@@ -1,4 +1,5 @@
 <script lang="typescript">
+	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
@@ -11,27 +12,27 @@
 	let links: Link[] = [
 		{
 			name: `Sākums`,
-			link: `/#/admin/sakums`,
+			link: `/admin`,
 			icon: `house`
 		},
 		{
 			name: `Statistika`,
-			link: `/#/admin/statistika`,
+			link: `/admin/statistika`,
 			icon: `bar-chart-line`
 		},
 		{
 			name: `Jaunumi`,
-			link: `/#/admin/jaunumi`,
+			link: `/admin/jaunumi`,
 			icon: `newspaper`
 		},
 		{
 			name: `Norises draudzē`,
-			link: `/#/admin/norises-draudze`,
+			link: `/admin/norises-draudze`,
 			icon: `calendar`
 		},
 		{
 			name: `Vēsture`,
-			link: `/#/admin/vesture`,
+			link: `/admin/vesture`,
 			icon: `clock-history`
 		},
 		/* {
@@ -42,10 +43,12 @@
 	];
 
 	// If the client has not been logged in, redirect to login page
-	const username: string | null = localStorage.getItem(`adminLoginUsername`);
-	if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
-		window.location.hash = `/admin/ienakt`;
-	}
+	onMount(() => {
+		const username: string | null = localStorage.getItem(`adminLoginUsername`);
+		if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
+			window.location.hash = `/admin/ienakt`;
+		}
+	});
 
 	// Animation for mobile sidebar
 	const sidebarAnimationProgress = tweened(0, {
@@ -97,13 +100,13 @@
 		<img
 			src="/files/title.png"
 			alt="Mežgalciema baptistu draudze"
-			on:click={() => window.location.href = `/`}
-			style={localStorage.getItem(`theme`) === `dark` ? `filter: invert();` : ``} />
+			on:click={() => window.location.href = `/`} />
 
 		<div class="links">
 			{#each links as link}
+			<!-- class:active={window.location.href === link.link.slice(1)} -->
 				<a
-					class:active={window.location.hash === link.link.slice(1)}
+					
 					href={link.link}>
 					
 					{link.name}
@@ -112,7 +115,7 @@
 
 			<a
 				on:click={() => localStorage.removeItem(`adminLoginToken`)}
-				href="/#/admin/ienakt">
+				href="/admin/ienakt">
 				
 				Iziet
 			</a>
@@ -140,14 +143,14 @@
 					<div class="separator"></div>
 
 					<a
-						href="/#/admin/iestatijumi">
+						href="/admin/iestatijumi">
 
 						<i class="bi bi-gear"></i>
 						Iestatījumi
 					</a>
 					<br />
 					<a
-						href="/#/admin/mainit-paroli">
+						href="/admin/mainit-paroli">
 
 						<i class="bi bi-arrow-repeat"></i>
 						Mainīt paroli
@@ -155,7 +158,7 @@
 					<br />
 					<a
 						on:click={() => localStorage.removeItem(`adminLoginToken`)}
-						href="/#/admin/ienakt">
+						href="/admin/ienakt">
 
 						<i class="bi bi-box-arrow-right"></i>
 						Iziet
@@ -201,7 +204,7 @@
 	
 	<a
 		on:click={() => localStorage.removeItem(`adminLoginToken`)}
-		href="/#/admin/ienakt">
+		href="/admin/ienakt">
 
 		<i class="bi bi-box-arrow-right"></i>
 		Iziet

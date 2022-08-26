@@ -1,14 +1,14 @@
 <script lang="typescript">
-	import CookieNotice from '../../components/CookieNotice.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import CookieNotice from '../../../components/CookieNotice.svelte';
+	import Loading from '../../../components/Loading.svelte';
 
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request } from 'graphql-request';
 
 	// If logged in already, go to admin home page
-	if (localStorage.getItem(`adminLoginToken`) !== null && localStorage.getItem(`adminLoginUsername`) !== null) {
+	/* if (localStorage.getItem(`adminLoginToken`) !== null && localStorage.getItem(`adminLoginUsername`) !== null) {
         window.location.hash = `/admin/sakums`;
-    }
+    } */
 
 	let usernameValue: string = ``,
 		passwordValue: string = ``,
@@ -50,7 +50,7 @@
 			if (data.login.token !== ``) {
 				localStorage.setItem(`adminLoginToken`, data.login.token);
 				localStorage.setItem(`adminLoginUsername`, usernameValue);
-				window.location.hash = `/admin/sakums`;
+				window.location.href = `/admin/`;
 				return;
 			}
 
@@ -158,7 +158,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../theme.scss';
+	@import '../../../theme.scss';
 
 	.background {
 		display: flex;

@@ -1,42 +1,39 @@
 import * as dotenv from 'dotenv';
-dotenv.config();
-
 import { sign, verify, decode } from 'jsonwebtoken';
 
-import { AccountToken } from './schemas';
-
+dotenv.config();
 const jwtSecretKey: string = process.env.JWT_PRIVATE_KEY || ``;
 
-export const createAccountToken = (username: string) => {
-	let date: number = new Date().getTime();
-	
-	let token = sign({
-		username,
-		date
-	}, jwtSecretKey, { expiresIn: `365d` });
-
-	return token;
+export interface AccountToken {
+    username: string
 }
 
-export const verifyAccountToken = (token: string) => {
+export const createAccountToken = (username: string): string => {
+	return sign({
+		username,
+		date: new Date().getTime()
+	}, jwtSecretKey, { expiresIn: `365d` });
+}
+
+export const verifyAccountToken = (token: string): boolean => {
 	try {
-		let decoded: AccountToken = <AccountToken>verify(token, jwtSecretKey);
+		verify(token, jwtSecretKey);
 
 		return true;
 	} catch (e: any) {
-		console.log(e);
+		console.error(e);
 
 		return false;
 	}
 }
 
-export const getUsernameFromToken = (token: string) => {
+export const getUsernameFromToken = (token: string): string => {
 	try {
 		let decoded: AccountToken = <AccountToken>decode(token);
 		
 		return decoded?.username;
 	} catch (e: any) {
-		console.log(e);
+		console.error(e);
 
 		return ``;
 	}

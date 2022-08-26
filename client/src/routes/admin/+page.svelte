@@ -42,7 +42,7 @@
 					}
 				}
 				information {
-				    nextDate
+					nextDate
 				}
 				statistics(token: "${localStorage.getItem(`adminLoginToken`)}") {
 					visitorsInLast7Days

@@ -1,11 +1,11 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import Loading from '../../components/Loading.svelte';
-	import Dropdown from '../../components/Dropdown.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import Loading from '../../../components/Loading.svelte';
+	import Dropdown from '../../../components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loadingFetch: boolean = true;

@@ -1,12 +1,12 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import AdminArticle from '../../components/admin/AdminArticle.svelte';
-	import AddArticle from '../../components/admin/AddArticle.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import AdminArticle from '../../../components/admin/AdminArticle.svelte';
+	import AddArticle from '../../../components/admin/AddArticle.svelte';
+	import Loading from '../../../components/Loading.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loading: boolean = true;

@@ -1,10 +1,10 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import Loading from '../../../components/Loading.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loading: boolean = true;
@@ -185,7 +185,7 @@
 <AdminFooter />
 
 <style lang="scss">
-	@import './panels.scss';
+	@import '../panels.scss';
 
 	h1 {
 		margin-top: 1.5rem;

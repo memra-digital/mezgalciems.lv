@@ -54,11 +54,11 @@
 		currentPage = window.location.href.split(`/`).pop();
 
 		// Send statistical data
-		request(apiUrl, `
+		/* request(apiUrl, `
 			mutation registerPageView {
 				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`)}")
 			}
-		`);
+		`); */
 	});
 	
 	const sidebarAnimationProgress = tweened(0, {
