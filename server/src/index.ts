@@ -1,11 +1,12 @@
 import Express from 'express';
 import cors from 'cors';
 
-import { DocumentNode } from 'apollo-link';
 import { ApolloServer, gql } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { compare, hash } from 'bcrypt';
+import { DocumentNode } from 'graphql';
+import rateLimit from 'express-rate-limit';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -614,15 +615,20 @@ client.connect(async (err) => {
 
 	const server = new ApolloServer({ 
 		typeDefs,
-		resolvers,
-		uploads: {
-			maxFieldSize: 2097152
-		}
+		resolvers
 	});
 	await server.start();
 
 	const app = Express();
 	app.use(cors());
+
+	const limiter = rateLimit({
+		windowMs: 60000,
+		max: 100,
+		standardHeaders: true
+	});
+	app.use(limiter);
+
 	server.applyMiddleware({
 		app,
 		bodyParserConfig: {
