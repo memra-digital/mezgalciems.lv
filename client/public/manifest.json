@@ -1,0 +1,13 @@
+{
+	"name": "Mežgalciema baptistu draudze",
+	"short_name": "mezgalciems.lv",
+	"start_url": ".",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"description": "Mežgalciema baptistu draudze dibināta 1920. gadā. Piederīga pie Latvijas Baptistu draudžu savienības.",
+	"icons": [{
+		"src": "files/favicon.png",
+		"sizes": "720x720",
+		"type": "image/png"
+	}]
+}

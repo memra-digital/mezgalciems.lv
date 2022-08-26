@@ -1,0 +1,1 @@
+export const articlePageSize: number = 3;
