@@ -7,9 +7,9 @@
 		easing: quartInOut
 	});
 
-    if (localStorage.getItem(`cookiesAllowed`) === undefined || localStorage.getItem(`cookiesAllowed`) === null) {
+    /* if (localStorage.getItem(`cookiesAllowed`) === undefined || localStorage.getItem(`cookiesAllowed`) === null) {
         popupAnimation.set(0);
-    }
+    } */
 
     // The choices
     const agree = () => {

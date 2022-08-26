@@ -1,7 +1,3 @@
-<!--
-	© 2020-2021, Mežgalciema baptistu draudze - mezgalciems.lv
-	Licensēts zem GPLv3
--->
 <script lang="typescript">
 	import Navbar from '../components/Navbar.svelte';
 	import Footer from '../components/Footer.svelte';

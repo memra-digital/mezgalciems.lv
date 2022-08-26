@@ -1,7 +1,7 @@
 <script lang="typescript">
-	import Navbar from '../components/Navbar.svelte';
-	import Footer from '../components/Footer.svelte';
-	import CookieNotice from '../components/CookieNotice.svelte';
+	import Navbar from '../../components/Navbar.svelte';
+	import Footer from '../../components/Footer.svelte';
+	import CookieNotice from '../../components/CookieNotice.svelte';
 
 	import { onMount } from 'svelte';
 
@@ -78,7 +78,7 @@
 <Footer />
 
 <style lang="scss">
-	@import '../theme.scss';
+	@import '../../theme.scss';
 
 	.map {
 		height: 20rem;
