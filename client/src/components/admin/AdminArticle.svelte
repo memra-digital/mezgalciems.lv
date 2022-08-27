@@ -136,7 +136,7 @@
 				<button on:click={() => wantsToDelete = false}><i class="bi-x"></i></button>
 
 			{:else}
-				<h1 class="text-2xl text-slate-900" bind:this={titleElement}>{title}</h1>
+				<h1 class="font-title text-2xl text-slate-900" bind:this={titleElement}>{title}</h1>
 
 				<p class="pb-2">{@html parseURLs(escapeHTML(content))}</p>
 

@@ -54,7 +54,7 @@
 
 <AdminNavbar />
 <main>
-	<h1>Pievienot jaunumu</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Pievienot jaunumu</h1>
 	<AddArticle />
 
 	<h1>Jaunumi</h1>

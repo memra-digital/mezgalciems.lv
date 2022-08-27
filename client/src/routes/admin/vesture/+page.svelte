@@ -166,7 +166,7 @@
 
 <AdminNavbar />
 <main class="overflow-hidden">
-	<h1 class="text-3xl text-slate-900 mt-2 mb-2">Vēsture</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Vēsture</h1>
 
 	<div class="relative block w-full h-[calc(100vh-13rem)]">
 		<div class="absolute top-0 w-full h-full" bind:this={listEl} style="left: {$listTransitionProgress}px;">

@@ -101,7 +101,7 @@
 
 <AdminNavbar />
 <main>
-	<h1>Norises draudzē</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Norises draudzē</h1>
 	{#if loadingFetch}
 		<Loading />
 	{:else}

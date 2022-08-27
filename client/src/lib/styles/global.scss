@@ -4,12 +4,12 @@
 @import "./theme.scss";
 
 
-* {
+/* * {
 	box-sizing: border-box;
 	margin: 0;
 	font-family: $paragraph-font;
-}
-h1, h2, h3 {
+} */
+/* h1, h2, h3 {
 	font-family: $title-font;
 	color: $title-color;
 }
@@ -19,7 +19,7 @@ h3 {
 body {
 	background: $background-color;
 	color: $paragraph-color;
-}
+} */
 
 // The website (ideally) has it's own styling for element focus, so the outlines
 // provided by the browser by default are unnecessary

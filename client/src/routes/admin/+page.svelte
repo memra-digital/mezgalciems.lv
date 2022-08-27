@@ -70,7 +70,7 @@
 
 <AdminNavbar />
 <main>
-	<h1 class="text-3xl text-slate-900 mt-4 mb-2">{greeting}</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">{greeting}</h1>
 
 	{#if isLoading}
 		<Loading />
@@ -92,7 +92,7 @@
 		<a class="block w-full font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/statistika">Apskatīt vairāk statistiku <i class="bi-arrow-right"></i></a>
 	{/if}
 
-	<h1 class="text-3xl text-slate-900 mt-4 mb-1">Jaunākais raksts</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-4 mb-1">Jaunākais raksts</h1>
 	{#if isLoading}
 		<Loading />
 	{:else}
@@ -100,11 +100,11 @@
 		<a class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/jaunumi">Apskatīt un rediģēt visus rakstus <i class="bi-arrow-right"></i></a>
 	{/if}
 
-	<h1 class="text-3xl text-slate-900 mt-4">Nākamais dievkalpojums</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-4">Nākamais dievkalpojums</h1>
 	{#if isLoading}
 		<Loading />
 	{:else}
-		<h3 class="text-xl text-slate-700">{nextDate}</h3>
+		<h3 class="font-title text-xl text-slate-700">{nextDate}</h3>
 		<a class="block w-full font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/norises-draudze">Rediģēt informāciju <i class="bi-arrow-right"></i></a>
 	{/if}
 </main>
