@@ -14,7 +14,7 @@ dotenv.config();
 import { articlePageSize } from './globals';
 import { createAccountToken, getUsernameFromToken, verifyAccountToken } from './account';
 import { uploadImg } from './imgbb';
-import type { DbAccount, DbArticle, Article, DbHistoryArticle, DbInformation, HistoryArticlePreview, DbStatisticsLog } from './schemas';
+import type { DbAccount, DbArticle, Article, DbHistoryArticle, DbInformation, HistoryArticlePreview, DbStatisticsLog, HistoryArticle } from './schemas';
 
 console.log(`✅ Started mezgalciems.lv backend server!`);
 
@@ -111,7 +111,16 @@ client.connect(async (err) => {
 				};
 			},
 			historyArticle: async (parent: any, args: any, context: any, info: any) => {
-				let article: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+				let article: HistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return {
+					id: res._id,
+					title: res.title,
+					content: res.content,
+					date: res.date,
+					author: res.author,
+					type: res.type,
+					font: res.font,
+					videoLink: res.videoLink
+				}});
 				return article;
 			},
 
@@ -523,8 +532,8 @@ client.connect(async (err) => {
 						originalArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 
 						// Modify the article
-						const modifiedArticle: DbHistoryArticle = {
-							_id: originalArticle?._id || 0,
+						const modifiedArticle: HistoryArticle = {
+							id: originalArticle?._id || 0,
 							title: args.title,
 							content: args.content,
 							date: originalArticle?.date || 0,

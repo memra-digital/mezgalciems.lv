@@ -68,7 +68,7 @@
 	<title>Sākums | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<svelte:body class="admin"></svelte:body>
+<svelte:body class="bg-slate-500"></svelte:body>
 
 <AdminNavbar />
 <main>

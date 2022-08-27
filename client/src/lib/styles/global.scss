@@ -3,6 +3,7 @@
 
 @import "./theme.scss";
 
+
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -18,17 +19,12 @@ h3 {
 body {
 	background: $background-color;
 	color: $paragraph-color;
-
-	&.admin {
-		background: $admin-background;
-	}
 }
 
 // The website (ideally) has it's own styling for element focus, so the outlines
 // provided by the browser by default are unnecessary
-:focus {
-	border: 0;
-	outline: none;
+:focus, :focus-within, :focus-visible {
+	outline: none !important;
 }
 
 main {
@@ -53,7 +49,7 @@ a {
 	}
 }
 
-button {
+/* button {
 	display: inline-block;
 	height: 2.5rem;
 	background: $theme-gradient;
@@ -77,7 +73,7 @@ button {
 		background: $red-gradient;
 	}
 }
-
+ */
 ::selection {
 	background: $theme-color;
 	color: $theme-accent;
