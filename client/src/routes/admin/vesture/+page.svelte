@@ -1,55 +1,53 @@
-<script lang="typescript">
-    import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+<script lang="ts">
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
 	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
 	import Loading from '../../../components/Loading.svelte';
 	import Dropdown from '../../../components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
+	import { tweened, type Tweened } from 'svelte/motion';
+	import { cubicInOut } from 'svelte/easing';
 	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
-    let loadingFetch: boolean = true;
-    let loadingSave: boolean = false;
-    
-    let editorOpen: boolean = false;
+	let isLoadingList: boolean = true,
+		isLoadingEditor: boolean = true;
 
-    let historyArticles: Array<any> = [];
+	let listEl: HTMLElement,
+		editorEl: HTMLElement;
 
-    let currentHistoryArticleTitle: string = ``;
-    let currentHistoryArticleContent: string = ``;
-	let currentHistoryArticleId: number = -1;
-	let currentHistoryArticlePublished: boolean = true;
-	let currentHistoryArticleCategory: number = 0;
-	let currentHistoryArticleFont: number = 0;
-	let currentHistoryArticleVideoLink: string = ``;
+	let listTransitionProgress: Tweened<number> = tweened(0, {
+		duration: 300,
+		easing: cubicInOut
+	});
+	let editorTransitionProgress: Tweened<number> = tweened(0, {
+		duration: 300,
+		easing: cubicInOut
+	});
+	
+	interface HistoryArticleListItem {
+		id: number,
+		title: string,
+		preview: string
+	}
+	let articleList: HistoryArticleListItem[];
 
-	let deleteConfirmationOpen: boolean = false;
-	let videoSelectorOpen: boolean = false;
+	interface HistoryArticle {
+		title: string,
+		content: string,
+		type: string,
+		font: string,
+		videoLink: string
+	}
+	let editorArticle: HistoryArticle;
+	
+	const openList = () => {
+		editorTransitionProgress.set(-editorEl.clientWidth);
+		listTransitionProgress.set(0);
+		isLoadingList = true;
 
-	let error: string = ``;
-	let errorInTitle: boolean = false;
-	let errorInContent: boolean = false;
-	let errorInVideoLink: boolean = false;
-
-	const categories: string[] = [
-		`church`,
-		`baptist`
-	];
-	const fonts: string[] = [
-		`serif`,
-		`sans`
-	];
-    
-    onMount(async () => {
-        loadHistoryArticles();
-    });
-
-    const loadHistoryArticles = () => {
-        loadingFetch = true;
-        editorOpen = false;
-        
-        const query = gql`
-            {
+		const query = gql`
+			{
 				historyArticles {
 					articles {
 						id
@@ -60,16 +58,17 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loadingFetch = false;
+			isLoadingList = false;
 
-            historyArticles = data.historyArticles.articles;
+			articleList = data.historyArticles.articles;
 		});
-    }
-    const loadHistoryArticle = (id: number) => {
-        loadingFetch = true;
-        editorOpen = true;
+	}
+	const openEditor = (id: number) => {
+		listTransitionProgress.set(-listEl.clientWidth);
+		editorTransitionProgress.set(0);
+		isLoadingEditor = true;
 
-        const query = gql`
+		const query = gql`
 			{
 				historyArticle(id: ${id.toString()}) {
 					title
@@ -81,135 +80,14 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loadingFetch = false;
-
-			currentHistoryArticleTitle = data.historyArticle.title;
-			currentHistoryArticleContent = data.historyArticle.content;
-			currentHistoryArticleId = id;
-			currentHistoryArticlePublished = true;
-			currentHistoryArticleCategory = categories.indexOf(data.historyArticle.type);
-			currentHistoryArticleFont = fonts.indexOf(data.historyArticle.font);
-			currentHistoryArticleVideoLink = `https://youtu.be/${data.historyArticle.videoLink}`;
-
-			error = ``;
-			errorInTitle = false;
-			errorInContent = false;
+			isLoadingEditor = false;
+			editorArticle = data.historyArticle;
 		});
-    }
-	const newHistoryArticle = () => {
-        editorOpen = true;
-
-		currentHistoryArticleTitle = ``;
-		currentHistoryArticleContent = ``;
-		currentHistoryArticleId = -1;
-		currentHistoryArticlePublished = false;
-		currentHistoryArticleCategory = 0;
-		currentHistoryArticleFont = 0;
-		currentHistoryArticleVideoLink = ``;
-
-		error = ``;
-		errorInTitle = false;
-		errorInContent = false;
-	}
-	const saveHistoryArticle = () => {
-		if (!checkTitle() || !checkContent() || !checkVideoLink()) {
-			return;
-		}
-
-		loadingSave = true;
-		console.log(currentHistoryArticlePublished);
-
-		if (currentHistoryArticlePublished) {
-			const query = gql`
-				mutation modifyHistoryArticle {
-					modifyHistoryArticle(id: ${currentHistoryArticleId}, title: "${currentHistoryArticleTitle.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${categories[currentHistoryArticleCategory]}", font: "${fonts[currentHistoryArticleFont]}", content: "${currentHistoryArticleContent.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", videoLink: "${extractYTIDFromURL(currentHistoryArticleVideoLink)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
-						id
-					}
-				}
-			`;
-			request(apiUrl, query).then((data: any) => {
-				loadingSave = false;
-			});
-		} else {
-			const query = gql`
-				mutation addHistoryArticle {
-					addHistoryArticle(title: "${currentHistoryArticleTitle.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${currentHistoryArticleContent.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${categories[currentHistoryArticleCategory]}", font: "${fonts[currentHistoryArticleFont]}", videoLink: "${extractYTIDFromURL(currentHistoryArticleVideoLink)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
-						id
-					}
-				}
-			`;
-			request(apiUrl, query).then((data: any) => {
-				loadingSave = false;
-
-				currentHistoryArticleId = data.addHistoryArticle.id;
-				currentHistoryArticlePublished = true;
-			});
-		}
-	}
-	const deleteHistoryArticle = () => {
-		if (currentHistoryArticlePublished) {
-			loadingFetch = true;
-
-			const query = gql`
-				mutation removeHistoryArticle {
-					removeHistoryArticle(id: ${currentHistoryArticleId}, token: "${localStorage.getItem(`adminLoginToken`)}") {
-						id
-					}
-				}
-			`;
-			request(apiUrl, query).then((data: any) => {
-				loadingFetch = false;
-			});
-		}
-
-		deleteConfirmationOpen = false;
-
-		loadHistoryArticles();
 	}
 
-	const checkTitle = () => {
-		if (currentHistoryArticleTitle === ``) {
-			error = `Virsraksts nevar būt tukšs!`;
-			errorInTitle = true;
-			return false;
-		}
-
-		errorInTitle = false;
-		return true;
-	}
-	const checkContent = () => {
-		if (currentHistoryArticleContent === ``) {
-			error = `Saturs nevar būt tukšs!`;
-			errorInContent = true;
-			return false;
-		}
-
-		errorInContent = false;
-		return true;
-	}
-	const checkVideoLink = () => {
-		if (/((https?:\/\/)?((.*).)?(youtube.com)\/(watch\?v=.*))/gi.test(currentHistoryArticleVideoLink) ||
-			/((https?:\/\/)?((.*).)?(youtu.be)\/(.*))/gi.test(currentHistoryArticleVideoLink) ||
-			currentHistoryArticleVideoLink === ``) {
-			
-			errorInVideoLink = false;
-			return true;
-		}
-
-		error = `Nederīga video saite!`;
-		errorInVideoLink = true;
-		return false;
-	}
-
-	const extractYTIDFromURL = (input: string) => {
-		if (/((https?:\/\/)?((.*).)?(youtube.com)\/(watch\?v=.*))/gi.test(input)) {
-			return input.split(`v=`).pop()?.split(`&`).shift();			
-		} else if (/((https?:\/\/)?((.*).)?(youtu.be)\/(.*))/gi.test(input)) {
-			return input.split(`/`).pop();
-		} else {
-			return ``;
-		}
-	}
+	onMount(() => {
+		openList();
+	});
 </script>
 
 <svelte:head>
@@ -218,240 +96,108 @@
 
 <AdminNavbar />
 <main>
-    <h1>Draudzes vēsture</h1>
-    {#if loadingFetch}
-        <Loading />
-    {:else if editorOpen}
-		{#if deleteConfirmationOpen}
-			<b>Vai Jūs tiešām vēlaties izdzēst rakstu "{currentHistoryArticleTitle}"?</b> <br />
-			<button class="dangerous" on:click={() => deleteHistoryArticle()}><i class="bi-check2"></i></button>
-			<button on:click={() => deleteConfirmationOpen = false}><i class="bi-x"></i></button>
-		{:else if videoSelectorOpen}
-			<button on:click={() => videoSelectorOpen = false}>
-				<i class="bi bi-arrow-left"></i>
-			</button>
+	<h1>Draudzes vēsture</h1>
 
-			<p class="error-text">{error}</p>
-
-			<p>Saite uz YouTube video:</p>
-			<input
-				class:wrong={errorInVideoLink}
-				on:blur={() => { error = ``; checkVideoLink(); }}
-				bind:value={currentHistoryArticleVideoLink} />
-
-			{#if currentHistoryArticleVideoLink && checkVideoLink()}
-				<iframe
-					class="video"
-					width="560"
-					height="315"
-					src="https://www.youtube.com/embed/{extractYTIDFromURL(currentHistoryArticleVideoLink)}"
-					title="YouTube video atskaņotājs"
-					frameborder="0"
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-					allowfullscreen>
-				</iframe>
+	<div class="workspace">
+		<div class="list" bind:this={listEl} style="left: {$listTransitionProgress}px;">
+			{#if isLoadingList}
+				<Loading />
+			{:else}
+				{#each articleList as article}
+					<button on:click={() => openEditor(article.id)}>
+						<b>{article.title}</b>
+						<p>{article.preview}</p>
+					</button>
+				{/each}
 			{/if}
-		{:else}
-			<button on:click={() => loadHistoryArticles()}>
-				<i class="bi bi-arrow-left"></i>
-			</button>
-			<button on:click={() => saveHistoryArticle()}>
-				Saglabāt
-			</button>
-			<button on:click={() => videoSelectorOpen = true}>
-				Izvēlēties video
-			</button>
-			<button class="dangerous" on:click={() => deleteConfirmationOpen = true}>
-				Dzēst
-			</button>
+		</div>
+			<div class="editor" bind:this={editorEl} style="right: {$editorTransitionProgress}px;">
+				<button on:click={() => openList()}><i class="bi bi-chevron-left"></i> Atpakaļ</button>
 
-			<p class="error-text">{error}</p>
+				{#if isLoadingEditor}
+					<Loading />
+				{:else}
+					<input bind:value={editorArticle.title} />
 
-			<textarea
-				class="titleInput"
-				class:wrong={errorInTitle}
-				placeholder="Virsraksts"
-				bind:value={currentHistoryArticleTitle}
-				style="font-family: '{currentHistoryArticleFont === 0 ? `Libre Baskerville` : `Overpass`}';" />
-
-			<div class="dropdown-wrapper">
-				<p>Kategorija:</p>
-				<Dropdown
-					options={[
-						`Draudzes vēsture`,
-						`Baptistu vēsture`
-					]}
-					bind:selected={currentHistoryArticleCategory} />
+					<textarea bind:value={editorArticle.content}></textarea>
+				{/if}
 			</div>
-			<div class="dropdown-wrapper">
-				<p>Fonts:</p>
-				<Dropdown
-					options={[
-						`Serif`,
-						`Sans Serif`
-					]}
-					bind:selected={currentHistoryArticleFont} />
-			</div>
-
-			<textarea
-				class="contentInput"
-				class:wrong={errorInContent}
-				placeholder="Saturs"
-				bind:value={currentHistoryArticleContent}
-				style="font-family: '{currentHistoryArticleFont === 0 ? `Libre Baskerville` : `Open Sans`}';" />
-
-			<button on:click={() => saveHistoryArticle()}>
-				Saglabāt
-			</button>
-			<button on:click={() => videoSelectorOpen = true}>
-				Izvēlēties video
-			</button>
-			<button class="dangerous" on:click={() => deleteConfirmationOpen = true}>
-				Dzēst
-			</button>
-		{/if}
-    {:else}
-		<button on:click={() => newHistoryArticle()}>
-			Pievienot rakstu
-		</button>
-
-        {#each historyArticles as historyArticle}
-            <button class="sidebar-option" on:click={() => loadHistoryArticle(historyArticle.id)}>
-                <b>{historyArticle.title}</b>
-                <p>{historyArticle.preview}...</p>
-            </button>
-        {/each}
-    {/if}
+	</div>
 </main>
 <AdminFooter />
 
-<style>
+<style lang="scss">
 	@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
+	@import '../../../theme.scss';
 	
-    h1 {
-		margin-top: 1.5rem;
+	main {
+		overflow: hidden;
 	}
 
-	.error-text {
-		display: block;
-		min-height: 1.125rem;
-
-		margin-bottom: .5rem;
-
-		color: #f85e5e;
-
-		font-size: 1rem;
-		line-height: 1.125rem;
-		font-weight: bold;
-	}
-
-    .sidebar-option {
-        display: block;
-		height: auto;
-
-		text-align: left;
-
-		padding: 0;
-
-		border: 0;
-
-		background: none;
-		color: #000000;
-
-		margin-bottom: 1.5rem;
-
-		border-radius: 0;
-
-		transition: .2s all;
-	}
-	.sidebar-option:hover {
-		color: #585858;
-
-		cursor: pointer;
-	}
-	.sidebar-option b {
-		font-size: 1.2rem;
-		font-family: 'Overpass', sans-serif;
-	}
-	.sidebar-option p {
-		font-size: 1rem;
-		line-height: 1.25rem;
-
+	.workspace {
 		position: relative;
-	}
-
-	textarea,
-	input {
 		display: block;
 		width: 100%;
+		height: calc(100vh - 13rem);
 
-		background: #eaeaea;
-		color: #000000;
-
-		border: 0;
-
-		border-radius: .5rem;
-
-		resize: vertical;
-	}
-    .titleInput {
-		height: 3rem;
-
-		font-size: 2rem;
-		font-weight: 700;
-		text-align: center;
-
-		border-radius: .5rem;
-
-		margin-bottom: 1rem;
-
-		resize: vertical;
-	}
-	.contentInput {
-		height: 50vh;
-
-		font-size: 1rem;
-	}
-
-	input {
-		width: auto;
-
-		padding: .5rem;
-	}
-	.video {
-		display: block;
-
-		margin: auto;
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-
-		border-radius: 1rem;
-
-		background: #000000;
-
-		box-shadow: 0px 0px 23px -3px rgba(66, 68, 74, 0.4);
-	}
-
-	.dropdown-wrapper {
-		display: inline-block;
-
-		margin-bottom: 1rem;
-		margin-left: .5rem;
-	}
-
-	textarea,
-	input {
-		border: 0 solid #f85e5e;
-
-		transition: .2s all;
-	}
-	.wrong {
-		border-width: 4px;
-	}
-
-	@media only screen and (max-width: 875px) {
-		main {
-			text-align: center;
+		.list, .editor {
+			position: absolute;
+			top: 0;
+			width: 100%;
 		}
+	}
+
+	.list {
+		button {
+			display: block;
+			width: 100%;
+			text-align: left;
+			font-size: 1rem;
+			background: none;
+			padding: 0;
+			margin: 0;
+			margin-top: 0.5rem;
+			transition: .2s opacity;
+
+			b {
+				font-family: $title-font;
+				color: $title-color;
+			}
+			p {
+				color: $paragraph-color;
+			}
+
+			&:hover {
+				opacity: 0.7;
+			}
+			&:first-child {
+				margin-top: 0;
+			}
+		}
+	}
+
+	.editor {
+		height: 100%;
+
+		input, textarea {
+			border-radius: .5rem;
+			border: 2px solid #d4d4d4;
+		}
+		input {
+			width: 100%;
+			font-size: 2rem;
+			text-align: center;
+			margin-bottom: .5rem;
+		}
+		textarea {
+			width: 100%;
+			height: calc(100% - 7.5rem);
+			font-size: 1rem;
+			resize: none;
+		}
+	}
+
+	h1 {
+		margin-top: 1.5rem;
 	}
 </style>
