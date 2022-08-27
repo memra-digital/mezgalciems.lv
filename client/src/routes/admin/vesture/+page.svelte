@@ -202,9 +202,9 @@
 					<button class="bg-gradient-to-tl from-red-600 to-red-400 text-white py-1 px-4 rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => deleteArticle(editorArticle.id)}><i class="bi bi-trash"></i> Dzēst</button>
 				</div>
 
-				<input placeholder="Nosaukums" bind:value={editorArticle.title} class="block mt-2 pt-1 text-center text-2xl font-title w-full rounded-lg border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200" class:font-serif={editorArticle.font === `serif`} />
+				<input placeholder="Nosaukums" bind:value={editorArticle.title} class="block mt-2 pt-1 text-center text-2xl font-title w-full rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200" class:font-serif={editorArticle.font === `serif`} />
 
-				<textarea placeholder="Saturs" class="block mt-2 w-full h-[calc(100%-5.5rem)] resize-none p-2 rounded-lg border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200" bind:value={editorArticle.content}></textarea>
+				<textarea placeholder="Saturs" class="block mt-2 w-full h-[calc(100%-5.5rem)] resize-none p-2 rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200" bind:value={editorArticle.content}></textarea>
 			{/if}
 		</div>
 	</div>

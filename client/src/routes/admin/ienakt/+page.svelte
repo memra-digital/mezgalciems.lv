@@ -2,30 +2,23 @@
 	import CookieNotice from '../../../components/CookieNotice.svelte';
 	import Loading from '../../../components/Loading.svelte';
 
+	import { onMount } from 'svelte';
 	import { apiUrl } from '../../../globals';
 	import { request } from 'graphql-request';
 
-	// If logged in already, go to admin home page
-	/* if (localStorage.getItem(`adminLoginToken`) !== null && localStorage.getItem(`adminLoginUsername`) !== null) {
-        window.location.hash = `/admin/sakums`;
-    } */
-
 	let usernameValue: string = ``,
-		passwordValue: string = ``,
+		passwordValue: string = ``;
 
-		isLoading: boolean = false,
+	let isLoading: boolean = false;
 
-		passwordElement: HTMLInputElement,
-		isPasswordShown: boolean = false,
-
-		serverError: string = ` `,
-		serverHasError: boolean = false,
+	let passwordElement: HTMLInputElement,
+		isPasswordShown: boolean = false;
 		
-		usernameError: string = ` `,
-		usernameHasError: boolean = false,
+	let usernameError: string = ` `,
+		isUsernameInvalid: boolean = false;
 		
-		passwordError: string = ` `,
-		passwordHasError: boolean = false;
+	let passwordError: string = ` `,
+		isPasswordInvalid: boolean = false;
 
 	// Show/hide password
 	const togglePassword = () => {
@@ -35,6 +28,13 @@
 
 	// Try logging in
 	const login = () => {
+		// Client-side validation
+		validateUsername();
+		validatePassword();
+		if (isUsernameInvalid || isPasswordInvalid) {
+			return;
+		}
+
 		isLoading = true;
 
 		request(apiUrl, `
@@ -54,48 +54,49 @@
 				return;
 			}
 
-			serverHasError = true;
-			if (data.login.error === `usernameNotFound`) {
-				serverError = `Lietotājvārds netika atrasts!`;
-			} else if (data.login.error === `pwdNotCorrect`) {
-				serverError = `Nepareiza parole!`;
+			if (data.login.error === `invalidUserOrPwd`) {
+				usernameError = `Nepareizs lietotājvārds/parole!`;
+				passwordError = `Nepareizs lietotājvārds/parole!`;
+
+				isUsernameInvalid = true;
+				isPasswordInvalid = true;
 			} else {
-				serverError = `Notika nezināma kļūda!`;
+				console.error(data.login.error);
 			}
 		});
 	}
 
 	// Client-side validation
 	const validateUsername = () => {
-		if (usernameValue === ``) {
-			usernameError = `Lietotājvārds nevar būt tukšs!`;
-			usernameHasError = true;
+		if (usernameValue.trim() === ``) {
+			usernameError = `Nedrīkst būt tukšs!`;
+			isUsernameInvalid = true;
 			return;
 		}
-
-		usernameHasError = false
+		isUsernameInvalid = false;
 	}
 	const validatePassword = () => {
-		if (passwordValue === ``) {
-			passwordError = `Parole nevar būt tukša!`;
-			passwordHasError = true;
+		if (passwordValue.trim() === ``) {
+			passwordError = `Nedrīkst būt tukša!`;
+			isPasswordInvalid = true;
 			return;
 		}
-
-		passwordHasError = false;
+		isPasswordInvalid = false;
 	}
 
 	// Try logging in on Enter key press
 	export const onBodyKeyPress = (e: KeyboardEvent) => {
 		if (e.key === `Enter`) {
-			validateUsername();
-			validatePassword();
-
-			if (!usernameHasError && !passwordHasError) {
-				login();
-			}
+			login();
 		}
 	}
+
+	onMount(() => {
+		// If logged in already, go to admin home page
+		if (localStorage.getItem(`adminLoginToken`) !== null && localStorage.getItem(`adminLoginUsername`) !== null) {
+			window.location.href = `/admin`;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -105,194 +106,28 @@
 <svelte:body on:keypress={(e) => onBodyKeyPress(e)}></svelte:body>
 
 <CookieNotice />
-<div class="background">
-	<div class="modal">
-		<img
-			src="/files/title.png"
-			alt="Mežgalciema baptistu draudze"
-			on:click={() => window.location.href = `/`} />
+<div class="block w-screen h-screen grid place-items-center bg-slate-200">
+	<div class="block w-[25rem] h-[22rem] p-4 rounded-3xl bg-slate-50 shadow-lg shadow-slate-300">
+		<img class="w-3/4 mx-auto mb-2 cursor-pointer" src="/files/title.png" alt="Mežgalciema baptistu draudze" on:click={() => window.location.href = `/`} />
 		
-		<h1>Ienākt</h1>
+		<h1 class="text-2xl text-center text-slate-900 leading-5 mt-4">Ienākt</h1>
 
-		<p class="error {serverHasError ? `error-show` : `error-hide`}">{serverError}</p>
+		<b class="text-slate-900 transition duration-200" class:text-red-500={isUsernameInvalid} class:font-bold={isUsernameInvalid}>Lietotājvārds <span class="italic opacity-0 transition duration-200" class:opacity-100={isUsernameInvalid}> - {usernameError}</span></b>
+		<input class="block w-full mb-2 p-1 bg-white border border-slate-300 rounded-lg focus:border-2 focus:border-blue-500 transition duration-200" class:border-red-500={isUsernameInvalid} class:focus:border-red-500={isUsernameInvalid} type="text" bind:value={usernameValue} />
 
-		<p class="label">Lietotājvārds:</p>
-		<input
-			type="text"
-			bind:value={usernameValue}
-			on:blur={() => validateUsername()}
-			class:wrong={usernameHasError} />
-		<p class="error {usernameHasError ? `error-show` : `error-hide`}">{usernameError}</p>
+		<b class="text-slate-900 transition duration-200" class:text-red-500={isPasswordInvalid} class:font-bold={isPasswordInvalid}>Parole <span class="italic opacity-0 transition duration-200" class:opacity-100={isPasswordInvalid}> - {passwordError}</span></b>
+		<div class="relative">
+			<input class="block w-full mb-2 p-1 bg-white border border-slate-300 rounded-lg focus:border-2 focus:border-blue-500 transition duration-200" class:border-red-500={isPasswordInvalid} class:focus:border-red-500={isPasswordInvalid} type="password" bind:this={passwordElement} bind:value={passwordValue} />
 
-		<p class="label">Parole:</p>
-		<div
-			class="password-container"
-			class:wrong={passwordHasError}>
-			
-			<input
-				type="password"
-				bind:this={passwordElement}
-				bind:value={passwordValue}
-				on:blur={() => validatePassword()} />
-
-			<button
-				class="show-password-btn"
-				on:click={() => togglePassword()}>
-
-				<i class="bi bi-eye-{isPasswordShown ? `slash-` : ``}fill"></i>
+			<button class="absolute right-2 top-1 block width-2 height-2 hover:opacity-75 transition duration-200" on:click={() => togglePassword()}>
+				<i class="bi bi-eye{isPasswordShown ? `-slash` : ``}"></i>
 			</button>
-
-			<p class="error password-error {passwordHasError ? `error-show` : `error-hide`}">{passwordError}</p>
 		</div>
 
 		{#if isLoading}
 			<Loading />
 		{:else}
-			<button
-				on:click={() => login()}>
-				
-				Ienākt
-			</button>
+			<button class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mt-4 mx-auto w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => login()}>Ienākt</button>
 		{/if}
 	</div>
 </div>
-
-<style lang="scss">
-	@import '../../../theme.scss';
-
-	.background {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		width: 100vw;
-		height: 100vh;
-
-		background: $admin-background;
-	}
-
-	.modal {
-		display: block;
-		width: 25%;
-
-		padding: 1rem;
-
-		border-radius: 1rem;
-
-		box-shadow: 0px 0px 10px -3px $shadow-color;
-
-		background: $background-color;
-	}
-
-	img {
-		width: 50%;
-		max-width: 50%;
-
-		margin-left: 25%;
-		margin-right: 25%;
-		margin-bottom: 1rem;
-
-		cursor: pointer;
-	}
-
-	h1 {
-		text-align: center;
-	}
-
-	.label {
-		margin-top: 1rem;
-	}
-
-	input {
-		color: $paragraph-color;
-		background: $background-accent;
-
-		border: 0;
-
-		border-radius: 2rem;
-
-		padding: .5rem;
-
-		font-size: 1rem;
-
-		width: 100%;
-
-		transition: .2s all;
-	}
-
-	.password-container {
-		position: absolute;
-
-		width: calc(25% - 2rem);
-		height: 3rem;
-	}
-	.show-password-btn {
-		position: absolute;
-		right: 0;
-		top: 0;
-
-		display: block;
-		width: 2rem;
-		height: 2rem;
-
-		margin: .25rem;
-
-		border-radius: 1rem;
-
-		border: 0;
-
-		background: rgba(0, 0, 0, 0.4);
-		color: $paragraph-color;
-
-		cursor: pointer;
-
-		padding: .5rem;
-
-		transition: .2s all;
-
-		i {
-			display: block;
-			width: 1rem;
-			height: 1rem;
-		}
-	}
-	.wrong .show-password-btn {
-		margin: calc(.25rem + 5px);
-	}
-
-	input.wrong,
-	.wrong input {
-		border: $red-color 5px solid;
-
-		transition: .2s all;
-	}
-	.error {
-		color: $red-color;
-
-		font-weight: bold;
-
-		transition: .2s all;
-	}
-	.error-show {
-		opacity: 1;
-	}
-	.error-hide {
-		opacity: 0;
-	}
-
-	button {
-		display: block;
-
-		margin: auto;
-		margin-top: 4.5rem;
-	}
-
-	@media only screen and (max-width: 875px) {
-		.modal {
-			width: 80%;
-		}
-		.password-container {
-			width: calc(80% - 2rem);
-		}
-	}
-</style>

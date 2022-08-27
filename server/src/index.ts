@@ -147,19 +147,11 @@ client.connect(async (err) => {
 				}
 
 				let account: DbAccount = await accountCollection.findOne({ username: args.username }).then((res: any) => { return res; });
+				let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
 
-				if (account === null) {
+				if (account === null || !isPwdCorrect) {
 					return {
-						error: `usernameNotFound`,
-						token: ``
-					};
-				}
-
-				let pwdIsCorrect: boolean = await compare(args.password, account.password).then((res: any) => { return res; });
-
-				if (!pwdIsCorrect) {
-					return {
-						error: `pwdNotCorrect`,
+						error: `invalidUserOrPwd`,
 						token: ``
 					};
 				}
