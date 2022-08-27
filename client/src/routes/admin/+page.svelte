@@ -21,9 +21,9 @@
 		greeting = `Labvakar!`;
 	}
 
-	// Data
-	let loading: boolean = true,
-		visitorsInLast7Days: number = 0,
+	let isLoading: boolean = true;
+
+	let visitorsInLast7Days: number = 0,
 		visitorsToday: number = 0,
 		viewsInLast7Days: number = 0,
 		newestArticle: ArticleData,
@@ -51,7 +51,7 @@
 				}
 			}
 		`).then((data: any) => {
-			loading = false;
+			isLoading = false;
 
 			visitorsInLast7Days = data.statistics.visitorsInLast7Days;
 			visitorsToday = data.statistics.visitorsToday;
@@ -70,83 +70,42 @@
 
 <AdminNavbar />
 <main>
-	<h1>{greeting}</h1>
+	<h1 class="text-3xl text-slate-900 mt-4 mb-2">{greeting}</h1>
 
-	{#if loading}
+	{#if isLoading}
 		<Loading />
 	{:else}
-		<div class="panel-container">
-			<div class="panel">
-				<h1>{visitorsInLast7Days}</h1>
-				<p>atsevišķi apmeklētāji pēdējās 7 dienās</p>
+		<div class="grid grid-cols-3 gap-4 mb-4">
+			<div class="text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{visitorsInLast7Days}</h1>
+				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji pēdējās 7 dienās</p>
 			</div>
-			<div class="panel">
-				<h1>{visitorsToday}</h1>
-				<p>atsevišķi apmeklētāji šodien</p>
+			<div class="text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{visitorsToday}</h1>
+				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji šodien</p>
 			</div>
-			<div class="panel">
-				<h1>{viewsInLast7Days}</h1>
-				<p>skatījumi pēdējās 7 dienās</p>
+			<div class="text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{viewsInLast7Days}</h1>
+				<p class="text-slate-600 font-bold">skatījumi pēdējās 7 dienās</p>
 			</div>
 		</div>
-		<a href="/#/admin/statistika" class="see-more-btn">Apskatīt vairāk statistiku <i class="bi-arrow-right"></i></a>
+		<a class="block w-full font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/statistika">Apskatīt vairāk statistiku <i class="bi-arrow-right"></i></a>
 	{/if}
 
-	<h1>Jaunākais raksts</h1>
-	{#if loading}
+	<h1 class="text-3xl text-slate-900 mt-4 mb-1">Jaunākais raksts</h1>
+	{#if isLoading}
 		<Loading />
 	{:else}
 		<AdminArticle id={newestArticle.id} title={newestArticle.title} image={newestArticle.image} imageAlt={newestArticle.imageAlt} content={newestArticle.content} />
-		<a href="/#/admin/jaunumi" class="see-more-btn">Apskatīt un rediģēt visus rakstus <i class="bi-arrow-right"></i></a>
+		<a class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/jaunumi">Apskatīt un rediģēt visus rakstus <i class="bi-arrow-right"></i></a>
 	{/if}
 
-	<h1>Nākamais dievkalpojums</h1>
-	{#if loading}
+	<h1 class="text-3xl text-slate-900 mt-4">Nākamais dievkalpojums</h1>
+	{#if isLoading}
 		<Loading />
 	{:else}
-		<h3>{nextDate}</h3>
-		<a href="/#/admin/norises-draudze" class="see-more-btn">Rediģēt informāciju <i class="bi-arrow-right"></i></a>
+		<h3 class="text-xl text-slate-700">{nextDate}</h3>
+		<a class="block w-full font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/norises-draudze">Rediģēt informāciju <i class="bi-arrow-right"></i></a>
 	{/if}
-
 </main>
 <AdminFooter />
-
-<style lang="scss">
-	@import './panels.scss';
-	@import '../../theme.scss';
-
-	h1 {
-		margin-top: 1.5rem;
-	}
-
-	.see-more-btn {
-		font-size: 1.2rem;
-
-		font-family: 'Overpass', sans-serif;
-
-		background: none;
-		color: $title-color;
-
-		border: 0;
-
-		cursor: pointer;
-
-		text-align: center;
-
-		display: block;
-		width: 100%;
-
-		i {
-			transition: .2s all;
-		}
-		&:hover i {
-			margin-left: 1.5rem;
-		}
-	}
-
-	@media only screen and (max-width: 875px) {	
-		.panel:not(:nth-child(1)) {
-			display: none;
-		}
-	}
-</style>

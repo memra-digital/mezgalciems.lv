@@ -100,7 +100,7 @@
 <!-- <svelte:body on:click={(e) => bodyClick(e)}></svelte:body> -->
 
 <nav class="block w-5/6 h-20 mx-auto border-b-2 border-slate-300">
-	<div class="hidden lg:block my-2">
+	<div class="hidden lg:block mb-2">
 		<img class="inline-block w-44" src="/files/title.png" alt="Mežgalciema baptistu draudze" />
 
 		<div class="block h-6 my-7 float-right">
