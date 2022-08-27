@@ -110,7 +110,7 @@
 	<div class="block w-[25rem] h-[22rem] p-4 rounded-3xl bg-slate-50 shadow-lg shadow-slate-300">
 		<img class="w-3/4 mx-auto mb-2 cursor-pointer" src="/files/title.png" alt="Mežgalciema baptistu draudze" on:click={() => window.location.pathname = `/`} />
 		
-		<h1 class="text-2xl text-center text-slate-900 leading-5 mt-4">Ienākt</h1>
+		<h1 class="font-title text-2xl text-center text-slate-900 leading-5 mt-4">Ienākt</h1>
 
 		<b class="text-slate-900 transition duration-200" class:text-red-500={isUsernameInvalid} class:font-bold={isUsernameInvalid}>Lietotājvārds <span class="italic opacity-0 transition duration-200" class:opacity-100={isUsernameInvalid}> - {usernameError}</span></b>
 		<input class="block w-full mb-2 p-1 bg-white border border-slate-300 rounded-lg focus:border-2 focus:border-blue-500 transition duration-200" class:border-red-500={isUsernameInvalid} class:focus:border-red-500={isUsernameInvalid} type="text" bind:value={usernameValue} />

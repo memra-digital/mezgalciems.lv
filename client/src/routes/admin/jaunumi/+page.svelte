@@ -57,7 +57,7 @@
 	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Pievienot jaunumu</h1>
 	<AddArticle />
 
-	<h1>Jaunumi</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Jaunumi</h1>
 	{#each articles as article}
 		<AdminArticle id={article.id} title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} />
 	{/each}
@@ -67,7 +67,7 @@
 	{/if}
 
 	{#if currentlyLoadedPages < totalPages}
-		<button class="load-more-btn" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+		<button class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
 	{/if}
 </main>
 <AdminFooter />

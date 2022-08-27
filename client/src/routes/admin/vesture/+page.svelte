@@ -25,6 +25,15 @@
 		duration: 300,
 		easing: cubicInOut
 	});
+
+	let confirmationDialogProgress: Tweened<number> = tweened(0, {
+		duration: 300,
+		easing: cubicInOut
+	});
+	let videoDialogProgress: Tweened<number> = tweened(0, {
+		duration: 300,
+		easing: cubicInOut
+	});
 	
 	interface HistoryArticleListItem {
 		id: number,
@@ -47,6 +56,8 @@
 		editorTransitionProgress.set(-editorEl.clientWidth);
 		listTransitionProgress.set(0);
 		isLoadingList = true;
+
+		window.location.hash = ``;
 
 		const query = gql`
 			{
@@ -85,12 +96,15 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingEditor = false;
 			editorArticle = data.historyArticle;
+			window.location.hash = editorArticle.id.toString();
 		});
 	}
 	const newArticle = () => {
 		listTransitionProgress.set(-listEl.clientWidth);
 		editorTransitionProgress.set(0);
 		isLoadingEditor = false;
+
+		window.location.hash = `jauns`;
 
 		editorArticle = {
 			id: -1,
@@ -102,7 +116,7 @@
 		};
 	}
 
-	const saveArticle = async () => {
+	const saveArticle = () => {
 		isSaving = true;
 
 		let mutation;
@@ -126,9 +140,11 @@
 
 		request(apiUrl, mutation).then((data: any) => {
 			isSaving = false;
-			if (editorArticle.id === -1) editorArticle.id = data.addHistoryArticle.id;
 
-			return true;
+			if (editorArticle.id === -1) {
+				editorArticle.id = data.addHistoryArticle.id;
+				window.location.hash = editorArticle.id.toString();
+			}
 		});
 	}
 
@@ -156,7 +172,14 @@
 	}
 
 	onMount(() => {
-		openList();
+		// Load the article from the hash if it's present
+		if (window.location.hash.trim() === `#` || window.location.hash.trim() === ``) {
+			openList();
+		} else if (window.location.hash.trim() === `#jauns`) {
+			newArticle();
+		} else {
+			openArticle(parseInt(window.location.hash.slice(1).trim()));
+		}
 	});
 </script>
 
@@ -187,7 +210,7 @@
 			{#if isLoadingEditor}
 				<Loading />
 			{:else}
-				<button class="bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:brightness-95 duration-200" on:click={() => saveArticle().then(() => openList()) }><i class="bi bi-chevron-left"></i> Atpakaļ</button>
+				<button class="bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:brightness-95 duration-200" on:click={() => openList()}><i class="bi bi-chevron-left"></i> Atpakaļ</button>
 				<button class="bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:brightness-95 duration-200" on:click={() => editVideo(editorArticle.id)}><i class="bi bi-camera-reels"></i> Pievienot video</button>
 				
 				<div class="float-right">
