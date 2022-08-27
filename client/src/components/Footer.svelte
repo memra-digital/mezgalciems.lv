@@ -3,7 +3,7 @@
 </script>
 
 <footer>
-	<p>&copy; Mežgalciema baptistu draudze, {year} • {version}<span class="no-print">&nbsp;• <a href="/#/privatuma-politika">Privātuma politika</a></span></p>
+	<p>&copy; Mežgalciema baptistu draudze, {year} • {version}<span class="no-print">&nbsp;• <a href="/privatuma-politika">Privātuma politika</a></span></p>
 
 	<a class="social-link social-link-facebook" href="https://www.facebook.com/mezgalciems" target="_blank" rel="noreferer">
 		<i class="bi bi-facebook"></i>

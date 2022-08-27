@@ -35,12 +35,6 @@
 	}
 }
 
-.graph {
-	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-
-	height: 15rem;
 
 	.graph-column {
 		position: relative;
@@ -70,7 +64,6 @@
 			}
 		}
 	}
-}
 .graph-column-labels {
 	display: block;
 

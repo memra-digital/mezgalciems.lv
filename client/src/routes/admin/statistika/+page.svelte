@@ -1,10 +1,10 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import Loading from '../../../components/Loading.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loading: boolean = true;
@@ -100,94 +100,86 @@
 
 <AdminNavbar />
 <main>
-	<h1>Statistika</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Statistika</h1>
 	{#if loading}
 		<Loading />
 	{:else}
-		<div class="panel-container">
-			<div class="panel">
-				<h1>{visitorsInLast7Days}</h1>
-				<p>atsevišķi apmeklētāji pēdējās 7 dienās</p>
+		<div class="flex flex-wrap gap-4">
+			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{visitorsInLast7Days}</h1>
+				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji pēdējās 7 dienās</p>
 			</div>
-			<div class="panel">
-				<h1>{visitorsToday}</h1>
-				<p>atsevišķi apmeklētāji šodien</p>
+			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{visitorsToday}</h1>
+				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji šodien</p>
 			</div>
-			<div class="panel">
-				<h1>{viewsInLast7Days}</h1>
-				<p>skatījumi pēdējās 7 dienās</p>
+			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{viewsInLast7Days}</h1>
+				<p class="text-slate-600 font-bold">skatījumi pēdējās 7 dienās</p>
 			</div>
-			<div class="panel panel-wide">
-				<h1>{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
-				<p>ir visapmeklētākā lapa</p>
+			<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
+				<p class="text-slate-600 font-bold">ir visapmeklētākā lapa</p>
 			</div>
-			<div class="panel">
-				<h1>{mostViewedPageViews}</h1>
-				<p>skatījumi visapmeklētākajai lapai</p>
+			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
+				<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
 			</div>
-			<div class="panel panel-wide desktop">
-				<div class="graph">
+			<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<div class="flex items-end justify-center h-60">
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(views6DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{views6DaysAgo}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{views6DaysAgo}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(views5DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{views5DaysAgo}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{views5DaysAgo}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(views4DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{views4DaysAgo}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{views4DaysAgo}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(views3DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{views3DaysAgo}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{views3DaysAgo}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(views2DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{views2DaysAgo}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{views2DaysAgo}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(viewsYesterday / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{viewsYesterday}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{viewsYesterday}</p>
 					</div>
 					<div
-						class="graph-column"
+						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
 						style="height: {Math.max(viewsToday / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p>{viewsToday}</p>
+						<p class="absolute bottom-1 w-8 font-bold text-white">{viewsToday}</p>
 					</div>
 				</div>
 				<div
-					class="graph-column-labels">
+					class="block mt-1 mb-4">
 					
 					{#each weekDayDisplayList as w}
-						<b>{w}</b>
+						<b class="inline-block w-16 text-slate-600">{w}</b>
 					{/each}
 				</div>
-				<p>Skatījumu pārskats pēdējās 7 dienās</p>
+				<p class="text-slate-600 font-bold">Skatījumu pārskats pēdējās 7 dienās</p>
 			</div>
 		</div>
 	{/if}
 </main>
 <AdminFooter />
-
-<style lang="scss">
-	@import './panels.scss';
-
-	h1 {
-		margin-top: 1.5rem;
-	}
-</style>

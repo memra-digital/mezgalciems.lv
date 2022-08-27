@@ -51,14 +51,14 @@
 	}
 
 	onMount(() => {
-		currentPage = window.location.hash.split(`/`).pop();
+		currentPage = window.location.pathname.split(`/`).pop();
 
 		// Send statistical data
-		request(apiUrl, `
+		/* request(apiUrl, `
 			mutation registerPageView {
 				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`)}")
 			}
-		`);
+		`); */
 	});
 	
 	const sidebarAnimationProgress = tweened(0, {
@@ -69,7 +69,7 @@
 
 <svelte:window on:scroll={(e) => updateStickiness()} bind:scrollY={y}/>
 
-{#if localStorage.getItem(`adminLoginToken`) !== null}
+<!-- {#if localStorage.getItem(`adminLoginToken`) !== null}
 	<div
 		class="admin-link"
 		on:click={() => window.location.href = `#/admin/sakums`}>
@@ -85,7 +85,7 @@
 			<i class="bi bi-person-circle"></i>
 		</div>
 	</div>
-{/if}
+{/if} -->
 
 <header>
 	<div class="header-banner"
@@ -115,7 +115,7 @@
 	<nav bind:this={navbarElement}>
 		<div class="desktop">
 			{#each links as link}
-				<a aria-current={currentPage === link.link ? `page` : undefined} href="#/{link.link}" >{link.name}</a>
+				<a aria-current={currentPage === link.link ? `page` : undefined} href="/{link.link}" >{link.name}</a>
 			{/each}
 		</div>
 		<div class="mobile">

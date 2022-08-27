@@ -1,12 +1,12 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import AdminArticle from '../../components/admin/AdminArticle.svelte';
-	import AddArticle from '../../components/admin/AddArticle.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import AdminArticle from '../../../components/admin/AdminArticle.svelte';
+	import AddArticle from '../../../components/admin/AddArticle.svelte';
+	import Loading from '../../../components/Loading.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loading: boolean = true;
@@ -54,7 +54,7 @@
 
 <AdminNavbar />
 <main>
-	<h1>Pievienot jaunumu</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Pievienot jaunumu</h1>
 	<AddArticle />
 
 	<h1>Jaunumi</h1>

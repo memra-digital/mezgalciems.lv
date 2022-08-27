@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <!--
 	© 2020-2021, Mežgalciema baptistu draudze - mezgalciems.lv
-	v2.2
+	v3.0
 -->
 <html lang="lv" dir="ltr">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<link rel="manifest" href="manifest.json">
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json">
 
 		<meta http-equiv="content-security-policy" content="default-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; script-src * blob: 'unsafe-inline'; style-src * 'unsafe-inline';">
 
-		<link rel="icon" href="/files/favicon.png" />
+		<link rel="icon" href="%sveltekit.assets%/files/favicon.png" />
 
 		<meta name="keywords" content="mežgalciems, mežgalciema baptistu draudze, mežgalciema draudze, mežgalciema baznīca, mezgalciems, mezgalciems.lv">
 		<meta name="description" content="Mežgalciema baptistu draudze dibināta 1920. gadā. Piederīga pie Latvijas Baptistu draudžu savienības.">
@@ -34,14 +34,15 @@
 		<meta property="twitter:description" content="Mežgalciema baptistu draudze dibināta 1920. gadā. Piederīga pie Latvijas Baptistu draudžu savienības.">
 		<meta property="twitter:image" content="files/background.png">
 
-    	<meta name="msapplication-TileColor" content="#6b9fdb">
+		<meta name="msapplication-TileColor" content="#6b9fdb">
 
-   		<meta name="application-name" content="Mežgalciema baptistu draudze">
+		<meta name="application-name" content="Mežgalciema baptistu draudze">
 
 		<title>Mežgalciema baptistu draudze</title>
+
+		%sveltekit.head%
 	</head>
 	<body>
-		<noscript>Jums vajag internetpārlūku, kas atbalsta JavaScript, lai aplūkotu šo lapu.</noscript>
-		<script type="module" src="/dist/index.js"></script>
+		%sveltekit.body%
 	</body>
 </html>	

@@ -1,31 +1,28 @@
 {
-  "scripts": {
-    "dev": "snowpack dev",
-    "build": "snowpack build",
-    "test": "web-test-runner \"src/**/*.test.ts\""
-  },
-  "dependencies": {
-    "graphql": "^15.5.0",
-    "graphql-request": "^3.4.0",
-    "html2canvas": "^1.2.1",
-    "svelte": "^3.37.0",
-    "svelte-spa-router": "^3.1.0"
-  },
-  "devDependencies": {
-    "@snowpack/plugin-dotenv": "^2.1.0",
-    "@snowpack/plugin-sass": "^1.4.0",
-    "@snowpack/plugin-svelte": "^3.6.1",
-    "@snowpack/plugin-typescript": "^1.2.1",
-    "@snowpack/web-test-runner-plugin": "^0.2.2",
-    "@testing-library/svelte": "^3.0.3",
-    "@tsconfig/svelte": "^1.0.10",
-    "@types/chai": "^4.2.17",
-    "@types/mocha": "^8.2.2",
-    "@types/snowpack-env": "^2.3.3",
-    "@web/test-runner": "^0.13.3",
-    "chai": "^4.3.4",
-    "snowpack": "^3.3.7",
-    "svelte-preprocess": "^4.7.2",
-    "typescript": "^4.2.4"
-  }
+	"name": "mezgalciems.lv-client",
+	"version": "3.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build"
+	},
+	"dependencies": {
+		"graphql": "^15.5.0",
+		"graphql-request": "^3.4.0"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"autoprefixer": "^10.4.8",
+		"node-sass": "^7.0.1",
+		"postcss": "^8.4.16",
+		"svelte": "^3.44.0",
+		"svelte-check": "^2.7.1",
+		"svelte-preprocess": "^4.10.7",
+		"tailwindcss": "^3.1.8",
+		"tslib": "^2.3.1",
+		"typescript": "^4.7.4",
+		"vite": "^3.0.4"
+	},
+	"type": "module"
 }

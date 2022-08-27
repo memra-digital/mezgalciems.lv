@@ -1,16 +1,16 @@
 <script lang="typescript">
-	import Navbar from '../components/Navbar.svelte';
-	import Footer from '../components/Footer.svelte';
-	import Loading from '../components/Loading.svelte';
-	import CookieNotice from '../components/CookieNotice.svelte';
-	import Dropdown from '../components/Dropdown.svelte';
+	import Navbar from '../../components/Navbar.svelte';
+	import Footer from '../../components/Footer.svelte';
+	import Loading from '../../components/Loading.svelte';
+	import CookieNotice from '../../components/CookieNotice.svelte';
+	import Dropdown from '../../components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { request, gql } from 'graphql-request';
-	import { apiUrl } from '../globals';
-	import { parseURLs, escapeHTML } from '../processing';
+	import { apiUrl } from '../../globals';
+	import { parseURLs, escapeHTML } from '../../processing';
 
 	interface HistoryArticlePreview {
 		id: number,
@@ -279,7 +279,7 @@
 <Footer />
 
 <style lang="scss">
-	@import '../theme.scss';
+	@import '../../theme.scss';
 	@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
 
 	main {

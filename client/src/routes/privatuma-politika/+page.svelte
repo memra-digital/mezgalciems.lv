@@ -1,7 +1,7 @@
 <script lang="typescript">
-    import Navbar from '../components/Navbar.svelte';
-	import Footer from '../components/Footer.svelte';
-    import CookieNotice from '../components/CookieNotice.svelte';
+    import Navbar from '../../components/Navbar.svelte';
+	import Footer from '../../components/Footer.svelte';
+    import CookieNotice from '../../components/CookieNotice.svelte';
 </script>
 
 <svelte:head>

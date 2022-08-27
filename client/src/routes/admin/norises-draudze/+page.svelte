@@ -1,11 +1,11 @@
 <script lang="typescript">
-	import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import Loading from '../../components/Loading.svelte';
-	import Dropdown from '../../components/Dropdown.svelte';
+	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
+	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
+	import Loading from '../../../components/Loading.svelte';
+	import Dropdown from '../../../components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '../../../globals';
 	import { request, gql } from 'graphql-request';
 
 	let loadingFetch: boolean = true;
@@ -101,7 +101,7 @@
 
 <AdminNavbar />
 <main>
-	<h1>Norises draudzē</h1>
+	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Norises draudzē</h1>
 	{#if loadingFetch}
 		<Loading />
 	{:else}

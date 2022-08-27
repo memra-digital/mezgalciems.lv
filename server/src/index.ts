@@ -1,11 +1,12 @@
 import Express from 'express';
 import cors from 'cors';
 
-import { DocumentNode } from 'apollo-link';
 import { ApolloServer, gql } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { compare, hash } from 'bcrypt';
+import { DocumentNode } from 'graphql';
+import rateLimit from 'express-rate-limit';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -13,7 +14,7 @@ dotenv.config();
 import { articlePageSize } from './globals';
 import { createAccountToken, getUsernameFromToken, verifyAccountToken } from './account';
 import { uploadImg } from './imgbb';
-import type { DbAccount, DbArticle, Article, DbHistoryArticle, DbInformation, HistoryArticlePreview, DbStatisticsLog } from './schemas';
+import type { DbAccount, DbArticle, Article, DbHistoryArticle, DbInformation, HistoryArticlePreview, DbStatisticsLog, HistoryArticle } from './schemas';
 
 console.log(`✅ Started mezgalciems.lv backend server!`);
 
@@ -110,7 +111,16 @@ client.connect(async (err) => {
 				};
 			},
 			historyArticle: async (parent: any, args: any, context: any, info: any) => {
-				let article: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+				let article: HistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return {
+					id: res._id,
+					title: res.title,
+					content: res.content,
+					date: res.date,
+					author: res.author,
+					type: res.type,
+					font: res.font,
+					videoLink: res.videoLink
+				}});
 				return article;
 			},
 
@@ -137,19 +147,11 @@ client.connect(async (err) => {
 				}
 
 				let account: DbAccount = await accountCollection.findOne({ username: args.username }).then((res: any) => { return res; });
+				let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
 
-				if (account === null) {
+				if (account === null || !isPwdCorrect) {
 					return {
-						error: `usernameNotFound`,
-						token: ``
-					};
-				}
-
-				let pwdIsCorrect: boolean = await compare(args.password, account.password).then((res: any) => { return res; });
-
-				if (!pwdIsCorrect) {
-					return {
-						error: `pwdNotCorrect`,
+						error: `invalidUserOrPwd`,
 						token: ``
 					};
 				}
@@ -522,8 +524,8 @@ client.connect(async (err) => {
 						originalArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 
 						// Modify the article
-						const modifiedArticle: DbHistoryArticle = {
-							_id: originalArticle?._id || 0,
+						const modifiedArticle: HistoryArticle = {
+							id: originalArticle?._id || 0,
 							title: args.title,
 							content: args.content,
 							date: originalArticle?.date || 0,
@@ -614,15 +616,20 @@ client.connect(async (err) => {
 
 	const server = new ApolloServer({ 
 		typeDefs,
-		resolvers,
-		uploads: {
-			maxFieldSize: 2097152
-		}
+		resolvers
 	});
 	await server.start();
 
 	const app = Express();
 	app.use(cors());
+
+	const limiter = rateLimit({
+		windowMs: 60000,
+		max: 100,
+		standardHeaders: true
+	});
+	app.use(limiter);
+
 	server.applyMiddleware({
 		app,
 		bodyParserConfig: {
