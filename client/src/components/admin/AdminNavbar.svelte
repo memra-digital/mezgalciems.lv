@@ -3,12 +3,12 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
+	
 	interface Link {
 		name: string,
 		link: string,
 		icon: string
 	}
-
 	let links: Link[] = [
 		{
 			name: `Sākums`,
@@ -41,14 +41,7 @@
 			icon: `person`
 		}, */
 	];
-
-	// If the client has not been logged in, redirect to login page
-	onMount(() => {
-		const username: string | null = localStorage.getItem(`adminLoginUsername`);
-		if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
-			window.location.hash = `/admin/ienakt`;
-		}
-	});
+	let selectedLink: string;
 
 	// Animation for mobile sidebar
 	const sidebarAnimationProgress = tweened(0, {
@@ -91,32 +84,36 @@
 			}
 		}
 	} */
+
+	onMount(() => {
+		// If the client has not been logged in, redirect to login page
+		const username: string | null = localStorage.getItem(`adminLoginUsername`);
+		if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
+			window.location.pathname = `/admin/ienakt`;
+		}
+
+		// Set the selected link
+		selectedLink = window.location.pathname;
+	});
 </script>
 
 <!-- <svelte:body on:click={(e) => bodyClick(e)}></svelte:body> -->
 
-<nav>
-	<div class="desktop">
-		<img
-			src="/files/title.png"
-			alt="Mežgalciema baptistu draudze"
-			on:click={() => window.location.href = `/`} />
+<nav class="block w-5/6 h-20 mx-auto border-b-2 border-slate-300">
+	<div class="hidden lg:block my-2">
+		<img class="inline-block w-44" src="/files/title.png" alt="Mežgalciema baptistu draudze" />
 
-		<div class="links">
+		<div class="block h-6 my-7 float-right">
 			{#each links as link}
-			<!-- class:active={window.location.href === link.link.slice(1)} -->
-				<a
-					
-					href={link.link}>
-					
+				<a class="mx-2 hover:opacity-75 transition duration-200" class:font-bold={selectedLink === link.link} class:text-blue-500={selectedLink === link.link} href={link.link}>
+					<i class="bi bi-{link.icon}"></i>
 					{link.name}
 				</a>
 			{/each}
 
-			<a
-				on:click={() => localStorage.removeItem(`adminLoginToken`)}
-				href="/admin/ienakt">
+			<a class="ml-2 hover:opacity-75 transition duration-200" on:click={() => localStorage.removeItem(`adminLoginToken`)} href="/admin/ienakt">
 				
+				<i class="bi bi-door-open"></i>
 				Iziet
 			</a>
 
@@ -167,39 +164,35 @@
 			</div> -->
 		</div>
 	</div>
-	<div class="mobile">
-		<button on:click={() => sidebarAnimationProgress.set(1)}>
+	<div class="lg:hidden">
+		<button class="block w-16 h-16 my-2 float-left text-4xl" on:click={() => sidebarAnimationProgress.set(1)}>
 			<i class="bi bi-list"></i>
 		</button>
 
-		<img
-			src="/files/title.png"
-			alt="Mežgalciema baptistu draudze"
-			on:click={() => window.location.href = `/`} />
+		<img class="block w-40 my-1 float-right" src="/files/title.png" alt="Mežgalciema baptistu draudze" on:click={() => window.location.pathname = `/`} />
 	</div>
 </nav>
 
 <div 
-	class="sidebar-nav-bg"
+	class="fixed w-full h-full top-0 left-0 bg-black z-10"
 	on:click={() => sidebarAnimationProgress.set(0)}
 	style={`opacity: ${$sidebarAnimationProgress / 2};
 			display: ${($sidebarAnimationProgress === 0) ? `none` : `block`}`}>
 </div>
 <div 
-	class="sidebar-nav"
+	class="fixed w-[2/3] h-full top-0 bg-slate-50 z-20 p-4"
 	style={`left: ${($sidebarAnimationProgress * 80) - 80}%;
-			box-shadow: 0px 0px 23px -3px rgba(66, 68, 74, ${$sidebarAnimationProgress / 2});`}>
+			opacity: ${$sidebarAnimationProgress};`}>
 
-	<button on:click={() => sidebarAnimationProgress.set(0)}>
-		<i class="bi bi-x"></i>
+	<button class="float-right text-xl" on:click={() => sidebarAnimationProgress.set(0)}>
+		<i class="bi bi-x-lg"></i>
 	</button>
 
 	{#each links as link}
-		<a href={link.link}>
+		<a class="block mb-2" class:font-bold={selectedLink === link.link} class:text-blue-500={selectedLink === link.link} href={link.link}>
 			<i class="bi bi-{link.icon}"></i>
 			{link.name}
 		</a>
-		<br />
 	{/each}
 	
 	<a
@@ -210,251 +203,3 @@
 		Iziet
 	</a>
 </div>
-
-<style lang="scss">
-	@import '../../theme.scss';
-
-	nav {
-		display: block;
-		width: 80%;
-		height: 5rem;
-
-		margin: auto;
-
-		border-bottom: 2px solid $background-accent;
-
-		transition: .5 border;
-	}
-	
-	img {
-		float: left;
-
-		max-width: 10rem;
-
-		margin-top: .25rem;
-
-		cursor: pointer;
-	}
-
-	.links {
-		float: right;
-
-		margin-top: 1.75rem;
-
-		.account-popup a {
-			color: $paragraph-color;
-		}
-		.account-popup a:hover {
-			background: none;
-		}
-		a {
-			color: #808080;
-
-			font-weight: bold;
-
-			margin: .5rem;
-			margin-bottom: 0;
-
-			vertical-align: middle;
-
-			transition: .2s all;
-		}
-		a:hover,
-		a.active,
-		button:hover,
-		button.active {
-			color: $theme-color;
-		}
-		a.active {
-			background-size: 100% 2px;
-		}
-	}
-
-	.account {
-		position: relative;
-		
-		display: inline-block;
-
-		vertical-align: middle;
-
-		button {
-			height: 1.5rem;
-			
-			background: none;
-			color: #808080;
-
-			padding: 0;
-
-			margin: 0;
-
-			font-size: 1.5rem;
-
-			transition: .2s all;
-		}
-		.account-popup {
-			position: absolute;
-			top: 3rem;
-			left: -5.25rem;
-
-			display: none;
-			width: 12rem;
-			height: 8.5rem;
-
-			background: $background-color;
-			color: $paragraph-color;
-
-			opacity: 0;
-			
-			transform: translateY(-20px);
-
-			padding: .5rem;
-
-			border-radius: 1rem;
-
-			box-shadow: 0px 0px 23px -3px $shadow-color;
-
-			transition-duration: .2s;
-			transition-property: opacity, transform;
-
-			&::before {
-				content: "";
-
-				position: absolute;
-				top: -1rem;
-				left: 5rem;
-
-				display: block;
-				width: 2rem;
-				height: 1rem;
-
-				transform: translateY(20px);
-
-				background: $background-color;
-
-				clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-				
-				transition: .2s transform;
-			}
-		}
-		.account-popup-open {
-			display: block;
-
-			opacity: 1;
-
-			transform: none;
-
-			&::before {
-				transform: none;
-			}
-		}
-		b {
-			display: block;
-			width: 100%;
-
-			text-align: center;
-		}
-	}
-	.separator {
-		display: block;
-		width: 90%;
-		height: 3px;
-
-		border-radius: 1.5px;
-
-		margin-left: 5%;
-		margin-right: 5%;
-		margin-top: .5rem;
-		margin-bottom: .5rem;
-
-		background: $theme-gradient;
-	}
-
-	.mobile {
-		img {
-			margin-right: 1.5rem;
-			
-			max-height: 5rem;
-
-			float: right;
-		}
-		button {
-			border: 0;
-
-			background: none;
-			color: $paragraph-color;
-
-			width: 3rem;
-			height: 3rem;
-
-			margin: 1rem;
-
-			padding: 0;
-
-			float: left;
-
-			cursor: pointer;
-
-			i {
-				font-size: 3rem;
-				line-height: 3rem;
-			}
-		}
-	}
-
-	.sidebar-nav-bg {
-		position: fixed;
-		top: 0; 
-		left: 0;
-
-		display: block;
-		width: 100%;
-		height: 100%;
-
-		background: #000000;
-
-		z-index: 5;
-	}
-	.sidebar-nav {
-		position: fixed;
-		top: 0; 
-		left: -100px;
-
-		display: block;
-		width: 80%;
-		height: 100%;
-
-		background: $background-color;
-
-		font-weight: normal;
-
-		padding: 1rem;
-
-		z-index: 6;
-	
-		button {
-			width: calc(100% - 1rem);
-
-			background: none;
-			color: $paragraph-color;
-
-			padding: 0;
-
-			border: 0;
-
-			text-align: center;
-
-			cursor: pointer;
-		
-			i {
-				font-size: 3rem;
-				line-height: 3rem;
-			}
-		}
-		a {
-			font-family: 'Overpass', sans-serif;
-			font-size: 1.2rem;
-
-			color: $paragraph-color;
-		}
-	}
-</style>

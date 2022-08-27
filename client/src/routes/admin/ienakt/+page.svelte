@@ -50,7 +50,7 @@
 			if (data.login.token !== ``) {
 				localStorage.setItem(`adminLoginToken`, data.login.token);
 				localStorage.setItem(`adminLoginUsername`, usernameValue);
-				window.location.href = `/admin/`;
+				window.location.pathname = `/admin/`;
 				return;
 			}
 
@@ -108,7 +108,7 @@
 <CookieNotice />
 <div class="block w-screen h-screen grid place-items-center bg-slate-200">
 	<div class="block w-[25rem] h-[22rem] p-4 rounded-3xl bg-slate-50 shadow-lg shadow-slate-300">
-		<img class="w-3/4 mx-auto mb-2 cursor-pointer" src="/files/title.png" alt="Mežgalciema baptistu draudze" on:click={() => window.location.href = `/`} />
+		<img class="w-3/4 mx-auto mb-2 cursor-pointer" src="/files/title.png" alt="Mežgalciema baptistu draudze" on:click={() => window.location.pathname = `/`} />
 		
 		<h1 class="text-2xl text-center text-slate-900 leading-5 mt-4">Ienākt</h1>
 

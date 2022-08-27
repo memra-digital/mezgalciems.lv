@@ -51,7 +51,7 @@
 	}
 
 	onMount(() => {
-		currentPage = window.location.href.split(`/`).pop();
+		currentPage = window.location.pathname.split(`/`).pop();
 
 		// Send statistical data
 		/* request(apiUrl, `

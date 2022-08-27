@@ -24,7 +24,7 @@
     <main>
         <i class="bi bi-{randomEmoji}"></i>
         <h1>Šī lapa neeksistē!</h1>
-        <button on:click={() => location.href = ``}>Atpakaļ uz sākumlapu...</button>
+        <button on:click={() => location.pathname = ``}>Atpakaļ uz sākumlapu...</button>
     </main>
 
     <Footer />
