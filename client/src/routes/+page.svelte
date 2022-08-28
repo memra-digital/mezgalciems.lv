@@ -1,9 +1,6 @@
-<script lang="typescript">
-	import Navbar from '../components/Navbar.svelte';
-	import Footer from '../components/Footer.svelte';
+<script lang="ts">
 	import Article from '../components/Article.svelte';
 	import Loading from '../components/Loading.svelte';
-	import CookieNotice from '../components/CookieNotice.svelte';
 
 	import { onMount } from 'svelte';
 	import { request } from 'graphql-request';
@@ -52,25 +49,19 @@
 	<title>Jaunumi | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<CookieNotice />
-<Navbar />
 
-<main>
-	<h1 class="font-title text-3xl text-slate-900 mb-2">Jaunumi</h1>
-	{#each articles as article, i}
-		<Article title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} author={article.author} date={parseInt(article.date)} />
-	{/each}
+<h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Jaunumi</h1>
+{#each articles as article, i}
+	<Article title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} author={article.author} date={parseInt(article.date)} />
+{/each}
 
-	{#if isLoading}
-		<Loading />
-	{/if}
+{#if isLoading}
+	<Loading />
+{/if}
 
-	{#if loadedPages < totalPages}
-		<button class="load-more-btn" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
-	{/if}
-</main>
-
-<Footer />
+{#if loadedPages < totalPages}
+	<button class="load-more-btn" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+{/if}
 
 <style lang="scss">
 	@import '../theme.scss';

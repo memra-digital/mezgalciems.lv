@@ -37,23 +37,16 @@
 	<title>Norises draudzē | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<CookieNotice />
-<Navbar />
+<h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Norises draudzē</h1>
 
-<main>
-	<h1>Norises draudzē</h1>
-
-	{#if isLoading}
-		<Loading />
-	{:else}
-		<h3>Nākamais dievkalpojums {nextDate}</h3>
-		<p>{@html parseURLs(escapeHTML(dateInfo))}</p>
-		<br />
-		<p>{@html parseURLs(escapeHTML(information))}</p>
-	{/if}
-</main>
-
-<Footer />
+{#if isLoading}
+	<Loading />
+{:else}
+	<h3>Nākamais dievkalpojums {nextDate}</h3>
+	<p>{@html parseURLs(escapeHTML(dateInfo))}</p>
+	<br />
+	<p>{@html parseURLs(escapeHTML(information))}</p>
+{/if}
 
 <style lang="scss">
     main {

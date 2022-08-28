@@ -1,8 +1,5 @@
 <script lang="typescript">
-	import Navbar from '../../components/Navbar.svelte';
-	import Footer from '../../components/Footer.svelte';
 	import Loading from '../../components/Loading.svelte';
-	import CookieNotice from '../../components/CookieNotice.svelte';
 	import Dropdown from '../../components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
@@ -140,143 +137,136 @@
 
 <svelte:window on:scroll={(e) => updateStickiness()} />
 
-<CookieNotice />
-<Navbar />
-
-<main>
-	<h1>Vēsture</h1>
-	<div class="sidebar-wrapper desktop">
-		<div class="sidebar" bind:this={sidebar}>
+<h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Vēsture</h1>
+<div class="sidebar-wrapper desktop">
+	<div class="sidebar" bind:this={sidebar}>
+		<div
+			class="filter">
+			
+			<p>Rādīt: </p>
 			<div
-				class="filter">
+				class="filter-dropdown">
 				
-				<p>Rādīt: </p>
-				<div
-					class="filter-dropdown">
-					
-					<Dropdown 
-						options={filterOptionsDisplayList}
-						bind:selected={currentArticleFilterOption} />
-				</div>
+				<Dropdown 
+					options={filterOptionsDisplayList}
+					bind:selected={currentArticleFilterOption} />
 			</div>
+		</div>
 
-			<div
-				class="sidebar-scrollarea">
-				
-				{#each filterArticles(currentArticleFilterOption) as article}
-					<button
-						class="sidebar-option"
-						class:active={currentArticleId === article.id}
-						on:click={() => loadArticle(article.id)}>
+		<div
+			class="sidebar-scrollarea">
+			
+			{#each filterArticles(currentArticleFilterOption) as article}
+				<button
+					class="sidebar-option"
+					class:active={currentArticleId === article.id}
+					on:click={() => loadArticle(article.id)}>
 
-						<b>{article.title}</b>
-						<p>{article.preview}...</p>
-					</button>
+					<b>{article.title}</b>
+					<p>{article.preview}...</p>
+				</button>
+			{:else}
+				{#if loadingArticles}
+					<Loading />
 				{:else}
-					{#if loadingArticles}
-						<Loading />
-					{:else}
-						<b>Nav rezultātu.</b>
-					{/if}
-				{/each}
-			</div>
+					<b>Nav rezultātu.</b>
+				{/if}
+			{/each}
 		</div>
 	</div>
+</div>
 
-	<div class="reader">
-		<div class="mobile">
-			<button
-				class="mobile-selector-open-btn"
-				on:click={() => selectorAnimationProgress.set(1)}>
-	
-				Izvēlēties rakstu
-			</button>
-		</div>
-
-		{#if isLoadingContent}
-			<Loading />
-		{:else if currentArticle !== null}
-			<h1
-				class:serif-font={currentArticle.font === `serif`}>
-				
-				{currentArticle.title}
-			</h1>
-
-			{#if currentArticle.videoLink !== ``}
-				<iframe
-					class="video"
-					src="https://www.youtube.com/embed/{currentArticle.videoLink}"
-					title="YouTube video atskaņotājs"
-					frameborder="0"
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-					allowfullscreen>
-				</iframe>
-			{/if}
-
-			<p
-				class:serif-font={currentArticle.font === `serif`}>
-
-				{@html parseURLs(escapeHTML(currentArticle.content)).replaceAll(`\n`, `<br />`)}
-			</p>
-		{:else}
-			<p class="instructions desktop">
-				<i class="bi bi-arrow-left moving-animation"></i> Izvēlieties kādu no rakstiem, lai to lasītu
-			</p>
-		{/if}
-	</div>
+<div class="reader">
 	<div class="mobile">
-		<div
-			class="mobile-selector-bg"
-			on:click={() => selectorAnimationProgress.set(0)}
-			style={`opacity: ${$selectorAnimationProgress / 2};
-					display: ${($selectorAnimationProgress === 0) ? `none` : `block`}`}></div>
-		<div
-			class="mobile-selector"
-			style={`bottom: ${($selectorAnimationProgress * 85) - 85}%;
-					box-shadow: 0px 0px 23px -3px rgba(66, 68, 74, ${$selectorAnimationProgress / 2});`}>
+		<button
+			class="mobile-selector-open-btn"
+			on:click={() => selectorAnimationProgress.set(1)}>
 
-			<button on:click={() => selectorAnimationProgress.set(0)}>
-				<i class="bi bi-x"></i>
-			</button>
+			Izvēlēties rakstu
+		</button>
+	</div>
 
+	{#if isLoadingContent}
+		<Loading />
+	{:else if currentArticle !== null}
+		<h1
+			class:serif-font={currentArticle.font === `serif`}>
+			
+			{currentArticle.title}
+		</h1>
+
+		{#if currentArticle.videoLink !== ``}
+			<iframe
+				class="video"
+				src="https://www.youtube.com/embed/{currentArticle.videoLink}"
+				title="YouTube video atskaņotājs"
+				frameborder="0"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen>
+			</iframe>
+		{/if}
+
+		<p
+			class:serif-font={currentArticle.font === `serif`}>
+
+			{@html parseURLs(escapeHTML(currentArticle.content)).replaceAll(`\n`, `<br />`)}
+		</p>
+	{:else}
+		<p class="instructions desktop">
+			<i class="bi bi-arrow-left moving-animation"></i> Izvēlieties kādu no rakstiem, lai to lasītu
+		</p>
+	{/if}
+</div>
+<div class="mobile">
+	<div
+		class="mobile-selector-bg"
+		on:click={() => selectorAnimationProgress.set(0)}
+		style={`opacity: ${$selectorAnimationProgress / 2};
+				display: ${($selectorAnimationProgress === 0) ? `none` : `block`}`}></div>
+	<div
+		class="mobile-selector"
+		style={`bottom: ${($selectorAnimationProgress * 85) - 85}%;
+				box-shadow: 0px 0px 23px -3px rgba(66, 68, 74, ${$selectorAnimationProgress / 2});`}>
+
+		<button on:click={() => selectorAnimationProgress.set(0)}>
+			<i class="bi bi-x"></i>
+		</button>
+
+		<div
+			class="filter">
+			
+			<p>Rādīt: </p>
 			<div
-				class="filter">
+				class="filter-dropdown">
 				
-				<p>Rādīt: </p>
-				<div
-					class="filter-dropdown">
-					
-					<Dropdown 
-						options={filterOptionsDisplayList}
-						bind:selected={currentArticleFilterOption} />
-				</div>
-			</div>
-
-			<div
-				class="mobile-selector-scrollarea">
-
-				{#each filterArticles(currentArticleFilterOption) as article}
-					<button class="sidebar-option" on:click={() => {
-							loadArticle(article.id);
-							selectorAnimationProgress.set(0);
-						}}>
-
-						<b>{article.title}</b>
-						<p>{article.preview}...</p>
-					</button>
-				{:else}
-					{#if loadingArticles}
-						<Loading />
-					{:else}
-						<b>Nav rezultātu.</b>
-					{/if}
-				{/each}
+				<Dropdown 
+					options={filterOptionsDisplayList}
+					bind:selected={currentArticleFilterOption} />
 			</div>
 		</div>
-	</div>
-</main>
 
-<Footer />
+		<div
+			class="mobile-selector-scrollarea">
+
+			{#each filterArticles(currentArticleFilterOption) as article}
+				<button class="sidebar-option" on:click={() => {
+						loadArticle(article.id);
+						selectorAnimationProgress.set(0);
+					}}>
+
+					<b>{article.title}</b>
+					<p>{article.preview}...</p>
+				</button>
+			{:else}
+				{#if loadingArticles}
+					<Loading />
+				{:else}
+					<b>Nav rezultātu.</b>
+				{/if}
+			{/each}
+		</div>
+	</div>
+</div>
 
 <style lang="scss">
 	@import '../../theme.scss';

@@ -1,8 +1,4 @@
 <script lang="typescript">
-	import Navbar from '../../components/Navbar.svelte';
-	import Footer from '../../components/Footer.svelte';
-	import CookieNotice from '../../components/CookieNotice.svelte';
-
 	import { onMount } from 'svelte';
 
 	// I know this may look like an error, but it works!
@@ -60,22 +56,15 @@
 	<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
 </svelte:head>
 
-<CookieNotice />
-<Navbar />
+<h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Kā nokļūt</h1>
+<div id="map" class="map"></div>
 
-<main>
-	<h1>Kā nokļūt</h1>
-	<div id="map" class="map"></div>
+<h2 class="printing-disclaimer">Diemžēl karti nav iespējams izprintēt.</h2>
 
-	<h2 class="printing-disclaimer">Diemžēl karti nav iespējams izprintēt.</h2>
-
-	<a href="https://www.google.com/maps/@56.3677,21.1187,18z" target="_blank" rel="noopener">
-		<p>Atvērt Google Maps</p>
-		<i class="bi bi-arrow-right"></i>
-	</a>
-</main>
-
-<Footer />
+<a href="https://www.google.com/maps/@56.3677,21.1187,18z" target="_blank" rel="noopener">
+	<p>Atvērt Google Maps</p>
+	<i class="bi bi-arrow-right"></i>
+</a>
 
 <style lang="scss">
 	@import '../../theme.scss';
