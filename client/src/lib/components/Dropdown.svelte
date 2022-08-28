@@ -17,7 +17,7 @@
 </div>
 
 <style lang="scss">
-	@import '../theme.scss';
+	@import '../../theme.scss';
 	
 	.button {
 		display: inline-block;

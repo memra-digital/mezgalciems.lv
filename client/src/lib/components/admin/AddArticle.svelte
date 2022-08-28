@@ -1,7 +1,7 @@
 <script lang="typescript">
-    import Loading from '../../components/Loading.svelte';
+    import Loading from '$lib/components/Loading.svelte';
 
-	import { apiUrl } from '../../globals';
+	import { apiUrl } from '$lib/globals';
 	import { request, gql } from 'graphql-request';
 
     let titleInput: string = ``;

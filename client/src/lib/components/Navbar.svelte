@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { apiUrl } from '../globals';
+	import { apiUrl } from '$lib/globals';
 	import { request } from 'graphql-request';
 
 	interface Link {
@@ -149,7 +149,7 @@
 </div>
 
 <style lang="scss">
-	@import '../theme.scss';
+	@import '../../theme.scss';
 
 	// Banner
 	header {

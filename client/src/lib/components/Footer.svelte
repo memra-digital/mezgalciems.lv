@@ -1,5 +1,5 @@
 <script lang="typescript">
-	import { year, version } from '../globals';
+	import { year, version } from '$lib/globals';
 </script>
 
 <footer>

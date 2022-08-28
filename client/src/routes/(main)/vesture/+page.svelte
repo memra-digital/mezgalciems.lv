@@ -1,13 +1,13 @@
 <script lang="typescript">
-	import Loading from '../../components/Loading.svelte';
-	import Dropdown from '../../components/Dropdown.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	import Dropdown from '$lib/components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { request, gql } from 'graphql-request';
-	import { apiUrl } from '../../globals';
-	import { parseURLs, escapeHTML } from '../../processing';
+	import { apiUrl } from '$lib/globals';
+	import { parseURLs, escapeHTML } from '$lib/processing';
 
 	interface HistoryArticlePreview {
 		id: number,

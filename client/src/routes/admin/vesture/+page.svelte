@@ -1,13 +1,13 @@
 <script lang="ts">
-	import AdminNavbar from '../../../components/admin/AdminNavbar.svelte';
-	import AdminFooter from '../../../components/admin/AdminFooter.svelte';
-	import Loading from '../../../components/Loading.svelte';
-	import Dropdown from '../../../components/Dropdown.svelte';
+	import AdminNavbar from '$lib/components/admin/AdminNavbar.svelte';
+	import AdminFooter from '$lib/components/admin/AdminFooter.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	import Dropdown from '$lib/components/Dropdown.svelte';
 
 	import { onMount } from 'svelte';
 	import { tweened, type Tweened } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
-	import { apiUrl } from '../../../globals';
+	import { apiUrl } from '$lib/globals';
 	import { request, gql } from 'graphql-request';
 
 	let isLoadingList: boolean = true,

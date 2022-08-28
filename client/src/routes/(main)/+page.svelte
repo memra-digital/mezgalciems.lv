@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Article from '../../components/Article.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import Article from '$lib/components/Article.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
 	import { onMount } from 'svelte';
 	import { request } from 'graphql-request';
-	import { apiUrl } from '../../globals';
-	import type { ArticleData } from '../../schemas';
+	import { apiUrl } from '$lib/globals';
+	import type { ArticleData } from '$lib/schemas';
 
 	let isLoading: boolean = true,
 		articles: ArticleData[] = [],

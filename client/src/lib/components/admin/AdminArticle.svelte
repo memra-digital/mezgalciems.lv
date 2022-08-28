@@ -5,10 +5,10 @@
     export let image: string;
     export let imageAlt: string;
 
-	import Loading from '../../components/Loading.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
-	import { apiUrl } from '../../globals';
-	import { parseURLs, escapeHTML } from '../../processing';
+	import { apiUrl } from '$lib/globals';
+	import { parseURLs, escapeHTML } from '$lib/processing';
 	import { request, gql } from 'graphql-request';
 	import { onMount } from 'svelte';
 

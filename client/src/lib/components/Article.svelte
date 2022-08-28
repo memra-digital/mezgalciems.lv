@@ -1,5 +1,5 @@
 <script lang="typescript">
-	import { parseURLs, escapeHTML } from '../processing';
+	import { parseURLs, escapeHTML } from '$lib/processing';
 
 	export let title: string;
 	export let content: string;

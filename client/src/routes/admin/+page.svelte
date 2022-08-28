@@ -1,14 +1,14 @@
 <script lang="typescript">
-    import AdminNavbar from '../../components/admin/AdminNavbar.svelte';
-    import AdminFooter from '../../components/admin/AdminFooter.svelte';
-	import AdminArticle from '../../components/admin/AdminArticle.svelte';
-	import Loading from '../../components/Loading.svelte';
+    import AdminNavbar from '$lib/components/admin/AdminNavbar.svelte';
+    import AdminFooter from '$lib/components/admin/AdminFooter.svelte';
+	import AdminArticle from '$lib/components/admin/AdminArticle.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
 	import { onMount } from 'svelte';
 	import { request,  } from 'graphql-request';
-    import { apiUrl } from '../../globals';
-	import { formatDate } from '../../processing';
-	import type { ArticleData } from '../../schemas';
+    import { apiUrl } from '$lib/globals';
+	import { formatDate } from '$lib/processing';
+	import type { ArticleData } from '$lib/schemas';
 
 	// The greeting that changes based on system time
 	let time: number = new Date().getHours(),

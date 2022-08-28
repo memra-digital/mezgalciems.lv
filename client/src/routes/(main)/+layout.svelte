@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Navbar from '../../components/Navbar.svelte';
-	import Footer from '../../components/Footer.svelte';
-	import CookieNotice from '../../components/CookieNotice.svelte';
+	import Navbar from '$lib/components/Navbar.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+	import CookieNotice from '$lib/components/CookieNotice.svelte';
 </script>
 
 <div class="bg-slate-50">

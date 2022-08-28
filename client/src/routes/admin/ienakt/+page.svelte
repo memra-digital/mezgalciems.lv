@@ -1,9 +1,9 @@
-<script lang="typescript">
-	import CookieNotice from '../../../components/CookieNotice.svelte';
-	import Loading from '../../../components/Loading.svelte';
+<script lang="ts">
+	import CookieNotice from '$lib/components/CookieNotice.svelte';
+	import Loading from '$lib/components/Loading.svelte';
 
 	import { onMount } from 'svelte';
-	import { apiUrl } from '../../../globals';
+	import { apiUrl } from '$lib/globals';
 	import { request } from 'graphql-request';
 
 	let usernameValue: string = ``,

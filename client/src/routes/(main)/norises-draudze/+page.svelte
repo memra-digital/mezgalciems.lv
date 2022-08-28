@@ -1,13 +1,13 @@
 <script lang="typescript">
-	import Navbar from '../../components/Navbar.svelte';
-	import Footer from '../../components/Footer.svelte';
-	import Loading from '../../components/Loading.svelte';
-	import CookieNotice from '../../components/CookieNotice.svelte';
+	import Navbar from '$lib/components/Navbar.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	import CookieNotice from '$lib/components/CookieNotice.svelte';
 
 	import { onMount } from 'svelte';
 	import { request } from 'graphql-request';
-	import { apiUrl } from '../../globals';
-	import { formatDate, parseURLs, escapeHTML } from '../../processing';
+	import { apiUrl } from '$lib/globals';
+	import { formatDate, parseURLs, escapeHTML } from '$lib/processing';
 
 	let isLoading: boolean = true,
 		nextDate: string,
