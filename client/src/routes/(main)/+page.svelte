@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Article from '../components/Article.svelte';
-	import Loading from '../components/Loading.svelte';
+	import Article from '../../components/Article.svelte';
+	import Loading from '../../components/Loading.svelte';
 
 	import { onMount } from 'svelte';
 	import { request } from 'graphql-request';
-	import { apiUrl } from '../globals';
-	import type { ArticleData } from '../schemas';
+	import { apiUrl } from '../../globals';
+	import type { ArticleData } from '../../schemas';
 
 	let isLoading: boolean = true,
 		articles: ArticleData[] = [],
@@ -64,7 +64,7 @@
 {/if}
 
 <style lang="scss">
-	@import '../theme.scss';
+	@import '../../theme.scss';
 
 	.load-more-btn {
 		display: block;
