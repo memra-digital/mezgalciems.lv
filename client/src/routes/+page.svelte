@@ -56,7 +56,7 @@
 <Navbar />
 
 <main>
-	<h1>Jaunumi</h1>
+	<h1 class="font-title text-3xl text-slate-900 mb-2">Jaunumi</h1>
 	{#each articles as article, i}
 		<Article title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} author={article.author} date={parseInt(article.date)} />
 	{/each}

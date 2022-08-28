@@ -8,77 +8,15 @@
 	export let author: string;
 	export let date: number;
 
-	let articleDate: Date = new Date(date),
-		
-		imgLoaded: boolean = false;
+	let articleDate: Date = new Date(date);
+	let isLoaded: boolean = false;
 </script>
 
-<article title={`${author} - ${articleDate.getHours().toString().length === 1 ? `0` : ``}${articleDate.getHours()}:${articleDate.getMinutes().toString().length === 1 ? `0` : ``}${articleDate.getMinutes()} ${articleDate.getFullYear()}.${articleDate.getMonth().toString().length === 1 ? `0` : ``}${articleDate.getMonth() + 1}.${articleDate.getDate().toString().length === 1 ? `0` : ``}${articleDate.getDate()}`}>
-	<img
-		src={image}
-		alt={imageAlt}
-		on:load={() => imgLoaded = true}
-		style={imgLoaded ? `` : `display: none;`} />
-
-	<div
-		class="img-placeholder"
-		style={imgLoaded ? `display: none;` : ``}></div>
+<article class="grid grid-cols-2 gap-4 mb-8" title={`${author} - ${articleDate.getHours().toString().length === 1 ? `0` : ``}${articleDate.getHours()}:${articleDate.getMinutes().toString().length === 1 ? `0` : ``}${articleDate.getMinutes()} ${articleDate.getFullYear()}.${articleDate.getMonth().toString().length === 1 ? `0` : ``}${articleDate.getMonth() + 1}.${articleDate.getDate().toString().length === 1 ? `0` : ``}${articleDate.getDate()}`}>
+	<img class="w-full rounded-3xl text-white text-center shadow-md shadow-slate-300" class:bg-slate-700={!isLoaded} class:aspect-square={!isLoaded} src={image} alt={imageAlt} on:load={() => isLoaded = true} />
 
 	<div class="content">
-		<h1>{title}</h1>
+		<h1 class="font-title text-2xl text-slate-900">{title}</h1>
 		<p>{@html parseURLs(escapeHTML(content))}</p>
 	</div>
 </article>
-
-<style lang="scss">
-	@import '../theme.scss';
-
-	article {
-		display: flex;
-
-		margin-top: 1rem;
-		margin-bottom: 3rem;
-
-		img {
-			width: 100%;
-			max-height: 100%;
-			max-width: 50%;
-
-			background: $background-accent;
-
-			box-shadow: 0px 0px 23px -3px $shadow-color;
-
-			border-radius: 1rem;
-
-			transition: .5s box-shadow, background;
-
-			object-fit: cover;
-		}
-		.img-placeholder {
-			width: 100%;
-			height: 18rem;
-
-			background: $background-accent;
-
-			box-shadow: 0px 0px 23px -3px $shadow-color;
-
-			transition: .5s box-shadow, background;
-
-			border-radius: 1rem;
-		}
-		.content {
-			width: 100%;
-			max-width: 50%;
-
-			color: $paragraph-color;
-
-			padding-left: 1rem;
-
-			word-wrap: break-word;
-
-			h1, p {
-				transition: .5s color;
-			}
-		}
-	}
-</style>
