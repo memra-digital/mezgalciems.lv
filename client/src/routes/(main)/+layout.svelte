@@ -97,8 +97,8 @@
 				background-size: contain;`}/>
 	</header>
 	
-	<div class="flex place-content-center min-h-[5rem]" bind:this={wrapperElement}>
-		<nav class="relative top-[-1.75rem] inline-block w-full md:w-auto rounded-none md:rounded-2xl bg-white p-4 mb-8 shadow-lg shadow-slate-800/20 overflow-hidden z-10"
+	<div class="flex place-content-center min-h-[5rem] md:mb-[-1.5rem]" bind:this={wrapperElement}>
+		<nav class="relative top-[-1.75rem] inline-block w-full md:h-[3.75rem] md:w-auto rounded-none md:rounded-2xl bg-white p-4 shadow-lg shadow-slate-800/20 overflow-hidden z-10"
 			bind:this={navbarElement}>
 
 			<div class="hidden md:block">
