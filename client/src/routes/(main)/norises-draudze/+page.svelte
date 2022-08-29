@@ -1,8 +1,5 @@
 <script lang="typescript">
-	import Navbar from '$lib/components/Navbar.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import Loading from '$lib/components/Loading.svelte';
-	import CookieNotice from '$lib/components/CookieNotice.svelte';
 
 	import { onMount } from 'svelte';
 	import { request } from 'graphql-request';

@@ -89,7 +89,7 @@ export const parseURLs = (text: string) => {
 			if (!hyperlink.match(`^https?:\/\/`)) {
 				hyperlink = `http://${hyperlink}`;
 			}
-			return `${space}<a class="link" target="_blank" rel="noopener" href="${hyperlink}">${url}</a>`;
+			return `${space}<a class="link text-blue-500 bg-gradient-to-t from-blue-500 to-blue-500" target="_blank" rel="noopener" href="${hyperlink}">${url}</a>`;
 		}
 	);
 }

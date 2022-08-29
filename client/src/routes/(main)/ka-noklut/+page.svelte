@@ -67,7 +67,7 @@
 </a>
 
 <style lang="scss">
-	@import '../../theme.scss';
+	@import '../../../theme.scss';
 
 	.map {
 		height: 20rem;
