@@ -51,8 +51,15 @@
 		}
 	}
 
+	let mainElement: HTMLElement;
+
 	onMount(() => {
 		currentPage = window.location.pathname.split(`/`).pop();
+		
+		// Some pages might require wider main elements
+		if (window.location.pathname === `/vesture`) {
+			mainElement.style.width = `80vw`;
+		}
 
 		// Send statistical data
 		/* request(apiUrl, `
@@ -145,7 +152,7 @@
 		{/each}
 	</div>
 
-	<main class="p-2 w-full sm:w-3/4 md:w-2/4 mx-auto">
+	<main class="p-2 w-full sm:w-3/4 md:w-2/4 mx-auto" bind:this={mainElement}>
 		<slot></slot>
 	</main>
 
