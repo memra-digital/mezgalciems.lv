@@ -1,10 +1,10 @@
 <script lang="ts">
 	import CookieNotice from '$lib/components/CookieNotice.svelte';
-	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { apiUrl } from '$lib/globals';
 	import { request } from 'graphql-request';
+	import { afterNavigate } from '$app/navigation';
 
 	interface Link {
 		name: string,
@@ -53,20 +53,22 @@
 
 	let mainElement: HTMLElement;
 
-	onMount(() => {
-		currentPage = window.location.pathname.split(`/`).pop();
+	afterNavigate((nav) => {
+		currentPage = nav.to.pathname.split(`/`).pop();
 		
 		// Some pages might require wider main elements
-		if (window.location.pathname === `/vesture`) {
+		if (nav.to.pathname === `/vesture`) {
 			mainElement.style.width = `80vw`;
+		} else {
+			mainElement.style.width = ``;
 		}
 
 		// Send statistical data
-		/* request(apiUrl, `
+		request(apiUrl, `
 			mutation registerPageView {
 				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`)}")
 			}
-		`); */
+		`);
 	});
 	
 	const sidebarAnimationProgress = tweened(0, {
