@@ -6,8 +6,8 @@
 	import { apiUrl } from '$lib/globals';
 	import { formatDate, parseURLs, escapeHTML } from '$lib/processing';
 
-	let isLoading: boolean = true,
-		nextDate: string,
+	let isLoading: boolean = true;
+	let nextDate: string,
 		dateInfo: string,
 		information: string;
 
@@ -39,23 +39,7 @@
 {#if isLoading}
 	<Loading />
 {:else}
-	<h3>Nākamais dievkalpojums {nextDate}</h3>
-	<p>{@html parseURLs(escapeHTML(dateInfo))}</p>
-	<br />
+	<h3 class="font-title font-bold text-xl text-slate-800">Nākamais dievkalpojums {nextDate}</h3>
+	<p class="mb-6">{@html parseURLs(escapeHTML(dateInfo))}</p>
 	<p>{@html parseURLs(escapeHTML(information))}</p>
 {/if}
-
-<style lang="scss">
-    main {
-        margin-bottom: 1rem;
-
-		word-wrap: break-word;
-
-		h3 {
-			font-size: 1.5rem;
-		}
-		p {
-			transition: .5s color;
-		}
-    }
-</style>
