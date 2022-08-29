@@ -51,7 +51,7 @@
 
 
 <h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Jaunumi</h1>
-{#each articles as article, i}
+{#each articles as article}
 	<Article title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} author={article.author} date={parseInt(article.date)} />
 {/each}
 
@@ -60,29 +60,7 @@
 {/if}
 
 {#if loadedPages < totalPages}
-	<button class="load-more-btn" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+	<div class="block text-center">
+		<button class="font-title text-lg text-center text-slate-800 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+	</div>
 {/if}
-
-<style lang="scss">
-	@import '../../theme.scss';
-
-	.load-more-btn {
-		display: block;
-		width: 100%;
-		
-		text-align: center;
-		font-size: 1.2rem;
-		font-family: $title-font;
-
-		background: none;
-		color: $title-color;
-
-		border: 0;
-
-		cursor: pointer;
-
-		&:focus-visible {
-			color: $theme-color;
-		}
-	}
-</style>
