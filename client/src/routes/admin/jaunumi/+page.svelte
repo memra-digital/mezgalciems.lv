@@ -1,6 +1,4 @@
 <script lang="typescript">
-	import AdminNavbar from '$lib/components/admin/AdminNavbar.svelte';
-	import AdminFooter from '$lib/components/admin/AdminFooter.svelte';
 	import AdminArticle from '$lib/components/admin/AdminArticle.svelte';
 	import AddArticle from '$lib/components/admin/AddArticle.svelte';
 	import Loading from '$lib/components/Loading.svelte';
@@ -52,25 +50,21 @@
 	<title>Jaunumi | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<AdminNavbar />
-<main>
-	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Pievienot jaunumu</h1>
-	<AddArticle />
+<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Pievienot jaunumu</h1>
+<AddArticle />
 
-	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Jaunumi</h1>
-	{#each articles as article}
-		<AdminArticle id={article.id} title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} />
-	{/each}
+<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Jaunumi</h1>
+{#each articles as article}
+	<AdminArticle id={article.id} title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} />
+{/each}
 
-	{#if loading}
-		<Loading />
-	{/if}
+{#if loading}
+	<Loading />
+{/if}
 
-	{#if currentlyLoadedPages < totalPages}
-		<button class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
-	{/if}
-</main>
-<AdminFooter />
+{#if currentlyLoadedPages < totalPages}
+	<button class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+{/if}
 
 <style>
 	h1 {

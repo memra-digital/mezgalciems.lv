@@ -1,6 +1,4 @@
-<script lang="typescript">
-	import AdminNavbar from '$lib/components/admin/AdminNavbar.svelte';
-	import AdminFooter from '$lib/components/admin/AdminFooter.svelte';
+<script lang="ts">
 	import Loading from '$lib/components/Loading.svelte';
 	import Dropdown from '$lib/components/Dropdown.svelte';
 
@@ -99,70 +97,66 @@
 	<title>Norises draudzē | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<AdminNavbar />
-<main>
-	<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Norises draudzē</h1>
-	{#if loadingFetch}
-		<Loading />
-	{:else}
-		<b>Nākamā dievkalpojuma datums</b>
-		<div class="datePicker">
-			<p>Laiks: </p>
-			<input 
-				type="text"
-				bind:value={hourInput} />
-			<p>:</p>
-			<input 
-				type="text"
-				bind:value={minuteInput} />
-			<br />
-			
-			<p>Datums: </p>
-			<input 
-				type="text"
-				bind:value={dateInput} />
-			<br />
-			
-			<p>Mēnesis: </p>
-			<Dropdown 
-				options={[
-					`Janvāris`,
-					`Februāris`,
-					`Marts`,
-					`Aprīlis`,
-					`Maijs`,
-					`Jūnijs`,
-					`Jūlijs`,
-					`Augusts`,
-					`Septembris`,
-					`Oktobris`,
-					`Novembris`,
-					`Decembris`
-				]}
-				bind:selected={monthInput} />
-			<br />
-
-			<button on:click={() => setDate()}>Automātiski iestatīt</button>
-		</div>
+<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Norises draudzē</h1>
+{#if loadingFetch}
+	<Loading />
+{:else}
+	<b>Nākamā dievkalpojuma datums</b>
+	<div class="datePicker">
+		<p>Laiks: </p>
+		<input 
+			type="text"
+			bind:value={hourInput} />
+		<p>:</p>
+		<input 
+			type="text"
+			bind:value={minuteInput} />
+		<br />
+		
+		<p>Datums: </p>
+		<input 
+			type="text"
+			bind:value={dateInput} />
+		<br />
+		
+		<p>Mēnesis: </p>
+		<Dropdown 
+			options={[
+				`Janvāris`,
+				`Februāris`,
+				`Marts`,
+				`Aprīlis`,
+				`Maijs`,
+				`Jūnijs`,
+				`Jūlijs`,
+				`Augusts`,
+				`Septembris`,
+				`Oktobris`,
+				`Novembris`,
+				`Decembris`
+			]}
+			bind:selected={monthInput} />
 		<br />
 
-		<b>Informācija par dievkalpojumiem</b>
-		<textarea
-			bind:value={dateInfoInput} />
-		
-		<b>Pārējā informācija</b>
-		<textarea
-			bind:value={infoInput} />
+		<button on:click={() => setDate()}>Automātiski iestatīt</button>
+	</div>
+	<br />
 
-		{#if loadingSave}
-			<Loading />
-		{:else}
-			<button on:click={() => save()}>Saglabāt</button>
-		{/if}
+	<b>Informācija par dievkalpojumiem</b>
+	<textarea
+		bind:value={dateInfoInput} />
+	
+	<b>Pārējā informācija</b>
+	<textarea
+		bind:value={infoInput} />
 
+	{#if loadingSave}
+		<Loading />
+	{:else}
+		<button on:click={() => save()}>Saglabāt</button>
 	{/if}
-</main>
-<AdminFooter />
+
+{/if}
 
 <style>
 	h1 {

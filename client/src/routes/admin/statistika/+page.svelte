@@ -1,6 +1,4 @@
-<script lang="typescript">
-	import AdminNavbar from '$lib/components/admin/AdminNavbar.svelte';
-	import AdminFooter from '$lib/components/admin/AdminFooter.svelte';
+<script lang="ts">
 	import Loading from '$lib/components/Loading.svelte';
 
 	import { onMount } from 'svelte';
@@ -98,88 +96,84 @@
 
 <svelte:body class="admin"></svelte:body>
 
-<AdminNavbar />
-<main>
-	<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Statistika</h1>
-	{#if loading}
-		<Loading />
-	{:else}
-		<div class="flex flex-wrap gap-4">
-			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<h1 class="text-4xl font-title text-slate-900">{visitorsInLast7Days}</h1>
-				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji pēdējās 7 dienās</p>
-			</div>
-			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<h1 class="text-4xl font-title text-slate-900">{visitorsToday}</h1>
-				<p class="text-slate-600 font-bold">atsevišķi apmeklētāji šodien</p>
-			</div>
-			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<h1 class="text-4xl font-title text-slate-900">{viewsInLast7Days}</h1>
-				<p class="text-slate-600 font-bold">skatījumi pēdējās 7 dienās</p>
-			</div>
-			<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<h1 class="text-4xl font-title text-slate-900">{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
-				<p class="text-slate-600 font-bold">ir visapmeklētākā lapa</p>
-			</div>
-			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
-				<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
-			</div>
-			<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-				<div class="flex items-end justify-center h-60">
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(views6DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
+<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Statistika</h1>
+{#if loading}
+	<Loading />
+{:else}
+	<div class="flex flex-wrap gap-4">
+		<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<h1 class="text-4xl font-title text-slate-900">{visitorsInLast7Days}</h1>
+			<p class="text-slate-600 font-bold">atsevišķi apmeklētāji pēdējās 7 dienās</p>
+		</div>
+		<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<h1 class="text-4xl font-title text-slate-900">{visitorsToday}</h1>
+			<p class="text-slate-600 font-bold">atsevišķi apmeklētāji šodien</p>
+		</div>
+		<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<h1 class="text-4xl font-title text-slate-900">{viewsInLast7Days}</h1>
+			<p class="text-slate-600 font-bold">skatījumi pēdējās 7 dienās</p>
+		</div>
+		<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<h1 class="text-4xl font-title text-slate-900">{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
+			<p class="text-slate-600 font-bold">ir visapmeklētākā lapa</p>
+		</div>
+		<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
+			<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
+		</div>
+		<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+			<div class="flex items-end justify-center h-60">
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(views6DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
 
-						<p class="absolute bottom-1 w-8 font-bold text-white">{views6DaysAgo}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(views5DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{views5DaysAgo}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(views4DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{views4DaysAgo}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(views3DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{views3DaysAgo}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(views2DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{views2DaysAgo}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(viewsYesterday / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{viewsYesterday}</p>
-					</div>
-					<div
-						class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
-						style="height: {Math.max(viewsToday / maxViewsThisWeek * 15, 2)}rem;">
-
-						<p class="absolute bottom-1 w-8 font-bold text-white">{viewsToday}</p>
-					</div>
+					<p class="absolute bottom-1 w-8 font-bold text-white">{views6DaysAgo}</p>
 				</div>
 				<div
-					class="block mt-1 mb-4">
-					
-					{#each weekDayDisplayList as w}
-						<b class="inline-block w-16 text-slate-600">{w}</b>
-					{/each}
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(views5DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{views5DaysAgo}</p>
 				</div>
-				<p class="text-slate-600 font-bold">Skatījumu pārskats pēdējās 7 dienās</p>
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(views4DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{views4DaysAgo}</p>
+				</div>
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(views3DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{views3DaysAgo}</p>
+				</div>
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(views2DaysAgo / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{views2DaysAgo}</p>
+				</div>
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(viewsYesterday / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{viewsYesterday}</p>
+				</div>
+				<div
+					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
+					style="height: {Math.max(viewsToday / maxViewsThisWeek * 15, 2)}rem;">
+
+					<p class="absolute bottom-1 w-8 font-bold text-white">{viewsToday}</p>
+				</div>
 			</div>
+			<div
+				class="block mt-1 mb-4">
+				
+				{#each weekDayDisplayList as w}
+					<b class="inline-block w-16 text-slate-600">{w}</b>
+				{/each}
+			</div>
+			<p class="text-slate-600 font-bold">Skatījumu pārskats pēdējās 7 dienās</p>
 		</div>
-	{/if}
-</main>
-<AdminFooter />
+	</div>
+{/if}
