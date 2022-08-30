@@ -24,7 +24,7 @@
 		isTitleInvalid: boolean = false,
 		isContentInvalid: boolean = false;
 	
-	let removeArticleConfirmationPopupProgress = tweened(0, {
+	let deleteConfirmationDialogProgress = tweened(0, {
 		duration: 300,
 		easing: cubicInOut
 	});
@@ -78,7 +78,7 @@
 		});
 	}
 
-	const removeArticle = () => {
+	const deleteArticle = () => {
 		isLoading = true;
 
 		const query = gql`
@@ -128,7 +128,7 @@
 				<p class="pb-2">{@html parseURLs(escapeHTML(content))}</p>
 
 				<button class="w-8 h-8 mr-1 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => openEditor()}><i class="bi-pencil"></i></button>
-				<button class="w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => removeArticleConfirmationPopupProgress.set(1)}><i class="bi-trash"></i></button>
+				<button class="w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => deleteConfirmationDialogProgress.set(1)}><i class="bi-trash"></i></button>
 
 			{/if}
 		</div>
@@ -136,15 +136,15 @@
 {/if}
 
 <div class="fixed top-0 left-0 w-screen h-screen bg-black z-20"
-	style="display: {$removeArticleConfirmationPopupProgress === 0 ? `none` : `block`}; opacity: {$removeArticleConfirmationPopupProgress / 2};"
-	on:click={() => removeArticleConfirmationPopupProgress.set(0)}>
+	style="display: {$deleteConfirmationDialogProgress === 0 ? `none` : `block`}; opacity: {$deleteConfirmationDialogProgress / 2};"
+	on:click={() => deleteConfirmationDialogProgress.set(0)}>
 </div>
 
 <div class="fixed top-[calc(50vh-6rem)] left-[calc(50vw-8rem)] w-64 h-48 p-2 bg-white rounded-3xl z-30"
-	style="display: {$removeArticleConfirmationPopupProgress === 0 ? `none` : `block`}; transform: scale({$removeArticleConfirmationPopupProgress});">
+	style="display: {$deleteConfirmationDialogProgress === 0 ? `none` : `block`}; transform: scale({$deleteConfirmationDialogProgress});">
 
 	<div class="inline-block float-right text-2xl hover:opacity-75 duration-200 cursor-pointer"
-		on:click={() => removeArticleConfirmationPopupProgress.set(0)}>
+		on:click={() => deleteConfirmationDialogProgress.set(0)}>
 	
 		<i class="bi bi-x"></i>
 	</div>
@@ -152,7 +152,7 @@
 	<p class="block w-full mt-12 text-center">Vai tiešām vēlaties izdzēst rakstu "{title}"?</p>
 
 	<div class="text-center mt-2">
-		<button class="inline-block w-8 h-8 mr-1 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => removeArticleConfirmationPopupProgress.set(0)}><i class="bi bi-x-lg"></i></button>
-		<button class="inline-block w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => {removeArticle(); removeArticleConfirmationPopupProgress.set(0); isDeleted = true;}}><i class="bi bi-check2"></i></button>
+		<button class="inline-block w-8 h-8 mr-1 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => deleteConfirmationDialogProgress.set(0)}><i class="bi bi-x-lg"></i></button>
+		<button class="inline-block w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => {deleteArticle(); deleteConfirmationDialogProgress.set(0); isDeleted = true;}}><i class="bi bi-check2"></i></button>
 	</div>
 </div>

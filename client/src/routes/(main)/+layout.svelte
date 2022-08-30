@@ -214,7 +214,7 @@
 			transition: 0s all;
 		}
 		&:focus-visible {
-			color: $theme-color;
+			//color: $theme-color;
 		}
 	}
 </style>
