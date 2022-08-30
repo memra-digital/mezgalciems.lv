@@ -6,16 +6,20 @@
 	import { apiUrl } from '$lib/globals';
 	import { request, gql } from 'graphql-request';
 
-	let loadingFetch: boolean = true;
-	let loadingSave: boolean = false;
+	let isLoadingFetch: boolean = true,
+		isLoadingSave: boolean = false;
 
-	let minuteInput: string = ``;
-	let hourInput: string = ``;
-	let dateInput: string = ``;
-	let monthInput: number = 1;
+	let minuteValue: string = ``,
+		hourValue: string = ``,
+		dateValue: string = ``,
+		monthValue: number = 1;
 
-	let dateInfoInput: string = ``;
-	let infoInput: string = ``;
+	let isMinuteValueInvalid: boolean = false,
+		isHourValueInvalid: boolean = false,
+		isDateValueInvalid: boolean = false;
+
+	let dateInfoInput: string = ``,
+		infoInput: string = ``;
 	
 	onMount(async () => {
 		const query = gql`
@@ -28,16 +32,16 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loadingFetch = false;
+			isLoadingFetch = false;
 
 			let date: Array<string> = data.information.nextDate.split(`-`);
-			dateInput = date[0];
-			monthInput = parseInt(date[1]) - 1;
-			hourInput = date[2];
-			minuteInput = date[3];
+			dateValue = date[0];
+			monthValue = parseInt(date[1]) - 1;
+			hourValue = date[2];
+			minuteValue = date[3];
 
-			if (hourInput.length === 1) hourInput = `0${hourInput}`;
-			if (minuteInput.length === 1) minuteInput = `0${minuteInput}`;
+			if (hourValue.length === 1) hourValue = `0${hourValue}`;
+			if (minuteValue.length === 1) minuteValue = `0${minuteValue}`;
 			
 			dateInfoInput = data.information.dateInfo;
 			infoInput = data.information.information;
@@ -45,11 +49,21 @@
 	});
 
 	const save = () => {
-		loadingSave = true;
+		// Validate the fields
+		isHourValueInvalid = isNaN(hourValue as unknown as number);
+		isMinuteValueInvalid = isNaN(minuteValue as unknown as number);
+		isDateValueInvalid = isNaN(dateValue as unknown as number);
+
+		if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid) {
+			return;
+		}
+
+		// Save everything
+		isLoadingSave = true;
 		
 		const query = gql`
 			mutation modifyInformation {
-				modifyInformation(nextDate: "${parseInt(dateInput)}-${monthInput + 1}-${parseInt(hourInput)}-${parseInt(minuteInput)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				modifyInformation(nextDate: "${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					error,
 					nextDate,
 					dateInfo,
@@ -58,18 +72,21 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loadingSave = false;
+			isLoadingSave = false;
 
 			if (data.modifyInformation.error === ``) {
 				dateInfoInput = data.modifyInformation.dateInfo;
 				infoInput = data.modifyInformation.information;
+			} else {
+				console.error(data.modifyInformation.error);
 			}
 		});
 	}
 
-	const setDate = () => {
-		hourInput = `11`;
-		minuteInput = `00`;
+	// Automatically sets the date
+	const autoSetDate = () => {
+		hourValue = `11`;
+		minuteValue = `00`;
 
 		for (let i: number = 1; i <= 31; i++) {
 			let realDate: Date = new Date();
@@ -85,8 +102,8 @@
 				nextDate.setDate(realDate.getDate() + ((7 - realDate.getDay()) % 7) + 7);
 			}
 
-			dateInput = (nextDate.getDate()).toString();
-			monthInput = (nextDate.getMonth() + 1) - 1;
+			dateValue = (nextDate.getDate()).toString();
+			monthValue = (nextDate.getMonth() + 1) - 1;
 		}
 
 		save();
@@ -97,30 +114,36 @@
 	<title>Norises draudzē | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Norises draudzē</h1>
-{#if loadingFetch}
+<h1 class="font-title text-3xl text-slate-900 mt-2">Norises draudzē</h1>
+{#if isLoadingFetch}
 	<Loading />
 {:else}
-	<b>Nākamā dievkalpojuma datums</b>
-	<div class="datePicker">
-		<p>Laiks: </p>
+	<b class="font-title font-bold text-xl text-slate-800">Nākamā dievkalpojuma datums</b>
+	<div class="mb-2">
+		<p class="inline-block">Laiks: </p>
 		<input 
+			class="inline-block w-8 px-1 text-center rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
+			class:border-red-500={isHourValueInvalid} class:focus:border-red-500={isHourValueInvalid} 
 			type="text"
-			bind:value={hourInput} />
-		<p>:</p>
+			bind:value={hourValue} />
+		<p class="inline-block">:</p>
 		<input 
+			class="inline-block w-8 px-1 text-center rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
+			class:border-red-500={isMinuteValueInvalid} class:focus:border-red-500={isMinuteValueInvalid} 
 			type="text"
-			bind:value={minuteInput} />
+			bind:value={minuteValue} />
 		<br />
 		
-		<p>Datums: </p>
+		<p class="inline-block mt-2">Datums: </p>
 		<input 
+			class="inline-block w-8 px-1 text-center rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
+			class:border-red-500={isDateValueInvalid} class:focus:border-red-500={isDateValueInvalid} 
 			type="text"
-			bind:value={dateInput} />
+			bind:value={dateValue} />
 		<br />
 		
-		<p>Mēnesis: </p>
-		<Dropdown 
+		<p class="inline-block mt-2">Mēnesis: </p>
+		<Dropdown
 			options={[
 				`Janvāris`,
 				`Februāris`,
@@ -135,76 +158,36 @@
 				`Novembris`,
 				`Decembris`
 			]}
-			bind:selected={monthInput} />
-		<br />
-
-		<button on:click={() => setDate()}>Automātiski iestatīt</button>
+			bind:selected={monthValue} />
 	</div>
-	<br />
 
-	<b>Informācija par dievkalpojumiem</b>
+	<button 
+		class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-6 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:brightness-95 duration-200"
+		on:click={() => autoSetDate()}>
+		
+		<i class="bi bi-arrow-repeat"></i>
+		Automātiski iestatīt
+	</button>
+
+	<b class="font-title font-bold text-xl text-slate-800">Informācija par dievkalpojumiem</b>
 	<textarea
+		class="block w-full h-[calc(100%-5.5rem)] resize-vertical p-2 mb-6 rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
 		bind:value={dateInfoInput} />
 	
-	<b>Pārējā informācija</b>
+	<b class="font-title font-bold text-xl text-slate-800">Pārējā informācija</b>
 	<textarea
+		class="block w-full h-[calc(100%-5.5rem)] resize-vertical p-2 mb-6 rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
 		bind:value={infoInput} />
 
-	{#if loadingSave}
+	{#if isLoadingSave}
 		<Loading />
 	{:else}
-		<button on:click={() => save()}>Saglabāt</button>
+		<button
+			class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-6 mx-auto w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200"
+			on:click={() => save()}>
+
+			Saglabāt
+		</button>
 	{/if}
 
 {/if}
-
-<style>
-	h1 {
-		margin-top: 1.5rem;
-	}
-	
-	textarea, input {
-		display: block;
-		width: 100%;
-
-		background: #eaeaea;
-		color: #000000;
-
-		font-size: 1rem;
-		line-height: 1.25rem;
-
-		border-radius: .5rem;
-
-		margin-bottom: 1rem;
-
-		border: 0;
-
-		resize: vertical;
-	}
-
-	.datePicker {
-		padding-left: 1rem;
-	}
-	.datePicker input,
-	.datePicker p {
-		display: inline-block;
-	}
-	.datePicker input {
-		width: 4ch;
-
-		padding: .5rem;
-	}
-
-	select {
-		background: #eaeaea;
-		color: #000000;
-
-		border-radius: .5rem;
-
-		border: 0;
-
-		font-size: 1rem;
-		
-		padding: .5rem;
-	}
-</style>
