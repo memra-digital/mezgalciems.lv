@@ -116,11 +116,10 @@
 {#if isLoadingNewArticle}
 	<Loading />
 {:else}
-	<div class="grid grid-cols-2 gap-4">
+	<div class="grid grid-cols-1 gap-2 xs:grid-cols-2 xs:gap-4">
 		<div>
-			<div class="relative w-full rounded-3xl shadow-lg shadow-slate-800/20 overflow-hidden duration-200"
+			<div class="relative w-full rounded-3xl shadow-lg shadow-slate-800/20 bg-slate-800 overflow-hidden duration-200"
 				class:border-red-500={isNewArticleImageInvalid}
-				class:bg-slate-800={!isImageSet}
 				class:aspect-square={!isImageSet}
 				style="border-width: {isNewArticleImageInvalid ? `2px` : `0`}; /* I'm using inline style here to make sure there's no weird CSS specificity stuff going on */">
 
@@ -132,7 +131,7 @@
 					<button class="absolute top-4 right-4 block w-8 h-8 text-xl text-center bg-slate-800 text-white rounded-full z-10 shadow-sm shadow-slate-800/20 hover:shadow-md hover:shadow-slate-800/20 duration-200"
 						on:click={() => isImageSet = false}>
 
-						<i class="bi bi-x"></i>
+						<i class="bi bi-x-lg"></i>
 					</button>
 				{:else}
 					<button class="w-full h-full bg-none text-white text-center font-title text-2xl hover:opacity-75 duration-200"
@@ -184,6 +183,7 @@
 <h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Jaunumi</h1>
 {#each articles as article}
 	<AdminArticle id={article.id} title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} />
+	<div class="mb-4 border-b-2 border-slate-300 xs:hidden"></div>
 {/each}
 
 {#if isLoadingArticles}
@@ -191,5 +191,5 @@
 {/if}
 
 {#if currentlyLoadedPages < totalPages}
-	<button class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
+	<button class="block w-full xs:mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
 {/if}

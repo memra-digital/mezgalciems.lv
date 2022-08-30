@@ -71,7 +71,7 @@
 {#if isLoading}
 	<Loading />
 {:else}
-	<div class="grid grid-cols-3 gap-4 mb-4">
+	<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
 		<div class="text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
 			<h1 class="text-4xl font-title text-slate-900">{visitorsInLast7Days}</h1>
 			<p class="text-slate-600 font-bold">atsevišķi apmeklētāji pēdējās 7 dienās</p>
@@ -93,7 +93,7 @@
 	<Loading />
 {:else}
 	<AdminArticle id={newestArticle.id} title={newestArticle.title} image={newestArticle.image} imageAlt={newestArticle.imageAlt} content={newestArticle.content} />
-	<a class="block w-full mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/jaunumi">Apskatīt un rediģēt visus rakstus <i class="bi-arrow-right"></i></a>
+	<a class="block w-full xs:mt-[-1rem] font-title text-lg text-center text-slate-900 hover:text-blue-500 transition duration-200" href="/admin/jaunumi">Apskatīt un rediģēt visus rakstus <i class="bi-arrow-right"></i></a>
 {/if}
 
 <h1 class="font-title text-3xl text-slate-900 mt-4">Nākamais dievkalpojums</h1>

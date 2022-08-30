@@ -189,7 +189,7 @@
 
 <div class="relative block w-full h-[calc(100vh-13rem)] overflow-hidden">
 	<div class="absolute top-0 w-full h-full" bind:this={listEl} style="left: {$listTransitionProgress}px;">
-		<button class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-2 mx-auto w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => newArticle()}><i class="bi bi-plus-lg"></i> Pievienot</button>
+		<button class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-2 mx-auto w-2/3 xs:w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => newArticle()}><i class="bi bi-plus-lg"></i> Pievienot</button>
 
 		{#if isLoadingList}
 			<Loading />

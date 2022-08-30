@@ -15,8 +15,7 @@
 
 	let isDeleted: boolean = false,
 		isLoading: boolean = false,
-		isEditing: boolean = false,
-		wantsToDelete: boolean = false;
+		isEditing: boolean = false;
 
 	let titleValue: string = title,
 		contentValue: string = content;
@@ -100,9 +99,9 @@
 </script>
 
 {#if !isDeleted}
-	<article class="grid grid-cols-2 gap-4 mb-8">
+	<article class="grid grid-cols-1 xs:grid-cols-2 gap-2 xs:gap-4 mb-0 xs:mb-8">
 		<img class="w-full rounded-3xl bg-slate-700 shadow-lg shadow-slate-800/20" src={image} alt={imageAlt} />
-		<div>
+		<div class="px-2 pb-4 xs:p-0">
 			{#if isLoading}
 				<Loading />
 
@@ -119,7 +118,7 @@
 					placeholder="Saturs" />
 
 				<button class="w-8 h-8 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => saveAndCloseEditor()}><i class="bi-check2"></i></button>
-				<button class="w-8 h-8 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => closeEditor()}><i class="bi-x"></i></button>
+				<button class="w-8 h-8 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => closeEditor()}><i class="bi-x-lg"></i></button>
 
 				<p class="font-bold text-red-500 duration-200" class:opacity-100={errorMsg !== ``}>{errorMsg}</p>
 
@@ -153,7 +152,7 @@
 	<p class="block w-full mt-12 text-center">Vai tiešām vēlaties izdzēst rakstu "{title}"?</p>
 
 	<div class="text-center mt-2">
-		<button class="inline-block w-8 h-8 mr-1 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => removeArticleConfirmationPopupProgress.set(0)}><i class="bi bi-x"></i></button>
-		<button class="inline-block w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => {removeArticle(); removeArticleConfirmationPopupProgress.set(0); isDeleted = true;}}><i class="bi bi-check"></i></button>
+		<button class="inline-block w-8 h-8 mr-1 bg-gradient-to-tl from-blue-600 to-blue-300 text-white rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200" on:click={() => removeArticleConfirmationPopupProgress.set(0)}><i class="bi bi-x-lg"></i></button>
+		<button class="inline-block w-8 h-8 ml-1 bg-gradient-to-tl from-red-600 to-red-400 text-white rounded-full shadow-sm shadow-red-200 hover:shadow-md hover:shadow-red-200 hover:brightness-95 duration-200" on:click={() => {removeArticle(); removeArticleConfirmationPopupProgress.set(0); isDeleted = true;}}><i class="bi bi-check2"></i></button>
 	</div>
 </div>

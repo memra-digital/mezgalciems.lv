@@ -121,7 +121,7 @@
 			<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
 			<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
 		</div>
-		<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+		<div class="hidden sm:block grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
 			<div class="flex items-end justify-center h-60">
 				<div
 					class="relative block w-8 rounded-full bg-gradient-to-tl from-blue-600 to-blue-300 mx-4"
