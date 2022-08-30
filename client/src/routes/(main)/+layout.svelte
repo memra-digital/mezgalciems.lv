@@ -174,8 +174,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../theme.scss';
-
 	// Banner
 	header {
 		background: #edeef1;
@@ -197,7 +195,7 @@
 	nav a {
 		&::after {
 			content: "";
-			background: $theme-gradient;
+			//background: $theme-gradient;
 			position: absolute;
 			bottom: -2rem;
 			left: 0;
