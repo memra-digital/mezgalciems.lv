@@ -1,97 +1,24 @@
 <script lang="typescript">
 	export let options: string[];
 	export let selected: number = 0;
+
+	let isOpen: boolean = false;
 </script>
 
-<div class="main">
-	<div class="button">
-		<p>{options[selected]}</p>
+<div class="inline-block relative">
+	<div class="rounded-lg bg-slate-200 px-2 py-1 border border-slate-400 cursor-pointer"
+		on:click={() => isOpen = !isOpen}>
 
-		<i class="bi bi-caret-down-fill"></i>
+		{options[selected]}
+		<i class="bi bi-chevron-down inline-block ml-2 duration-200" class:rotate-180={isOpen}></i>
 	</div>
-	<div class="dropdown">
+	<div class="absolute bg-white h-0 max-h-[16rem] rounded-2xl shadow-lg shadow-slate-800/20 z-20 overflow-x-hidden duration-200"
+		style={isOpen ? `height: ${options.length * 2 + 0.5}rem;` : ``}>
+
 		{#each options as option, i}
-			<p on:click={() => selected = i}>{option}</p>
+			<p class="block my-2 mx-3 h-6 w-36 hover:opacity-75 duration-200 overflow-hidden cursor-pointer"
+				class:font-bold={i === selected}
+				on:click={() => { selected = i; isOpen = false; }}>{option}</p>
 		{/each}
 	</div>
 </div>
-
-<style lang="scss">
-	@import '../../theme.scss';
-	
-	.button {
-		display: inline-block;
-
-		padding: .5rem;
-		padding-left: 1rem;
-		padding-right: 1rem;
-
-		border-radius: 1rem;
-
-		background: $background-accent;
-		color: $paragraph-color;
-
-		cursor: pointer;
-
-		transition: .5s background, color;
-
-		user-select: none;
-
-		* {
-			display: inline-block;
-
-			transition: .2s all;
-		}
-	}
-
-	.dropdown {
-		position: absolute;
-
-		display: block;
-		height: 0;
-
-		padding: 0;
-		padding-left: 1rem;
-		padding-right: 1rem;
-
-		border-radius: 1rem;
-
-		box-shadow: 0px 0px 10px -3px $shadow-color;
-		
-		background: $background-color;
-		color: $paragraph-color;
-		
-		overflow: hidden;
-
-		transition: .2s all;
-
-		z-index: 1;
-
-		p {
-			display: block;
-
-			margin-bottom: .5rem;
-
-			color: $paragraph-color;
-
-			user-select: none;
-
-			cursor: pointer;
-
-			transition: .2s all;
-
-			&:hover {
-				opacity: 0.75;
-			}
-		}
-	}
-
-	.main:hover .button i {
-		transform: rotate(180deg);
-	}
-	.main:hover .dropdown {
-		height: auto;
-		
-		padding: 1rem;
-	}
-</style>

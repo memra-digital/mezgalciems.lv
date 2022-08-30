@@ -142,7 +142,7 @@
 			bind:value={dateValue} />
 		<br />
 		
-		<p class="inline-block mt-2">Mēnesis: </p>
+		<p class="inline-block mt-3">Mēnesis: </p>
 		<Dropdown
 			options={[
 				`Janvāris`,
