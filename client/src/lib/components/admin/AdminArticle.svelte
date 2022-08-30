@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
 	export let id: number;
     export let title: string;
     export let content: string;

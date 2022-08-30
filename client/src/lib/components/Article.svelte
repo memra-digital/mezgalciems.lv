@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
 	import { parseURLs, escapeHTML } from '$lib/processing';
 
 	export let title: string;

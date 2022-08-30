@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
 	import { year } from '$lib/globals';
 </script>
 

@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
 	import Loading from '$lib/components/Loading.svelte';
 	import Dropdown from '$lib/components/Dropdown.svelte';
 
