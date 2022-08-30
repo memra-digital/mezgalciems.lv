@@ -5,6 +5,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:focus {
+	outline: none;
+}
+
 a.link {
 	text-decoration: none;
 	background-position: 0% 100%;

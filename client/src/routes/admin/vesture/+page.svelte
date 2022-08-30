@@ -185,7 +185,7 @@
 	<title>Vēsture | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<h1 class="font-title text-3xl text-slate-900 mt-2 mb-2">Vēsture</h1>
+<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Vēsture</h1>
 
 <div class="relative block w-full h-[calc(100vh-13rem)] overflow-hidden">
 	<div class="absolute top-0 w-full h-full" bind:this={listEl} style="left: {$listTransitionProgress}px;">

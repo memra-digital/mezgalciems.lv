@@ -22,6 +22,7 @@
 		infoInput: string = ``;
 	
 	onMount(async () => {
+		// Fetch the data
 		const query = gql`
 			{
 				information {
@@ -114,7 +115,7 @@
 	<title>Norises draudzē | Admin | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-<h1 class="font-title text-3xl text-slate-900 mt-2">Norises draudzē</h1>
+<h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Norises draudzē</h1>
 {#if isLoadingFetch}
 	<Loading />
 {:else}
@@ -189,5 +190,4 @@
 			Saglabāt
 		</button>
 	{/if}
-
 {/if}
