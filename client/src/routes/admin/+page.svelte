@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AdminArticle from '$lib/components/admin/AdminArticle.svelte';
+	import AdminArticle from '$lib/components/AdminArticle.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 
 	import { onMount } from 'svelte';
