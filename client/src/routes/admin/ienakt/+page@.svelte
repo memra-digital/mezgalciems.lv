@@ -40,7 +40,6 @@
 		request(apiUrl, `
 			{
 				login(username: "${usernameValue}", password: "${passwordValue}") {
-					error
 					token
 				}
 			}
@@ -54,14 +53,14 @@
 				return;
 			}
 
-			if (data.login.error === `invalidUserOrPwd`) {
+			if (false) { // TODO: handle invalid user or password error
 				usernameError = `Nepareizs lietotājvārds/parole!`;
 				passwordError = `Nepareizs lietotājvārds/parole!`;
 
 				isUsernameInvalid = true;
 				isPasswordInvalid = true;
 			} else {
-				console.error(data.login.error);
+				console.error(data.login);
 			}
 		});
 	}

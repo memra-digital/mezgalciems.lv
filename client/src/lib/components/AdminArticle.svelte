@@ -60,7 +60,6 @@
 		const query = gql`
 			mutation modifyArticle {
 				modifyArticle(id: ${id}, title: "${titleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${contentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", imageAlt: "${imageAlt.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
-					error
 					title
 					content
 				}
@@ -69,9 +68,7 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoading = false;
 
-			if (data.modifyArticle.error !== ``) {
-				return;
-			} else {
+			if (true) { // TODO: error handling
 				title = data.modifyArticle.title;
 				content = data.modifyArticle.content;
 			}
@@ -84,14 +81,13 @@
 		const query = gql`
 			mutation removeArticle {
 				removeArticle(id: ${id}, token: "${localStorage.getItem(`adminLoginToken`)}") {
-					error
 				}
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
 			isLoading = false;
 
-			if (data.removeArticle.error === ``) {
+			if (true) { // TODO: error handling
 				isDeleted = true;
 			}
 		});

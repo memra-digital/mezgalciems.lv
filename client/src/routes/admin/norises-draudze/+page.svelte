@@ -65,7 +65,6 @@
 		const query = gql`
 			mutation modifyInformation {
 				modifyInformation(nextDate: "${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
-					error,
 					nextDate,
 					dateInfo,
 					information
@@ -75,7 +74,7 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingSave = false;
 
-			if (data.modifyInformation.error === ``) {
+			if (true) { // TODO: handle errors
 				dateInfoInput = data.modifyInformation.dateInfo;
 				infoInput = data.modifyInformation.information;
 			} else {

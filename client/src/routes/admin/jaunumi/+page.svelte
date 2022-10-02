@@ -79,14 +79,13 @@
 		const query = gql`
 			mutation addArticle {
 				addArticle(title: "${newArticleTitleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${newArticleContentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", image: "${uploadedImageData}", imageAlt: "${newArticleAltValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
-					error
 				}
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
 			isLoadingNewArticle = false;
 			
-			if (data.addArticle.error !== ``) {
+			if (false) { // TODO: Handle errors
 				console.error(data.addArticle.error);
 			} else {
 				window.location.reload();

@@ -15,7 +15,6 @@ type Article {
 	author: String
 }
 type ArticleMutationResult {
-	error: String
 	id: Int!
 	title: String
 	content: String
@@ -29,7 +28,6 @@ type Information {
 	information: String
 }
 type InformationMutationResult {
-	error: String
 	nextDate: String
 	dateInfo: String
 	information: String
@@ -59,7 +57,6 @@ type HistoryArticle {
 	videoLink: String
 }
 type HistoryArticleMutationResult {
-	error: String
 	id: Int
 	title: String
 	content: String
@@ -69,7 +66,6 @@ type HistoryArticleMutationResult {
 }
 
 type LoginDetails {
-	error: String
 	token: String
 }
 
