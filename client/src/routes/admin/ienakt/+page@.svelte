@@ -111,10 +111,10 @@
 		
 		<h1 class="font-title text-2xl text-center text-slate-900 leading-5 mt-4">Ienākt</h1>
 
-		<b class="text-slate-900 transition duration-200" class:text-red-500={isUsernameInvalid} class:font-bold={isUsernameInvalid}>Lietotājvārds <span class="italic opacity-0 transition duration-200" class:opacity-100={isUsernameInvalid}> - {usernameError}</span></b>
+		<b class="text-slate-900 transition duration-200" class:text-red-500={isUsernameInvalid} class:font-bold={isUsernameInvalid}>Lietotājvārds <span class="italic transition duration-200" style="opacity: {isUsernameInvalid ? `1` : `0`}"> - {usernameError}</span></b>
 		<input class="block w-full mb-2 p-1 bg-white border border-slate-300 rounded-lg focus:border-2 focus:border-blue-500 transition duration-200" class:border-red-500={isUsernameInvalid} class:focus:border-red-500={isUsernameInvalid} type="text" bind:value={usernameValue} />
 
-		<b class="text-slate-900 transition duration-200" class:text-red-500={isPasswordInvalid} class:font-bold={isPasswordInvalid}>Parole <span class="italic opacity-0 transition duration-200" class:opacity-100={isPasswordInvalid}> - {passwordError}</span></b>
+		<b class="text-slate-900 transition duration-200" class:text-red-500={isPasswordInvalid} class:font-bold={isPasswordInvalid}>Parole <span class="italic opacity-0 transition duration-200" style="opacity: {isPasswordInvalid ? `1` : `0`}"> - {passwordError}</span></b>
 		<div class="relative">
 			<input class="block w-full mb-2 p-1 bg-white border border-slate-300 rounded-lg focus:border-2 focus:border-blue-500 transition duration-200" class:border-red-500={isPasswordInvalid} class:focus:border-red-500={isPasswordInvalid} type="password" bind:this={passwordElement} bind:value={passwordValue} />
 
