@@ -85,11 +85,11 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingNewArticle = false;
 			
-			if (false) { // TODO: Handle errors
-				console.error(data.addArticle.error);
-			} else {
-				window.location.reload();
-			}
+			window.location.reload();
+		}).catch((err: any) => {
+			isLoadingNewArticle = false;
+
+			console.error(err);
 		});
 	}
 	const showNewArticleImgPreview = () => {

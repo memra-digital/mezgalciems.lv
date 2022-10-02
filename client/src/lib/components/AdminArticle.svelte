@@ -68,10 +68,12 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoading = false;
 
-			if (true) { // TODO: error handling
-				title = data.modifyArticle.title;
-				content = data.modifyArticle.content;
-			}
+			title = data.modifyArticle.title;
+			content = data.modifyArticle.content;
+		}).catch((err: any) => {
+			isLoading = false;
+
+			console.error(err);
 		});
 	}
 
@@ -87,9 +89,11 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoading = false;
 
-			if (true) { // TODO: error handling
-				isDeleted = true;
-			}
+			isDeleted = true;
+		}).catch((err: any) => {
+			isLoading = false;
+
+			console.error(err);
 		});
 	}
 </script>

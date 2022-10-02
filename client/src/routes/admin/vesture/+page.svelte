@@ -154,12 +154,11 @@
 			}
 		`;
 		request(apiUrl, mutation).then((data: any) => {
-			if (true) { // TODO: handle errors
-				openList();
-			} else {
-				isLoadingEditor = false;
-				console.error(data.removeHistoryArticle.error);
-			}
+			openList();
+		}).catch((err: any) => {
+			isLoadingEditor = false;
+
+			console.error(err);
 		});
 	}
 

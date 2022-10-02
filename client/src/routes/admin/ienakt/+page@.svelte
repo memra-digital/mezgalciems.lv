@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { apiUrl } from '$lib/globals';
 	import { request } from 'graphql-request';
+    import { dataset_dev } from 'svelte/internal';
 
 	let usernameValue: string = ``,
 		passwordValue: string = ``;
@@ -46,21 +47,20 @@
 		`).then((data: any) => {
 			isLoading = false;
 
-			if (data.login.token !== ``) {
-				localStorage.setItem(`adminLoginToken`, data.login.token);
-				localStorage.setItem(`adminLoginUsername`, usernameValue);
-				window.location.pathname = `/admin/`;
-				return;
-			}
+			localStorage.setItem(`adminLoginToken`, data.login.token);
+			localStorage.setItem(`adminLoginUsername`, usernameValue);
+			window.location.pathname = `/admin/`;
+		}).catch((err: any) => {
+			isLoading = false;
 
-			if (false) { // TODO: handle invalid user or password error
+			if (err.message.includes(`Invalid username or password`)) {
 				usernameError = `Nepareizs lietotājvārds/parole!`;
 				passwordError = `Nepareizs lietotājvārds/parole!`;
 
 				isUsernameInvalid = true;
 				isPasswordInvalid = true;
 			} else {
-				console.error(data.login);
+				console.error(err);
 			}
 		});
 	}

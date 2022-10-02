@@ -74,12 +74,12 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingSave = false;
 
-			if (true) { // TODO: handle errors
-				dateInfoInput = data.modifyInformation.dateInfo;
-				infoInput = data.modifyInformation.information;
-			} else {
-				console.error(data.modifyInformation.error);
-			}
+			dateInfoInput = data.modifyInformation.dateInfo;
+			infoInput = data.modifyInformation.information;
+		}).catch((err: any) => {
+			isLoadingSave = false;
+
+			console.error(err);
 		});
 	}
 
