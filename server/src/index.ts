@@ -149,7 +149,7 @@ client.connect(async (err) => {
 				let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
 
 				if (account === null || !isPwdCorrect) {
-					throw new AuthenticationError(`Invalid username or password`);
+					throw new AuthenticationError(`invalidUsernameOrPassword`);
 				}
 
 				return await {
@@ -161,7 +161,7 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new UserInputError(`Invalid token!`);
+						throw new UserInputError(`invalidToken`);
 					}
 
 					let logs: DbStatisticsLog[] = await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
@@ -272,7 +272,7 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					// Capture the timestamp
@@ -316,14 +316,14 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					let originalArticle: DbArticle | undefined;
 
 					// Check if the article exists
 					if (await articleCollection.find({ _id: args.id }).count() === 0) {
-						throw new UserInputError(`Specified article doesn't exist`);
+						throw new UserInputError(`invalidArticleId`);
 					}
 
 					originalArticle = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
@@ -357,13 +357,13 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					// Check if the article exists
 					let article: DbArticle | undefined = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
 					if (article === undefined) {
-						throw new UserInputError(`Specified article doesn't exist`);
+						throw new UserInputError(`invalidArticleId`);
 					}
 
 					// Delete the article
@@ -385,7 +385,7 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					// Modify the information
@@ -413,13 +413,13 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					// Check if the video link is valid
 					if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
 						// I KNOW THIS REGEX IS HORRIBLE!!!
-						throw new UserInputError(`Invalid video link provided`);
+						throw new UserInputError(`invalidVideoLink`);
 					}
 
 					// Capture the timestamp
@@ -462,17 +462,17 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new ForbiddenError(`Invalid token provided`);
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					// Check if the article exists
 					if (await historyCollection.find({ _id: args.id }).count() === 0) {
-						throw new UserInputError(`Specified article doesn't exist`);
+						throw new UserInputError(`invalidHistoryId`);
 					}
 
 					// Check if the code is valid
 					if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
-						throw new UserInputError(`Invalid video link provided`);
+						throw new UserInputError(`invalidVideoLink`);
 					}
 
 					let originalArticle: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
@@ -507,13 +507,13 @@ client.connect(async (err) => {
 			removeHistoryArticle: async (parents: any, args: any, context: any, info: any) => {
 				// Verify token
 				if (!verifyAccountToken(args.token)) {
-					throw new ForbiddenError(`Invalid token provided`);
+					throw new ForbiddenError(`invalidToken`);
 				}
 
 				// Check if the article exists
 				let article: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 				if (article === undefined) {
-					throw new UserInputError(`Specified article doesn't exist`);
+					throw new UserInputError(`invalidHistoryId`);
 				}
 
 				// Delete the article

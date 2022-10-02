@@ -53,7 +53,7 @@
 		}).catch((err: any) => {
 			isLoading = false;
 
-			if (err.message.includes(`Invalid username or password`)) {
+			if (err.message.includes(`invalidUsernameOrPassword`)) {
 				usernameError = `Nepareizs lietotājvārds/parole!`;
 				passwordError = `Nepareizs lietotājvārds/parole!`;
 
