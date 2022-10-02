@@ -84,10 +84,10 @@
 
 <svelte:window on:scroll={(e) => updateStickiness()} bind:scrollY={y}/>
 
-<div class="bg-slate-50">
+<div class="bg-slate-50 print:bg-white">
 	<CookieNotice />
 
-	<header>
+	<header class="print:hidden">
 		<div class="header-banner"
 			alt="Mežgalciema baptistu draudzes baznīca"
 			style={`transform: translateY(${(y / 1.75)}px); background-image: url("/files/banner_0.png");`}
@@ -108,10 +108,10 @@
 				background-image: url("/files/banner_3.png");
 				margin-left: 40%;
 				max-width: 50vw;
-				background-size: contain;`}/>
+				background-size: contain;`} />
 	</header>
 	
-	<div class="flex place-content-center min-h-[5rem] md:mb-[-1.5rem]" bind:this={wrapperElement}>
+	<div class="flex place-content-center min-h-[5rem] md:mb-[-1.5rem] print:hidden" bind:this={wrapperElement}>
 		<nav class="relative top-[-1.75rem] inline-block w-full md:h-[3.75rem] md:w-auto rounded-none md:rounded-2xl bg-white p-4 shadow-lg shadow-slate-800/20 overflow-hidden z-10"
 			bind:this={navbarElement}>
 
@@ -137,11 +137,11 @@
 		</nav>
 	</div>
 	
-	<div class="fixed top-0 left-0 block w-screen h-screen z-20 bg-black"
+	<div class="fixed top-0 left-0 block w-screen h-screen z-20 bg-black print:hidden"
 		on:click={() => sidebarAnimationProgress.set(0)}
 		style="opacity: {$sidebarAnimationProgress / 2}; display: {($sidebarAnimationProgress === 0) ? `none` : `block`}"></div>
 	
-	<div class="fixed top-0 block w-[80%] h-screen z-30 bg-white" style="left: {($sidebarAnimationProgress * 80) - 80}%;">
+	<div class="fixed top-0 block w-[80%] h-screen z-30 bg-white print:hidden" style="left: {($sidebarAnimationProgress * 80) - 80}%;">
 		<button class="w-12 h-12 text-4xl float-right" on:click={() => sidebarAnimationProgress.set(0)}>
 			<i class="bi bi-x"></i>
 		</button>
@@ -164,15 +164,15 @@
 	</main>
 
 	<footer class="w-full pt-4 pb-12 text-center">
-		<p class="text-slate-600">&copy; Mežgalciema baptistu draudze, 2022<span class="no-print">&nbsp;• <a href="/privatuma-politika" class="link text-blue-500 bg-gradient-to-t from-blue-500 to-blue-500">Privātuma politika</a></span></p>
+		<p class="text-slate-600">&copy; Mežgalciema baptistu draudze, 2022<span class="print:hidden">&nbsp;• <a href="/privatuma-politika" class="link text-blue-500 bg-gradient-to-t from-blue-500 to-blue-500">Privātuma politika</a></span></p>
 	
-		<a class="mx-1 text-2xl text-blue-600 hover:opacity-75 transition duration-200" href="https://www.facebook.com/mezgalciems" target="_blank" rel="noreferer">
+		<a class="mx-1 text-2xl text-blue-600 hover:opacity-75 transition duration-200 print:hidden" href="https://www.facebook.com/mezgalciems" target="_blank" rel="noreferer">
 			<i class="bi bi-facebook"></i>
 		</a>
-		<a class="mx-1 text-2xl text-red-600 hover:opacity-75 transition duration-200" href="https://www.youtube.com/channel/UC4qO8CQPqA_xrSe2ONdm-gg" target="_blank" rel="noreferer">
+		<a class="mx-1 text-2xl text-red-600 hover:opacity-75 transition duration-200 print:hidden" href="https://www.youtube.com/channel/UC4qO8CQPqA_xrSe2ONdm-gg" target="_blank" rel="noreferer">
 			<i class="bi bi-youtube"></i>
 		</a>
-		<a class="mx-1 text-2xl text-green-500 hover:opacity-75 transition duration-200" href="https://open.spotify.com/show/2K9aHWInrMlwCqH25L4bRf?si=8400e25304ac469f" target="_blank" rel="noreferer">
+		<a class="mx-1 text-2xl text-green-500 hover:opacity-75 transition duration-200 print:hidden" href="https://open.spotify.com/show/2K9aHWInrMlwCqH25L4bRf?si=8400e25304ac469f" target="_blank" rel="noreferer">
 			<i class="bi bi-spotify"></i>
 		</a>
 	</footer>
@@ -194,6 +194,11 @@
 
 			width: 100%;
 			height: 100%;
+		}
+	}
+	@media print {
+		header, .header-banner {
+			display: none;
 		}
 	}
 

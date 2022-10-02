@@ -49,7 +49,6 @@
 	<title>Jaunumi | Mežgalciema baptistu draudze</title>
 </svelte:head>
 
-
 <h1 class="font-title font-bold text-3xl text-slate-900 mb-2">Jaunumi</h1>
 {#each articles as article}
 	<Article title={article.title} content={article.content} image={article.image} imageAlt={article.imageAlt} author={article.author} date={parseInt(article.date)} />
@@ -60,7 +59,7 @@
 {/if}
 
 {#if loadedPages < totalPages}
-	<div class="block text-center">
+	<div class="block text-center print:hidden">
 		<button class="font-title text-lg text-center text-slate-800 hover:text-blue-500 transition duration-200" on:click={() => loadMoreArticles()}>Ielādēt vairāk...</button>
 	</div>
 {/if}

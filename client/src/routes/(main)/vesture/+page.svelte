@@ -130,9 +130,9 @@
 
 <svelte:window on:scroll={(e) => updateStickiness()} />
 
-<h1 class="font-title font-bold text-3xl text-slate-900 mb-4">Vēsture</h1>
+<h1 class="font-title font-bold text-3xl text-slate-900 mb-4 print:mb-0">Vēsture</h1>
 
-<div class="hidden md:inline-block inline-block w-2/5 align-top">
+<div class="hidden md:inline-block inline-block w-2/5 align-top print:hidden">
 	<div class="hidden md:block" bind:this={sidebarElement}>
 		<div class="mb-4 h-8">
 			<p class="inline-block">Rādīt: </p>
@@ -167,7 +167,7 @@
 	</div>
 </div>
 
-<div class="block md:hidden">
+<div class="block md:hidden print:hidden">
 	<button class="block w-1/2 bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mx-auto rounded-full shadow-sm shadow-blue-200"
 		on:click={() => selectorAnimationProgress.set(1)}>
 
@@ -198,19 +198,19 @@
 			{@html parseURLs(escapeHTML(currentArticle.content)).replaceAll(`\n`, `<br />`)}
 		</p>
 	{:else}
-		<p class="hidden md:block text-slate-600 font-bold mt-14">
-			<i class="bi bi-arrow-left moving-animation"></i> Izvēlieties kādu no rakstiem, lai to lasītu
+		<p class="hidden md:block text-slate-600 font-bold mt-14 print:block print:text-center print:mt-0">
+			<i class="bi bi-arrow-left moving-animation inline-block print:hidden"></i> Izvēlieties kādu no rakstiem, lai to lasītu
 		</p>
 	{/if}
 </div>
 
 <div
-	class="fixed top-0 left-0 w-screen h-screen z-20 bg-black"
+	class="fixed top-0 left-0 w-screen h-screen z-20 bg-black print:hidden"
 	on:click={() => selectorAnimationProgress.set(0)}
 	style={`opacity: ${$selectorAnimationProgress / 2};
 			display: ${($selectorAnimationProgress === 0) ? `none` : `block`}`}></div>
 
-<div class="fixed left-0 block w-screen h-[85vh] z-30 bg-white rounded-t-3xl p-4"
+<div class="fixed left-0 block w-screen h-[85vh] z-30 bg-white rounded-t-3xl p-4 print:hidden"
 	style={`bottom: ${($selectorAnimationProgress * 85) - 85}%;`}>
 
 	<button class="w-8 h-8 text-4xl float-right" on:click={() => selectorAnimationProgress.set(0)}>
@@ -250,8 +250,6 @@
 	@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
 
 	.moving-animation {
-		display: inline-block;
-
 		animation-name: moving-animation;
 		animation-iteration-count: infinite;
 		animation-duration: 2.5s;
