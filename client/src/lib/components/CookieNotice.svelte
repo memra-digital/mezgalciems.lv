@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { quartInOut } from 'svelte/easing';

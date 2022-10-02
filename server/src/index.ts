@@ -1,7 +1,7 @@
 import Express from 'express';
 import cors from 'cors';
 
-import { ApolloServer, gql } from 'apollo-server-express';
+import { ApolloServer, AuthenticationError, ForbiddenError, gql, UserInputError } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { compare, hash } from 'bcrypt';
@@ -129,7 +129,7 @@ client.connect(async (err) => {
 
 				if (shouldRegister) {
 					let hashedPwd: string = await hash(args.password, 10).then((res: any) => { return res; });
-					
+
 					accountCollection.insertOne({
 						_id: 0,
 						username: args.username,
@@ -141,7 +141,6 @@ client.connect(async (err) => {
 					});
 
 					return await {
-						error: ``,
 						token: createAccountToken(args.username)
 					};
 				}
@@ -150,14 +149,10 @@ client.connect(async (err) => {
 				let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
 
 				if (account === null || !isPwdCorrect) {
-					return {
-						error: `invalidUserOrPwd`,
-						token: ``
-					};
+					throw new AuthenticationError(`invalidUsernameOrPassword`);
 				}
 
 				return await {
-					error: ``,
 					token: createAccountToken(account.username)
 				};
 			},
@@ -166,7 +161,7 @@ client.connect(async (err) => {
 				try {
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						throw new Error(`Invalid token!`);
+						throw new UserInputError(`invalidToken`);
 					}
 
 					let logs: DbStatisticsLog[] = await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
@@ -178,7 +173,7 @@ client.connect(async (err) => {
 					let logs2DaysAgo: DbStatisticsLog[] = [];
 					let logs1DayAgo: DbStatisticsLog[] = [];
 					let logsToday: DbStatisticsLog[] = [];
-					
+
 					let pageViews: any = {};
 
 					let usersToday: any = {};
@@ -253,10 +248,10 @@ client.connect(async (err) => {
 					return {
 						visitorsInLast7Days: Object.keys(usersInLast7Days).length,
 						visitorsToday: Object.keys(usersToday).length,
-					
+
 						mostViewedPage,
 						mostViewedPageViews,
-					
+
 						viewsInLast7Days,
 						viewsToday: logsToday.length,
 						views6DaysAgo: logs6DaysAgo.length,
@@ -275,47 +270,38 @@ client.connect(async (err) => {
 		Mutation: {
 			addArticle: async (parent: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
 
-					let id: number | undefined;
-					let timestamp: number | undefined;
+					// Capture the timestamp
+					let timestamp: number = new Date().getTime();
 
-					if (error === ``) {
-						// Capture the timestamp
-						timestamp = new Date().getTime();
+					// Get the article count
+					let id: number = await articleCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
+						if (res.length === 0) {
+							return 0;
+						} else {
+							return res[0]._id + 1;
+						}
+					});
 
-						// Get the article count
-						id = await articleCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
-							if (res.length === 0) {
-								return 0;
-							} else {
-								return res[0]._id + 1;
-							}
-						});
+					// Upload the image
+					let image: any = await uploadImg(args.image).then((res) => { return res; });
 
-						// Upload the image
-						let image: any = await uploadImg(args.image).then((res) => { return res; });
+					articleCollection.insertOne({
+						_id: id,
+						title: args.title,
+						content: args.content,
+						image: image.url,
+						imageAlt: args.imageAlt,
+						date: timestamp,
+						edited: false,
+						author: getUsernameFromToken(args.token)
+					});
 
-						articleCollection.insertOne({
-							_id: id,
-							title: args.title,
-							content: args.content,
-							image: image.url,
-							imageAlt: args.imageAlt,
-							date: timestamp,
-							edited: false,
-							author: getUsernameFromToken(args.token)
-						});
-					}
-
-					// Return everything
 					return {
-						error,
 						id: id,
 						title: args.title,
 						content: args.content,
@@ -324,49 +310,43 @@ client.connect(async (err) => {
 					}
 				} catch (e: any) {
 					console.log(e);
-				}	
+				}
 			},
 			modifyArticle: async (parent: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
 
 					let originalArticle: DbArticle | undefined;
 
 					// Check if the article exists
 					if (await articleCollection.find({ _id: args.id }).count() === 0) {
-						error = `couldntFind`;
+						throw new UserInputError(`invalidArticleId`);
 					}
 
-					if (error === ``) {
-						originalArticle = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+					originalArticle = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
 
-						// Modify the article
-						const modifiedArticle: DbArticle = {
-							_id: args.id,
-							title: args.title,
-							content: args.content,
-							image: originalArticle?.image || ``,
-							imageAlt: args.imageAlt,
-							date: originalArticle?.date || 0,
-							edited: true,
-							author: getUsernameFromToken(args.token)
-						};
+					// Modify the article
+					const modifiedArticle: DbArticle = {
+						_id: args.id,
+						title: args.title,
+						content: args.content,
+						image: originalArticle?.image || ``,
+						imageAlt: args.imageAlt,
+						date: originalArticle?.date || 0,
+						edited: true,
+						author: getUsernameFromToken(args.token)
+					};
 
-						articleCollection.replaceOne({ _id: args.id }, modifiedArticle);
-					}
+					articleCollection.replaceOne({ _id: args.id }, modifiedArticle);
 
-					// Return everything
 					return {
-						error,
-						id: args.id || 0,
-						title: args.title || ``,
-						content: args.content || ``,
-						imageAlt: args.imageAlt || ``,
+						id: args.id,
+						title: args.title,
+						content: args.content,
+						imageAlt: args.imageAlt,
 						edited: true
 					}
 				} catch (e: any) {
@@ -375,34 +355,26 @@ client.connect(async (err) => {
 			},
 			removeArticle: async (parents: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
-					
+
 					// Check if the article exists
-					let article: DbArticle | undefined;
-					if (await articleCollection.find({ _id: args.id }).count() === 0) {
-						error = `couldntFind`;
+					let article: DbArticle | undefined = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+					if (article === undefined) {
+						throw new UserInputError(`invalidArticleId`);
 					}
-					
-					if (error === ``) {
-						article = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
-					
-						// Delete the article
-						articleCollection.deleteOne({ _id: args.id });
-					}
-					
-					// Return everything
+
+					// Delete the article
+					articleCollection.deleteOne({ _id: args.id });
+
 					return {
-						error,
-						id: article?._id || 0,
-						title: article?.title || ``,
-						content: article?.content || ``,
-						imageAlt: article?.imageAlt || ``,
-						edited: article?.edited || false
+						id: article._id,
+						title: article.title,
+						content: article.content,
+						imageAlt: article.imageAlt,
+						edited: article.edited
 					}
 				} catch (e: any) {
 					console.log(e);
@@ -411,28 +383,23 @@ client.connect(async (err) => {
 
 			modifyInformation: async (parents: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
 
-					if (error === ``) {
-						// Modify the information
-						const modifiedInformation: DbInformation = {
-							_id: 0,
-							nextDate: args.nextDate,
-							dateInfo: args.dateInfo,
-							information: args.information
-						};
+					// Modify the information
+					const modifiedInformation: DbInformation = {
+						_id: 0,
+						nextDate: args.nextDate,
+						dateInfo: args.dateInfo,
+						information: args.information
+					};
 
-						infoCollection.replaceOne({ _id: 0 }, modifiedInformation);
-					}
+					infoCollection.replaceOne({ _id: 0 }, modifiedInformation);
 
 					// Return everything
 					return {
-						error,
 						nextDate: args.nextDate,
 						dateInfo: args.dateInfo,
 						information: args.information
@@ -444,103 +411,88 @@ client.connect(async (err) => {
 
 			addHistoryArticle: async (parent: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
 
-					// Check if the code is valid
+					// Check if the video link is valid
 					if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
-						// I KNOW THIS REGEX IS HORRIBLE!!! Whatcha gonna do? Poop your pants? Go cry to your mommy
-						error = `invalidVideoLink`;
+						// I KNOW THIS REGEX IS HORRIBLE!!!
+						throw new UserInputError(`invalidVideoLink`);
 					}
 
-					let id: number | undefined;
-					let timestamp: number | undefined;
+					// Capture the timestamp
+					let timestamp: number = new Date().getTime();
 
-					if (error === ``) {
-						// Capture the timestamp
-						timestamp = new Date().getTime();
+					// Get the article count
+					let id: number  = await historyCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
+						if (res.length === 0) {
+							return 0;
+						} else {
+							return res[0]._id + 1;
+						}
+					});
 
-						// Get the article count
-						id = await historyCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
-							if (res.length === 0) {
-								return 0;
-							} else {
-								return res[0]._id + 1;
-							}
-						});
-
-						historyCollection.insertOne({
-							_id: id,
-							title: args.title,
-							content: args.content,
-							date: timestamp,
-							author: getUsernameFromToken(args.token),
-							type: args.type,
-							font: args.font,
-							videoLink: args.videoLink
-						});
-					}
+					historyCollection.insertOne({
+						_id: id,
+						title: args.title,
+						content: args.content,
+						date: timestamp,
+						author: getUsernameFromToken(args.token),
+						type: args.type,
+						font: args.font,
+						videoLink: args.videoLink
+					});
 
 					// Return everything
 					return {
-						error,
 						id: id,
 						title: args.title,
 						content: args.content,
 						type: args.type,
 						font: args.font,
-						videoLink: args.videoLink 
+						videoLink: args.videoLink
 					}
 				} catch (e: any) {
 					console.log(e);
-				}	
+				}
 			},
 			modifyHistoryArticle: async (parent: any, args: any, context: any, info: any) => {
 				try {
-					let error: string = ``;
-
 					// Verify token
 					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
+						throw new ForbiddenError(`invalidToken`);
 					}
-
-					let originalArticle: DbHistoryArticle | undefined;
 
 					// Check if the article exists
 					if (await historyCollection.find({ _id: args.id }).count() === 0) {
-						error = `couldntFind`;
+						throw new UserInputError(`invalidHistoryId`);
 					}
 
 					// Check if the code is valid
 					if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
-						error = `invalidVideoLink`;
+						throw new UserInputError(`invalidVideoLink`);
 					}
 
-					if (error === ``) {
-						originalArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+					let originalArticle: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 
-						// Modify the article
-						const modifiedArticle: HistoryArticle = {
-							id: originalArticle?._id || 0,
-							title: args.title,
-							content: args.content,
-							date: originalArticle?.date || 0,
-							author: getUsernameFromToken(args.token),
-							type: args.type,
-							font: args.font,
-							videoLink: args.videoLink || ``
-						};
+					// Modify the article
+					const modifiedArticle: HistoryArticle = {
+						id: originalArticle?._id || 0,
+						title: args.title,
+						content: args.content,
+						date: originalArticle?.date || 0,
+						author: getUsernameFromToken(args.token),
+						type: args.type,
+						font: args.font,
+						videoLink: args.videoLink || ``
+					};
 
-						historyCollection.replaceOne({ _id: args.id }, modifiedArticle);
-					}
+					historyCollection.replaceOne({ _id: args.id }, modifiedArticle);
 
 					// Return everything
 					return {
-						error,
 						id: args.id,
 						title: args.title,
 						content: args.content,
@@ -553,36 +505,25 @@ client.connect(async (err) => {
 				}
 			},
 			removeHistoryArticle: async (parents: any, args: any, context: any, info: any) => {
-				try {
-					let error: string = ``;
+				// Verify token
+				if (!verifyAccountToken(args.token)) {
+					throw new ForbiddenError(`invalidToken`);
+				}
 
-					// Verify token
-					if (!verifyAccountToken(args.token)) {
-						error = `invalidToken`;
-					}
-					
-					// Check if the article exists
-					let article: DbHistoryArticle | undefined;
-					if (await historyCollection.find({ _id: args.id }).count() === 0) {
-						error = `couldntFind`;
-					}
-					
-					if (error === ``) {
-						article = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
-					
-						// Delete the article
-						historyCollection.deleteOne({ _id: args.id });
-					}
-					
-					// Return everything
-					return {
-						error,
-						id: article?._id || 0,
-						title: article?.title || ``,
-						content: article?.content || ``
-					}
-				} catch (e: any) {
-					console.log(e);
+				// Check if the article exists
+				let article: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+				if (article === undefined) {
+					throw new UserInputError(`invalidHistoryId`);
+				}
+
+				// Delete the article
+				historyCollection.deleteOne({ _id: args.id });
+
+				// Return everything
+				return {
+					id: article._id,
+					title: article.title,
+					content: article.content
 				}
 			},
 
@@ -604,7 +545,7 @@ client.connect(async (err) => {
 						page: args.page,
 						user: args.user
 					});
-					
+
 					return true;
 				} catch (e: any) {
 					console.log(e);
@@ -614,7 +555,7 @@ client.connect(async (err) => {
 		}
 	};
 
-	const server = new ApolloServer({ 
+	const server = new ApolloServer({
 		typeDefs,
 		resolvers
 	});

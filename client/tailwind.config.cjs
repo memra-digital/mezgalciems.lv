@@ -8,6 +8,9 @@ module.exports = {
 				'sans': ['Open Sans', 'sans-serif'],
 				'serif': ['Libre Baskerville', 'serif']
 			},
+			screens: {
+				'xs': '400px'
+			}
 		}
 	},
 	plugins: [],
