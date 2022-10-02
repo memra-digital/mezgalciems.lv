@@ -164,7 +164,7 @@
 	</main>
 
 	<footer class="w-full pt-4 pb-12 text-center">
-		<p class="text-slate-600">&copy; Mežgalciema baptistu draudze, 2022<span class="print:hidden">&nbsp;• <a href="/privatuma-politika" class="link text-blue-500 bg-gradient-to-t from-blue-500 to-blue-500">Privātuma politika</a></span></p>
+		<p class="text-slate-600">&copy; Mežgalciema baptistu draudze, 2022<span class="print:hidden">&nbsp;• <a href="/privatuma-politika" class="link">Privātuma politika</a></span></p>
 	
 		<a class="mx-1 text-2xl text-blue-600 hover:opacity-75 transition duration-200 print:hidden" href="https://www.facebook.com/mezgalciems" target="_blank" rel="noreferer">
 			<i class="bi bi-facebook"></i>
@@ -205,7 +205,7 @@
 	nav a {
 		&::after {
 			content: "";
-			//background: $theme-gradient;
+			background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
 			position: absolute;
 			bottom: -2rem;
 			left: 0;
@@ -224,7 +224,7 @@
 			transition: 0s all;
 		}
 		&:focus-visible {
-			//color: $theme-color;
+			color: #3b82f6;
 		}
 	}
 </style>
