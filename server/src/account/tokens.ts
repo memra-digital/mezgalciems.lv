@@ -5,7 +5,7 @@ dotenv.config();
 const jwtSecretKey: string = process.env.JWT_PRIVATE_KEY || ``;
 
 export interface AccountToken {
-    username: string
+	username: string
 }
 
 export const createAccountToken = (username: string): string => {

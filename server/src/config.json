@@ -1,0 +1,9 @@
+{
+	"articlePageSize": 3,
+
+	"rateLimiting": {
+		"window": 60,
+		"limit": 100
+	},
+	"fileSizeLimit": 2097152
+}
