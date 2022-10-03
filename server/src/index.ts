@@ -1,9 +1,9 @@
 import Express from 'express';
 import cors from 'cors';
 
-import { ApolloServer, AuthenticationError, ForbiddenError, gql, UserInputError } from 'apollo-server-express';
+import { ApolloError, ApolloServer, AuthenticationError, ForbiddenError, gql, UserInputError } from 'apollo-server-express';
 import { readFileSync } from 'fs';
-import { Collection, Db, MongoClient } from 'mongodb';
+import { Collection, Db, MongoClient, ObjectId } from 'mongodb';
 import { compare, hash } from 'bcrypt';
 import { DocumentNode } from 'graphql';
 import rateLimit from 'express-rate-limit';
@@ -23,7 +23,7 @@ const typeDefs: DocumentNode = gql`${schema}`;
 
 const dbUrl: string = process.env.DB_URL || ``;
 const dbName: string = `mezgalciems-lv`;
-const client: MongoClient = new MongoClient(dbUrl, { useUnifiedTopology: true });
+const client: MongoClient = new MongoClient(dbUrl);
 
 client.connect(async (err) => {
 	if (err) throw err;
@@ -50,7 +50,7 @@ client.connect(async (err) => {
 					let processed: Article[] = [];
 					for (let i: number = args.page * articlePageSize; i < Math.min(totalArticles, (args.page * articlePageSize + articlePageSize)); i++) {
 						processed.push({
-							id: res[i]._id,
+							id: parseInt(res[i]._id.toString()),
 							title: res[i].title,
 							content: res[i].content,
 							image: res[i].image,
@@ -71,12 +71,22 @@ client.connect(async (err) => {
 				};
 			},
 			article: async (parent: any, args: any, context: any, info: any) => {
-				let article: DbArticle = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+				let article: DbArticle | null = <DbArticle | null> await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+
+				if (article === null) {
+					throw new ApolloError(`unknown`);
+				}
+
 				return article;
 			},
 
 			information: async () => {
-				let information: DbInformation = await infoCollection.findOne({}).then(res => { return res; });
+				let information: DbInformation | null = <DbInformation | null> await infoCollection.findOne({}).then(res => { return res; });
+
+				if (information === null) {
+					throw new ApolloError(`unknown`);
+				}
+				
 				return information;
 			},
 
@@ -90,7 +100,7 @@ client.connect(async (err) => {
 					let processed: HistoryArticlePreview[] = [];
 					for (let i = 0; i < res.length; i++) {
 						processed.push({
-							id: res[i]._id,
+							id: parseInt(res[i]._id.toString()),
 							title: res[i].title,
 							preview: `${res[i].content.substr(0, 50)}`,
 							date: res[i].date,
@@ -111,17 +121,22 @@ client.connect(async (err) => {
 				};
 			},
 			historyArticle: async (parent: any, args: any, context: any, info: any) => {
-				let article: HistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return {
-					id: res._id,
-					title: res.title,
-					content: res.content,
-					date: res.date,
-					author: res.author,
-					type: res.type,
-					font: res.font,
-					videoLink: res.videoLink
-				}});
-				return article;
+				let dbArticle: DbHistoryArticle | null = <DbHistoryArticle | null> await historyCollection.findOne({ _id: args.id });
+
+				if (dbArticle === null) {
+					throw new ApolloError(`unknown`);
+				}
+
+				return {
+					id: parseInt(dbArticle._id.toString()),
+					title: dbArticle.title,
+					content: dbArticle.content,
+					date: dbArticle.date,
+					author: dbArticle.author,
+					type: dbArticle.type,
+					font: dbArticle.font,
+					videoLink: dbArticle.videoLink
+				};
 			},
 
 			login: async (parent: any, args: any, context: any, info: any) => {
@@ -131,7 +146,7 @@ client.connect(async (err) => {
 					let hashedPwd: string = await hash(args.password, 10).then((res: any) => { return res; });
 
 					accountCollection.insertOne({
-						_id: 0,
+						_id: new ObjectId(`0`),
 						username: args.username,
 						password: hashedPwd,
 						email: ``,
@@ -164,7 +179,7 @@ client.connect(async (err) => {
 						throw new UserInputError(`invalidToken`);
 					}
 
-					let logs: DbStatisticsLog[] = await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
+					let logs: DbStatisticsLog[] = <DbStatisticsLog[]> await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
 
 					let logs6DaysAgo: DbStatisticsLog[] = [];
 					let logs5DaysAgo: DbStatisticsLog[] = [];
@@ -283,7 +298,7 @@ client.connect(async (err) => {
 						if (res.length === 0) {
 							return 0;
 						} else {
-							return res[0]._id + 1;
+							return parseInt(res[0]._id.toString()) + 1;
 						}
 					});
 
@@ -291,7 +306,7 @@ client.connect(async (err) => {
 					let image: any = await uploadImg(args.image).then((res) => { return res; });
 
 					articleCollection.insertOne({
-						_id: id,
+						_id: new ObjectId(id.toString()),
 						title: args.title,
 						content: args.content,
 						image: image.url,
@@ -326,7 +341,7 @@ client.connect(async (err) => {
 						throw new UserInputError(`invalidArticleId`);
 					}
 
-					originalArticle = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+					originalArticle = <DbArticle | undefined> await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
 
 					// Modify the article
 					const modifiedArticle: DbArticle = {
@@ -361,7 +376,7 @@ client.connect(async (err) => {
 					}
 
 					// Check if the article exists
-					let article: DbArticle | undefined = await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+					let article: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
 					if (article === undefined) {
 						throw new UserInputError(`invalidArticleId`);
 					}
@@ -390,7 +405,7 @@ client.connect(async (err) => {
 
 					// Modify the information
 					const modifiedInformation: DbInformation = {
-						_id: 0,
+						_id: `0`,
 						nextDate: args.nextDate,
 						dateInfo: args.dateInfo,
 						information: args.information
@@ -430,12 +445,12 @@ client.connect(async (err) => {
 						if (res.length === 0) {
 							return 0;
 						} else {
-							return res[0]._id + 1;
+							return parseInt(res[0]._id.toString()) + 1;
 						}
 					});
 
 					historyCollection.insertOne({
-						_id: id,
+						_id: new ObjectId(id.toString()),
 						title: args.title,
 						content: args.content,
 						date: timestamp,
@@ -475,11 +490,11 @@ client.connect(async (err) => {
 						throw new UserInputError(`invalidVideoLink`);
 					}
 
-					let originalArticle: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+					let originalArticle: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 
 					// Modify the article
 					const modifiedArticle: HistoryArticle = {
-						id: originalArticle?._id || 0,
+						id: parseInt(originalArticle?._id.toString()) || 0,
 						title: args.title,
 						content: args.content,
 						date: originalArticle?.date || 0,
@@ -511,7 +526,7 @@ client.connect(async (err) => {
 				}
 
 				// Check if the article exists
-				let article: DbHistoryArticle = await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+				let article: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
 				if (article === undefined) {
 					throw new UserInputError(`invalidHistoryId`);
 				}
@@ -534,13 +549,13 @@ client.connect(async (err) => {
 						if (res.length === 0) {
 							return 0;
 						} else {
-							return res[0]._id + 1;
+							return parseInt(res[0]._id.toString()) + 1;
 						}
 					});
 
 					// Log the page view
 					statisticsCollection.insertOne({
-						_id: id,
+						_id: new ObjectId(id.toString()),
 						time: Date.now(),
 						page: args.page,
 						user: args.user

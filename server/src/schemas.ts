@@ -1,5 +1,5 @@
 export interface DbArticle {
-	_id: number,
+	_id: string,
 	title: string,
 	content: string,
 	date: number,
@@ -19,13 +19,13 @@ export interface Article {
 	image: string
 }
 export interface DbInformation {
-	_id: number,
+	_id: string,
 	nextDate: string,
 	dateInfo: string,
 	information: string
 }
 export interface DbHistoryArticle {
-	_id: number,
+	_id: string,
 	title: string,
 	content: string,
 	date: number,
@@ -43,6 +43,16 @@ export interface HistoryArticlePreview {
 	type: string,
 	videoLink: string
 }
+export interface DbHistoryArticle {
+	_id: string,
+	title: string,
+	content: string,
+	date: number,
+	author: string,
+	type: string,
+	font: string,
+	videoLink: string
+}
 export interface HistoryArticle {
 	id: number,
 	title: string,
@@ -54,13 +64,13 @@ export interface HistoryArticle {
 	videoLink: string
 }
 export interface DbStatisticsLog {
-	_id: number,
+	_id: string,
 	time: number,
 	page: string,
 	user: string
 }
 export interface DbAccount {
-	_id: number,
+	_id: string,
 	username: string,
 	name: string,
 	lastName: string,
