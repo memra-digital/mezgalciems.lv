@@ -1,5 +1,6 @@
 import { ForbiddenError } from "apollo-server-express";
 import { ObjectId } from "mongodb";
+import { getPermission } from "../account/permissions";
 import { verifyAccountToken } from "../account/tokens";
 import { infoCollection } from "../database";
 import { DbInformation } from "../schemas";
@@ -8,6 +9,9 @@ export const modifyInformation = async (parents: any, args: any, context: any, i
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 1)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		// Modify the information

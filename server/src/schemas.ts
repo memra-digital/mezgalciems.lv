@@ -79,3 +79,7 @@ export interface DbAccount {
 	password: string,
 	permissions: number
 }
+export interface AccountToken {
+	username: string,
+	permissions: number
+}

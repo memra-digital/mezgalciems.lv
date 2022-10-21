@@ -1,13 +1,16 @@
-import { UserInputError } from 'apollo-server-express';
+import { ForbiddenError, UserInputError } from 'apollo-server-express';
+import { getPermission } from '../account/permissions';
 import { verifyAccountToken } from '../account/tokens';
 import { statisticsCollection } from '../database';
 import { DbStatisticsLog } from '../schemas';
 
 export const getStatistics = async (parent: any, args: any, context: any, info: any) => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new UserInputError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 5)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		let logs: DbStatisticsLog[] = <DbStatisticsLog[]> await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });

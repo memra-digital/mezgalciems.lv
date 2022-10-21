@@ -20,7 +20,7 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 		});
 
 		return await {
-			token: createAccountToken(args.username)
+			token: createAccountToken(args.username, 63)
 		};
 	}
 
@@ -32,18 +32,6 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 	}
 
 	return await {
-		token: createAccountToken(account.username)
+		token: createAccountToken(account.username, account.permissions)
 	};
 }
-
-/*
-
-Permission integer:
-
-1. - Add/edit articles
-2. - Modify information
-3. - Add/edit history
-4. - Delete articles/history
-5. - Add/modify new accounts
-6. - View statistics
-*/

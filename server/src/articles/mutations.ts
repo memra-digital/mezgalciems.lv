@@ -1,5 +1,6 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
 import { InsertOneResult, ObjectId } from 'mongodb';
+import { getPermission } from '../account/permissions';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { articleCollection } from '../database';
 import { uploadImg } from '../imgbb';
@@ -9,6 +10,9 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 0)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		let timestamp: number = new Date().getTime();
@@ -42,6 +46,9 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 0)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		let originalArticle: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
@@ -80,6 +87,9 @@ export const removeArticle = async (parents: any, args: any, context: any, info:
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 3)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		// Check if the article exists

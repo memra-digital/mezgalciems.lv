@@ -1,5 +1,6 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
 import { InsertOneResult, ObjectId } from 'mongodb';
+import { getPermission } from '../account/permissions';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { historyCollection } from '../database';
 import { DbHistoryArticle, HistoryArticle } from '../schemas';
@@ -8,6 +9,9 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
+		}
+		if (!getPermission(args.token, 2)) {
+			throw new ForbiddenError(`invalidPermissions`);
 		}
 
 		// Check if the video link is valid
@@ -53,6 +57,9 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
+		if (!getPermission(args.token, 2)) {
+			throw new ForbiddenError(`invalidPermissions`);
+		}
 
 		// Check if the video link is valid
 		if (args.videoLink !== ``) {
@@ -97,6 +104,9 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 export const removeHistoryArticle = async (parents: any, args: any, context: any, info: any) => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
+	}
+	if (!getPermission(args.token, 3)) {
+		throw new ForbiddenError(`invalidPermissions`);
 	}
 
 	// Check if the article exists
