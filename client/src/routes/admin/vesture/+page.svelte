@@ -27,14 +27,14 @@
 	});
 	
 	interface HistoryArticleListItem {
-		id: number,
+		id: string,
 		title: string,
 		preview: string
 	}
 	let articleList: HistoryArticleListItem[];
 
 	interface HistoryArticle {
-		id: number,
+		id: string,
 		title: string,
 		content: string,
 		type: string,
@@ -43,7 +43,7 @@
 	}
 
 	let editorArticle: HistoryArticle = {
-		id: -1,
+		id: ``,
 		title: ``,
 		content: ``,
 		type: ``,
@@ -74,13 +74,13 @@
 			articleList = data.historyArticles.articles;
 		});
 	}
-	const openArticle = (id: number) => {
+	const openArticle = (id: string) => {
 		pageTransitionProgress.set(-1);
 		isLoadingEditor = true;
 
 		const query = gql`
 			{
-				historyArticle(id: ${id.toString()}) {
+				historyArticle(id: "${id.toString()}") {
 					id
 					title
 					content
@@ -103,7 +103,7 @@
 		window.location.hash = `jauns`;
 
 		editorArticle = {
-			id: -1,
+			id: ``,
 			title: ``,
 			content: ``,
 			type: `church`,
@@ -116,7 +116,7 @@
 		isSaving = true;
 
 		let mutation;
-		if (editorArticle.id === -1) {
+		if (editorArticle.id === ``) {
 			mutation = gql`
 				mutation addHistoryArticle {
 					addHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
@@ -127,7 +127,7 @@
 		} else {
 			mutation = gql`
 				mutation modifyHistoryArticle {
-					modifyHistoryArticle(id: ${editorArticle.id}, title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+					modifyHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 						id
 					}
 				}
@@ -137,19 +137,20 @@
 		request(apiUrl, mutation).then((data: any) => {
 			isSaving = false;
 
-			if (editorArticle.id === -1) {
+			if (editorArticle.id === ``) {
 				editorArticle.id = data.addHistoryArticle.id;
 				window.location.hash = editorArticle.id.toString();
 			}
 		});
 	}
 
-	const deleteArticle = (id: number) => {
+	const deleteArticle = (id: string) => {
 		isLoadingEditor = true;
 
 		const mutation = gql`
 			mutation removeHistoryArticle {
-				removeHistoryArticle(id: ${id.toString()}, token: "${localStorage.getItem(`adminLoginToken`)}") {
+				removeHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+					id
 				}
 			}
 		`;
@@ -169,7 +170,7 @@
 		} else if (window.location.hash.trim() === `#jauns`) {
 			newArticle();
 		} else {
-			openArticle(parseInt(window.location.hash.slice(1).trim()));
+			openArticle(window.location.hash.slice(1).trim());
 		}
 	});
 </script>
@@ -224,7 +225,7 @@
 				<div class="float-right">
 					{#if isSaving}
 						<p class="inline-block w-24 text-center">Saglabā...</p>
-					{:else if editorArticle.id != -1}
+					{:else if editorArticle.id !== ``}
 						<button class="bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200"
 							on:click={() => saveArticle()}>
 							

@@ -1,4 +1,5 @@
 import { ApolloError } from 'apollo-server-express';
+import { ObjectId } from 'mongodb';
 import { historyCollection } from '../database';
 import { HistoryArticlePreview, DbHistoryArticle } from '../schemas';
 
@@ -12,7 +13,7 @@ export const getHistoryArticles = async (parent: any, args: any, context: any, i
 		let processed: HistoryArticlePreview[] = [];
 		for (let i = 0; i < res.length; i++) {
 			processed.push({
-				id: parseInt(res[i]._id.toString()),
+				id: res[i]._id.toString(),
 				title: res[i].title,
 				preview: `${res[i].content.substr(0, 50)}`,
 				date: res[i].date,
@@ -34,14 +35,14 @@ export const getHistoryArticles = async (parent: any, args: any, context: any, i
 }
 
 export const getHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
-	let dbArticle: DbHistoryArticle | null = <DbHistoryArticle | null> await historyCollection.findOne({ _id: args.id });
+	let dbArticle: DbHistoryArticle | null = <DbHistoryArticle | null> await historyCollection.findOne({ _id: new ObjectId(args.id) });
 
 	if (dbArticle === null) {
 		throw new ApolloError(`unknown`);
 	}
 
 	return {
-		id: parseInt(dbArticle._id.toString()),
+		id: dbArticle._id.toString(),
 		title: dbArticle.title,
 		content: dbArticle.content,
 		date: dbArticle.date,

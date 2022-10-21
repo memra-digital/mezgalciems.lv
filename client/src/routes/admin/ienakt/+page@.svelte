@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import { apiUrl } from '$lib/globals';
 	import { request } from 'graphql-request';
-    import { dataset_dev } from 'svelte/internal';
 
 	let usernameValue: string = ``,
 		passwordValue: string = ``;

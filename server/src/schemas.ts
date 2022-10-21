@@ -1,5 +1,7 @@
+import { ObjectId } from 'mongodb';
+
 export interface DbArticle {
-	_id: string,
+	_id: ObjectId,
 	title: string,
 	content: string,
 	date: number,
@@ -9,7 +11,7 @@ export interface DbArticle {
 	image: string
 }
 export interface Article {
-	id: number,
+	id: string,
 	title: string,
 	content: string,
 	date: number,
@@ -19,13 +21,13 @@ export interface Article {
 	image: string
 }
 export interface DbInformation {
-	_id: string,
+	_id: ObjectId,
 	nextDate: string,
 	dateInfo: string,
 	information: string
 }
 export interface DbHistoryArticle {
-	_id: string,
+	_id: ObjectId,
 	title: string,
 	content: string,
 	date: number,
@@ -35,7 +37,7 @@ export interface DbHistoryArticle {
 	videoLink: string
 }
 export interface HistoryArticlePreview {
-	id: number,
+	id: string,
 	title: string,
 	preview: string,
 	date: number,
@@ -44,7 +46,7 @@ export interface HistoryArticlePreview {
 	videoLink: string
 }
 export interface DbHistoryArticle {
-	_id: string,
+	_id: ObjectId,
 	title: string,
 	content: string,
 	date: number,
@@ -54,7 +56,7 @@ export interface DbHistoryArticle {
 	videoLink: string
 }
 export interface HistoryArticle {
-	id: number,
+	id: ObjectId,
 	title: string,
 	content: string,
 	date: number,
@@ -64,13 +66,13 @@ export interface HistoryArticle {
 	videoLink: string
 }
 export interface DbStatisticsLog {
-	_id: string,
+	_id: ObjectId,
 	time: number,
 	page: string,
 	user: string
 }
 export interface DbAccount {
-	_id: string,
+	_id: ObjectId,
 	username: string,
 	name: string,
 	lastName: string,

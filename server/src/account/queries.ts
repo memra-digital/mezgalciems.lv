@@ -1,6 +1,5 @@
 import { AuthenticationError } from 'apollo-server-express';
 import { hash, compare } from 'bcrypt';
-import { ObjectId } from 'mongodb';
 import { accountCollection } from '../database';
 import { DbAccount } from '../schemas';
 import { createAccountToken } from './tokens';
@@ -12,7 +11,6 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 		let hashedPwd: string = await hash(args.password, 10).then((res: any) => { return res; });
 
 		accountCollection.insertOne({
-			_id: new ObjectId(`0`),
 			username: args.username,
 			password: hashedPwd,
 			email: ``,

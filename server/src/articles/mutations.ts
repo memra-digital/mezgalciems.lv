@@ -1,5 +1,5 @@
-import { ForbiddenError, UserInputError } from 'apollo-server-express';
-import { ObjectId } from 'mongodb';
+import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
+import { InsertOneResult, ObjectId } from 'mongodb';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { articleCollection } from '../database';
 import { uploadImg } from '../imgbb';
@@ -7,28 +7,15 @@ import { DbArticle } from '../schemas';
 
 export const addArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
 
-		// Capture the timestamp
 		let timestamp: number = new Date().getTime();
 
-		// Get the article count
-		let id: number = await articleCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
-			if (res.length === 0) {
-				return 0;
-			} else {
-				return parseInt(res[0]._id.toString()) + 1;
-			}
-		});
-
-		// Upload the image
 		let image: any = await uploadImg(args.image).then((res) => { return res; });
 
-		articleCollection.insertOne({
-			_id: new ObjectId(id.toString()),
+		let article: InsertOneResult<Document> = await articleCollection.insertOne({
 			title: args.title,
 			content: args.content,
 			image: image.url,
@@ -39,7 +26,7 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 		});
 
 		return {
-			id: id,
+			id: article.insertedId.toString(),
 			title: args.title,
 			content: args.content,
 			imageAlt: args.imageAlt,
@@ -47,28 +34,24 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }
 
 export const modifyArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
 
-		let originalArticle: DbArticle | undefined;
-
-		// Check if the article exists
-		if (await articleCollection.find({ _id: args.id }).count() === 0) {
+		let originalArticle: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
+		if (originalArticle === undefined) {
 			throw new UserInputError(`invalidArticleId`);
 		}
 
-		originalArticle = <DbArticle | undefined> await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
-
 		// Modify the article
 		const modifiedArticle: DbArticle = {
-			_id: args.id,
+			_id: new ObjectId(args.id),
 			title: args.title,
 			content: args.content,
 			image: originalArticle?.image || ``,
@@ -78,7 +61,7 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 			author: getUsernameFromToken(args.token)
 		};
 
-		articleCollection.replaceOne({ _id: args.id }, modifiedArticle);
+		articleCollection.replaceOne({ _id: new ObjectId(args.id) }, modifiedArticle);
 
 		return {
 			id: args.id,
@@ -89,27 +72,27 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }
 
 export const removeArticle = async (parents: any, args: any, context: any, info: any) => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
 
 		// Check if the article exists
-		let article: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: args.id }).then(res => { return res; });
+		let article: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
 		if (article === undefined) {
 			throw new UserInputError(`invalidArticleId`);
 		}
 
 		// Delete the article
-		articleCollection.deleteOne({ _id: args.id });
+		articleCollection.deleteOne({ _id: new ObjectId(args.id) });
 
 		return {
-			id: article._id,
+			id: args.id,
 			title: article.title,
 			content: article.content,
 			imageAlt: article.imageAlt,
@@ -117,5 +100,6 @@ export const removeArticle = async (parents: any, args: any, context: any, info:
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }

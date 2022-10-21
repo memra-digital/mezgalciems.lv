@@ -10,13 +10,13 @@
 	import { parseURLs, escapeHTML } from '$lib/processing';
 
 	interface HistoryArticlePreview {
-		id: number,
+		id: string,
 		title: string,
 		preview: string,
 		type: string
 	}
 	interface HistoryArticle {
-		id: number,
+		id: string,
 		title: string,
 		content: string,
 		font: string,
@@ -35,12 +35,12 @@
 	let currentArticleFilterOption: number;
 
 	// Fetches the content of the article
-	const loadArticle = (id: number) => {
+	const loadArticle = (id: string) => {
 		isLoadingContent = true;
 
 		request(apiUrl, `
 			{
-				historyArticle(id: ${id.toString()}) {
+				historyArticle(id: "${id.toString()}") {
 					id
 					title
 					content
@@ -150,7 +150,7 @@
 			{#each filterArticles(currentArticleFilterOption) as article}
 				<button
 					class="block text-left mb-6 w-full hover:opacity-75 transition duration-200"
-					class:opacity-75={(currentArticle?.id ?? -1) === article.id}
+					class:opacity-75={(currentArticle?.id || ``) === article.id}
 					on:click={() => loadArticle(article.id)}>
 
 					<b class="font-title text-slate-900 leading-5">{article.title}</b>

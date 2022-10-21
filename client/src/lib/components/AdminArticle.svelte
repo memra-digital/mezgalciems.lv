@@ -59,7 +59,7 @@
 
 		const query = gql`
 			mutation modifyArticle {
-				modifyArticle(id: ${id}, title: "${titleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${contentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", imageAlt: "${imageAlt.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				modifyArticle(id: "${id}", title: "${titleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${contentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", imageAlt: "${imageAlt.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					title
 					content
 				}
@@ -82,7 +82,8 @@
 
 		const query = gql`
 			mutation removeArticle {
-				removeArticle(id: ${id}, token: "${localStorage.getItem(`adminLoginToken`)}") {
+				removeArticle(id: "${id}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+					id
 				}
 			}
 		`;

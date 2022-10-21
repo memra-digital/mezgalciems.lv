@@ -5,7 +5,7 @@ type ArticlePage {
 	page: Int
 }
 type Article {
-	id: Int!
+	id: String!
 	title: String
 	content: String
 	image: String
@@ -15,7 +15,7 @@ type Article {
 	author: String
 }
 type ArticleMutationResult {
-	id: Int!
+	id: String!
 	title: String
 	content: String
 	imageAlt: String
@@ -39,7 +39,7 @@ type HistoryArticleList {
 	page: Int
 }
 type HistoryArticlePreview {
-	id: Int!
+	id: String!
 	title: String
 	preview: String
 	date: String
@@ -47,7 +47,7 @@ type HistoryArticlePreview {
 	type: String
 }
 type HistoryArticle {
-	id: Int
+	id: String!
 	title: String
 	content: String
 	date: String
@@ -57,7 +57,7 @@ type HistoryArticle {
 	videoLink: String
 }
 type HistoryArticleMutationResult {
-	id: Int
+	id: String!
 	title: String
 	content: String
 	type: String
@@ -88,12 +88,12 @@ type Statistics {
 
 type Query {
 	articles(page: Int!): ArticlePage!
-	article(id: Int!): Article
+	article(id: String!): Article
 
 	information: Information
 
 	historyArticles: HistoryArticleList!
-	historyArticle(id: Int!): HistoryArticle!
+	historyArticle(id: String!): HistoryArticle!
 
 	login(username: String!, password: String!): LoginDetails
 
@@ -102,14 +102,14 @@ type Query {
 
 type Mutation {
 	addArticle(title: String!, content: String!, image: String!, imageAlt: String!, token: String!): ArticleMutationResult
-	modifyArticle(id: Int!, title: String!, content: String! imageAlt: String!, token: String!): ArticleMutationResult
-	removeArticle(id: Int!, token: String!): ArticleMutationResult
+	modifyArticle(id: String!, title: String!, content: String! imageAlt: String!, token: String!): ArticleMutationResult
+	removeArticle(id: String!, token: String!): ArticleMutationResult
 
 	modifyInformation(nextDate: String!, dateInfo: String!, information: String!, token: String!): InformationMutationResult
 
 	addHistoryArticle(title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticleMutationResult
-	modifyHistoryArticle(id: Int!, title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticleMutationResult
-	removeHistoryArticle(id: Int!, token: String!): HistoryArticleMutationResult
+	modifyHistoryArticle(id: String!, title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticleMutationResult
+	removeHistoryArticle(id: String!, token: String!): HistoryArticleMutationResult
 
 	registerPageView(page: String!, user: String): Boolean
 }

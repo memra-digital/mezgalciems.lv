@@ -1,36 +1,28 @@
-import { ForbiddenError, UserInputError } from 'apollo-server-express';
-import { ObjectId } from 'mongodb';
+import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
+import { InsertOneResult, ObjectId } from 'mongodb';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { historyCollection } from '../database';
 import { DbHistoryArticle, HistoryArticle } from '../schemas';
 
 export const addHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
 
 		// Check if the video link is valid
-		if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
-			// I KNOW THIS REGEX IS HORRIBLE!!!
-			throw new UserInputError(`invalidVideoLink`);
+		if (args.videoLink !== ``) {
+			if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
+				// I KNOW THIS REGEX IS HORRIBLE!!!
+				throw new UserInputError(`invalidVideoLink`);
+			}
 		}
 
 		// Capture the timestamp
 		let timestamp: number = new Date().getTime();
 
-		// Get the article count
-		let id: number  = await historyCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
-			if (res.length === 0) {
-				return 0;
-			} else {
-				return parseInt(res[0]._id.toString()) + 1;
-			}
-		});
-
-		historyCollection.insertOne({
-			_id: new ObjectId(id.toString()),
+		let article: InsertOneResult<Document> = await historyCollection.insertOne({
+			_id: new ObjectId(),
 			title: args.title,
 			content: args.content,
 			date: timestamp,
@@ -42,7 +34,7 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 
 		// Return everything
 		return {
-			id: id,
+			id: article.insertedId.toString(),
 			title: args.title,
 			content: args.content,
 			type: args.type,
@@ -51,6 +43,7 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }
 
@@ -61,21 +54,21 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 			throw new ForbiddenError(`invalidToken`);
 		}
 
-		// Check if the article exists
-		if (await historyCollection.find({ _id: args.id }).count() === 0) {
+		// Check if the video link is valid
+		if (args.videoLink !== ``) {
+			if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
+				throw new UserInputError(`invalidVideoLink`);
+			}
+		}
+
+		let originalArticle: DbHistoryArticle | undefined = <DbHistoryArticle | undefined> await historyCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
+		if (originalArticle === undefined) {
 			throw new UserInputError(`invalidHistoryId`);
 		}
 
-		// Check if the code is valid
-		if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
-			throw new UserInputError(`invalidVideoLink`);
-		}
-
-		let originalArticle: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
-
 		// Modify the article
-		const modifiedArticle: HistoryArticle = {
-			id: parseInt(originalArticle?._id.toString()) || 0,
+		const modifiedArticle: DbHistoryArticle = {
+			_id: originalArticle?._id,
 			title: args.title,
 			content: args.content,
 			date: originalArticle?.date || 0,
@@ -85,9 +78,8 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 			videoLink: args.videoLink || ``
 		};
 
-		historyCollection.replaceOne({ _id: args.id }, modifiedArticle);
+		historyCollection.replaceOne({ _id: new ObjectId(args.id) }, modifiedArticle);
 
-		// Return everything
 		return {
 			id: args.id,
 			title: args.title,
@@ -98,23 +90,22 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }
 
 export const removeHistoryArticle = async (parents: any, args: any, context: any, info: any) => {
-	// Verify token
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
 
 	// Check if the article exists
-	let article: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: args.id }).then(res => { return res; });
+	let article: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
 	if (article === undefined) {
 		throw new UserInputError(`invalidHistoryId`);
 	}
 
-	// Delete the article
-	historyCollection.deleteOne({ _id: args.id });
+	historyCollection.deleteOne({ _id: new ObjectId(args.id) });
 
 	// Return everything
 	return {
