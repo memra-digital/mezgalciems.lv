@@ -60,7 +60,7 @@
 		if (window.pageYOffset >= sidebarHeight - 64) {
 			sidebarElement.style.position = `fixed`;
 			sidebarElement.style.top = `4rem`;
-			sidebarElement.style.width = `30%`;
+			sidebarElement.style.width = `26.4vw`;
 		} else {
 			sidebarElement.style.position = `static`;
 			sidebarElement.style.width = `100%`;
@@ -132,7 +132,7 @@
 
 <h1 class="font-title font-bold text-3xl text-slate-900 mb-4 print:mb-0">Vēsture</h1>
 
-<div class="hidden md:inline-block inline-block w-2/5 align-top print:hidden">
+<div class="hidden md:inline-block inline-block w-1/3 align-top print:hidden">
 	<div class="hidden md:block" bind:this={sidebarElement}>
 		<div class="mb-4 h-8">
 			<p class="inline-block">Rādīt: </p>
@@ -145,7 +145,7 @@
 		</div>
 
 		<div
-			class="pt-2 max-h-[calc(80vh - 3rem)] overflow-y-auto overflow-x-hidden">
+			class="pt-2 block h-[calc(80vh-6rem)] overflow-y-auto overflow-x-hidden">
 			
 			{#each filterArticles(currentArticleFilterOption) as article}
 				<button
@@ -175,7 +175,7 @@
 	</button>
 </div>
 
-<div class="inline-block w-full md:w-3/5 ml-[-5px] mt-4 md:mt-0">
+<div class="inline-block w-full md:w-3/5 ml-[-5px] mt-4 md:mt-0 min-h-[80vh]">
 	{#if isLoadingContent}
 		<Loading />
 	{:else if currentArticle !== null}
