@@ -14,15 +14,11 @@ export const modifyInformation = async (parents: any, args: any, context: any, i
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
-		// Modify the information
-		const modifiedInformation: DbInformation = {
-			_id: new ObjectId(),
+		infoCollection.replaceOne({}, {
 			nextDate: args.nextDate,
 			dateInfo: args.dateInfo,
 			information: args.information
-		};
-
-		infoCollection.replaceOne({}, modifiedInformation);
+		});
 
 		return {
 			nextDate: args.nextDate,
