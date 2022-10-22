@@ -1,5 +1,6 @@
 import { decode } from 'jsonwebtoken';
-import { AccountToken } from '../schemas';
+import { accountCollection } from '../database';
+import { AccountToken, DbAccount } from '../schemas';
 
 /*
 	0 - Add/modify articles
@@ -9,8 +10,14 @@ import { AccountToken } from '../schemas';
 	4 - Add/modify new accounts
 	5 - View statistics
 */
-export const getPermission = (token: string, perm: number) => {
+export const getPermission = async (token: string, perm: number) => {
 	try {
+		let username = (<AccountToken>decode(token)).username;
+		let account: DbAccount = await accountCollection.findOne({ username }).then((res: any) => { return res; });
+		if (account === null) {
+			return false;
+		}
+
 		let permCheckNum;
 		switch (perm) {
 			case 0:
@@ -36,8 +43,7 @@ export const getPermission = (token: string, perm: number) => {
 				break;
 		}
 
-		let decodedToken: AccountToken = <AccountToken>decode(token);
-		return (decodedToken.permissions & permCheckNum) === permCheckNum;
+		return (account.permissions & permCheckNum) === permCheckNum;
 	} catch (e: any) {
 		console.error(e);
 

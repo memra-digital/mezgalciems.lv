@@ -80,6 +80,5 @@ export interface DbAccount {
 	permissions: number
 }
 export interface AccountToken {
-	username: string,
-	permissions: number
+	username: string
 }

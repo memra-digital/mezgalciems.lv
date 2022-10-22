@@ -10,7 +10,7 @@ export const modifyInformation = async (parents: any, args: any, context: any, i
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
-		if (!getPermission(args.token, 1)) {
+		if (!await getPermission(args.token, 1)) {
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 

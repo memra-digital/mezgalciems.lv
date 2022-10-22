@@ -9,7 +9,7 @@ export const getStatistics = async (parent: any, args: any, context: any, info: 
 		if (!verifyAccountToken(args.token)) {
 			throw new UserInputError(`invalidToken`);
 		}
-		if (!getPermission(args.token, 5)) {
+		if (!await getPermission(args.token, 5)) {
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 

@@ -10,7 +10,7 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
-		if (!getPermission(args.token, 2)) {
+		if (!await getPermission(args.token, 2)) {
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
@@ -57,7 +57,7 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
-		if (!getPermission(args.token, 2)) {
+		if (!await getPermission(args.token, 2)) {
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
@@ -105,7 +105,7 @@ export const removeHistoryArticle = async (parents: any, args: any, context: any
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
-	if (!getPermission(args.token, 3)) {
+	if (!await getPermission(args.token, 3)) {
 		throw new ForbiddenError(`invalidPermissions`);
 	}
 

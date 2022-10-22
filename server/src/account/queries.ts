@@ -16,11 +16,11 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 			email: ``,
 			firstName: ``,
 			lastName: ``,
-			permissions: 63
+			permissions: 255
 		});
 
 		return await {
-			token: createAccountToken(args.username, 63)
+			token: createAccountToken(args.username)
 		};
 	}
 
@@ -32,6 +32,6 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 	}
 
 	return await {
-		token: createAccountToken(account.username, account.permissions)
+		token: createAccountToken(account.username)
 	};
 }

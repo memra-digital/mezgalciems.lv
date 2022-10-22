@@ -5,10 +5,9 @@ import { AccountToken } from '../schemas';
 dotenv.config();
 const jwtSecretKey: string = process.env.JWT_PRIVATE_KEY || ``;
 
-export const createAccountToken = (username: string, permissions: number): string => {
+export const createAccountToken = (username: string): string => {
 	return sign({
 		username,
-		permissions,
 		date: new Date().getTime()
 	}, jwtSecretKey, { expiresIn: `365d` });
 }
