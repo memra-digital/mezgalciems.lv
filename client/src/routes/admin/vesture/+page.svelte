@@ -185,7 +185,7 @@
 	<div class="absolute top-0 grid grid-cols-2 w-[200%] h-full"
 		style="left: calc({$pageTransitionProgress} * 100%);">
 
-		<div class="h-full">
+		<div class="h-full overflow-y-auto">
 
 			<button class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-2 mx-auto w-2/3 xs:w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200"
 				on:click={() => newArticle()}>
