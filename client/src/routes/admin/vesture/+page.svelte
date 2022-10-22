@@ -25,6 +25,9 @@
 		duration: 300,
 		easing: cubicInOut
 	});
+
+	let selectedArticleType: number = 0,
+		selectedFont: number = 0;
 	
 	interface HistoryArticleListItem {
 		id: string,
@@ -92,7 +95,12 @@
 		`;
 		request(apiUrl, query).then((data: any) => {
 			isLoadingEditor = false;
+
 			editorArticle = data.historyArticle;
+
+			selectedArticleType = data.historyArticle.type === `church` ? 0 : 1;
+			selectedFont = data.historyArticle.font === `sans` ? 0 : 1;
+
 			window.location.hash = editorArticle.id.toString();
 		});
 	}
@@ -114,6 +122,9 @@
 
 	const saveArticle = () => {
 		isSaving = true;
+
+		editorArticle.type = [`church`, `baptist`][selectedArticleType];
+		editorArticle.font = [`sans`, `serif`][selectedFont];
 
 		let mutation;
 		if (editorArticle.id === ``) {
@@ -248,10 +259,10 @@
 
 				<div class="block mt-2">
 					<p class="inline-block">Kategorija: </p>
-					<Dropdown options={[`Draudzes vēsture`, `Baptistu vēsture`]} selected={editorArticle.type === `church` ? 0 : 1} />
+					<Dropdown options={[`Draudzes vēsture`, `Baptistu vēsture`]} bind:selected={selectedArticleType} />
 
 					<p class="inline-block ml-4">Fonts: </p>
-					<Dropdown options={[`Sans`, `Serif`]} selected={editorArticle.font === `sans` ? 0 : 1} />
+					<Dropdown options={[`Sans`, `Serif`]} bind:selected={selectedFont} />
 				</div>
 
 				<input class="block mt-2 pt-1 text-center text-2xl font-bold font-title w-full rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
