@@ -12,11 +12,13 @@
 	let minuteValue: string = ``,
 		hourValue: string = ``,
 		dateValue: string = ``,
-		monthValue: number = 1;
+		monthValue: number = 0,
+		yearValue: string = ``;
 
 	let isMinuteValueInvalid: boolean = false,
 		isHourValueInvalid: boolean = false,
-		isDateValueInvalid: boolean = false;
+		isDateValueInvalid: boolean = false,
+		isYearValueInvalid: boolean = false;
 
 	let dateInfoInput: string = ``,
 		infoInput: string = ``;
@@ -35,11 +37,12 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingFetch = false;
 
-			let date: Array<string> = data.information.nextDate.split(`-`);
-			dateValue = date[0];
-			monthValue = parseInt(date[1]) - 1;
-			hourValue = date[2];
-			minuteValue = date[3];
+			let date: string[] = data.information.nextDate.split(`-`);
+			yearValue = date[0];
+			dateValue = date[1];
+			monthValue = parseInt(date[2]) - 1;
+			hourValue = date[3];
+			minuteValue = date[4];
 
 			if (hourValue.length === 1) hourValue = `0${hourValue}`;
 			if (minuteValue.length === 1) minuteValue = `0${minuteValue}`;
@@ -54,8 +57,12 @@
 		isHourValueInvalid = isNaN(hourValue as unknown as number);
 		isMinuteValueInvalid = isNaN(minuteValue as unknown as number);
 		isDateValueInvalid = isNaN(dateValue as unknown as number);
+		isYearValueInvalid = isNaN(yearValue as unknown as number);
 
-		if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid) {
+		isHourValueInvalid = isHourValueInvalid || (hourValue > `23` || hourValue < `0`);
+		isMinuteValueInvalid = isMinuteValueInvalid || (minuteValue > `59` || minuteValue < `0`);
+
+		if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid || isYearValueInvalid) {
 			return;
 		}
 
@@ -64,7 +71,7 @@
 		
 		const query = gql`
 			mutation modifyInformation {
-				modifyInformation(nextDate: "${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				modifyInformation(nextDate: "${parseInt(yearValue)}-${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					nextDate,
 					dateInfo,
 					information
@@ -88,23 +95,38 @@
 		hourValue = `11`;
 		minuteValue = `00`;
 
-		for (let i: number = 1; i <= 31; i++) {
-			let realDate: Date = new Date();
-			realDate.setDate(i);
-			let nextDate: Date = new Date();
-			
-			let weekOfTheMonth = Math.floor((realDate.getDate()) / 7);
-			console.log(`Date:`, i, `Week of the month:`, weekOfTheMonth);
+		let realDate: Date = new Date();
 
-			if (weekOfTheMonth % 2 === 0) {
-				nextDate.setDate(realDate.getDate() + ((7 - realDate.getDay()) % 7));
-			} else {
-				nextDate.setDate(realDate.getDate() + ((7 - realDate.getDay()) % 7) + 7);
+		let date: Date = new Date(realDate.getTime());
+		date.setDate(date.getDate() - 7 + ((7 - date.getDay()) % 7));
+
+		let isNextServiceDateFound: boolean = false;
+		while (!isNextServiceDateFound) {
+			date.setDate(date.getDate() + 7);
+
+			if (date.getDate() < realDate.getDate() && date.getMonth() < realDate.getMonth() && date.getFullYear() < realDate.getFullYear()) {
+				continue;
+			} else if (date.getDate() === realDate.getDate() && date.getMonth() === realDate.getMonth() && date.getFullYear() === realDate.getFullYear()) {
+				if (date.getHours() >= 11) {
+					continue;
+				}
 			}
 
-			dateValue = (nextDate.getDate()).toString();
-			monthValue = (nextDate.getMonth() + 1) - 1;
+			let firstDayOfMonth: Date = new Date();
+			firstDayOfMonth.setFullYear(date.getFullYear());
+			firstDayOfMonth.setMonth(date.getMonth());
+			firstDayOfMonth.setDate(1);
+
+			let weekOfTheMonth = Math.floor((date.getDate() + (firstDayOfMonth.getDate() - 1)) / 7) + 1;
+
+			if (weekOfTheMonth % 2 !== 0) {
+				isNextServiceDateFound = true;
+			}
 		}
+
+		dateValue = date.getDate().toString();
+		monthValue = date.getMonth();
+		yearValue = date.getFullYear().toString();
 
 		save();
 	}
@@ -159,6 +181,15 @@
 				`Decembris`
 			]}
 			bind:selected={monthValue} />
+		<br />
+
+		<p class="inline-block mt-2">Gads: </p>
+		<input 
+			class="inline-block w-16 px-1 text-center rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
+			class:border-red-500={isYearValueInvalid} class:focus:border-red-500={isYearValueInvalid} 
+			type="text"
+			bind:value={yearValue} />
+		<br />
 	</div>
 
 	<button 

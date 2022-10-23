@@ -2,13 +2,19 @@ export const formatDate = (input: string) => {
 	let nextServiceDate: Date = new Date();
 
 	let date: string[] = input.split(`-`);
-	nextServiceDate.setDate(parseInt(date[0]));
-	nextServiceDate.setMonth(parseInt(date[1]) - 1);
-	nextServiceDate.setHours(parseInt(date[2]));
-	nextServiceDate.setMinutes(parseInt(date[3]));
+	nextServiceDate.setFullYear(parseInt(date[0]));
+	nextServiceDate.setDate(parseInt(date[1]));
+	nextServiceDate.setMonth(parseInt(date[2]) - 1);
+	nextServiceDate.setHours(parseInt(date[3]));
+	nextServiceDate.setMinutes(parseInt(date[4]));
 
 	let hour: string = nextServiceDate.getHours().toString();
 	let minute: string = nextServiceDate.getMinutes().toString();
+
+	let year: string = ``;
+	if (nextServiceDate.getFullYear() !== (new Date()).getFullYear()) {
+		year = ` ${nextServiceDate.getFullYear()}. gada`;
+	}
 
 	let monthNumber: number = nextServiceDate.getMonth() + 1
 	let month: string = ``;
@@ -79,7 +85,7 @@ export const formatDate = (input: string) => {
 	if (parseInt(hour) < 10) hour = `0` + hour;
 	if (parseInt(minute) < 10) minute = `0` + minute;
 
-	return `${weekday}, ${nextServiceDate.getDate()}. ${month} ${hour}:${minute}`;
+	return `${weekday},${year} ${nextServiceDate.getDate()}. ${month} ${hour}:${minute}`;
 }
 
 export const parseURLs = (text: string) => {
