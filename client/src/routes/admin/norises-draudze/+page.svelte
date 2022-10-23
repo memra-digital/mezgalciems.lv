@@ -62,6 +62,13 @@
 		isHourValueInvalid = isHourValueInvalid || (hourValue > `23` || hourValue < `0`);
 		isMinuteValueInvalid = isMinuteValueInvalid || (minuteValue > `59` || minuteValue < `0`);
 
+		// Kind of overkill to check the length of the month like this to ensure that the date is valid but ¯\_(ツ)_/¯
+		let monthLengths: number[] = [31, 28, 31, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+		if ((parseInt(yearValue) % 4 === 0) && (parseInt(yearValue) % 100 !== 0 || parseInt(yearValue) % 400 === 0)) {
+			monthLengths[1] = 29;
+		}
+		isDateValueInvalid = isDateValueInvalid || parseInt(dateValue) > monthLengths[monthValue] || parseInt(dateValue) <= 0;
+
 		if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid || isYearValueInvalid) {
 			return;
 		}
