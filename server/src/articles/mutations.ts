@@ -15,6 +15,19 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
+		if (args.title.trim() === ``) {
+			throw new UserInputError(`emptyTitle`);
+		}
+		if (args.content.trim() === ``) {
+			throw new UserInputError(`emptyContent`);
+		}
+		if (args.image.trim() === ``) {
+			throw new UserInputError(`noImage`);
+		}
+		if (args.imageAlt.trim() === ``) {
+			throw new UserInputError(`emptyAlt`);
+		}
+
 		let timestamp: number = new Date().getTime();
 
 		let image: any = await uploadImg(args.image).then((res) => { return res; });
@@ -51,6 +64,16 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 		}
 		if (!await getPermission(args.token, 0)) {
 			throw new ForbiddenError(`invalidPermissions`);
+		}
+
+		if (args.title.trim() === ``) {
+			throw new UserInputError(`emptyTitle`);
+		}
+		if (args.content.trim() === ``) {
+			throw new UserInputError(`emptyContent`);
+		}
+		if (args.imageAlt.trim() === ``) {
+			throw new UserInputError(`emptyAlt`);
 		}
 
 		let originalArticle: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });

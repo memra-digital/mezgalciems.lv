@@ -5,6 +5,27 @@ import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { historyCollection } from '../database';
 import { DbHistoryArticle, HistoryArticle } from '../schemas';
 
+const validateHistoryArticle = (args: any) => {
+	if (args.title.trim() === ``) {
+		throw new UserInputError(`emptyTitle`);
+	}
+	if (args.content.trim() === ``) {
+		throw new UserInputError(`emptyTitle`);
+	}
+	if (args.type !== `church` && args.type !== `baptist`) {
+		throw new UserInputError(`invalidType`);
+	}
+	if (args.font !== `sans` && args.font !== `serif`) {
+		throw new UserInputError(`invalidType`);
+	}
+	if (args.videoLink !== undefined || args.videoLink !== ``) {
+		if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
+			// I KNOW THIS REGEX IS HORRIBLE!!!
+			throw new UserInputError(`invalidVideoLink`);
+		}
+	}
+}
+
 export const addHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
@@ -14,13 +35,7 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
-		// Check if the video link is valid
-		if (args.videoLink !== ``) {
-			if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
-				// I KNOW THIS REGEX IS HORRIBLE!!!
-				throw new UserInputError(`invalidVideoLink`);
-			}
-		}
+		validateHistoryArticle(args);
 
 		// Capture the timestamp
 		let timestamp: number = new Date().getTime();
@@ -61,12 +76,7 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
-		// Check if the video link is valid
-		if (args.videoLink !== ``) {
-			if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
-				throw new UserInputError(`invalidVideoLink`);
-			}
-		}
+		validateHistoryArticle(args);
 
 		let originalArticle: DbHistoryArticle | undefined = <DbHistoryArticle | undefined> await historyCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
 		if (originalArticle === undefined) {

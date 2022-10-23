@@ -1,4 +1,4 @@
-import { ForbiddenError } from "apollo-server-express";
+import { ForbiddenError, UserInputError } from "apollo-server-express";
 import { ObjectId } from "mongodb";
 import { getPermission } from "../account/permissions";
 import { verifyAccountToken } from "../account/tokens";
@@ -12,6 +12,16 @@ export const modifyInformation = async (parents: any, args: any, context: any, i
 		}
 		if (!await getPermission(args.token, 1)) {
 			throw new ForbiddenError(`invalidPermissions`);
+		}
+
+		if (args.nextDate.trim() === ``) {
+			throw new UserInputError(`emptyNextDate`);
+		}
+		if (args.dateInfo.trim() === ``) {
+			throw new UserInputError(`emptyDateInfo`);
+		}
+		if (args.information.trim() === ``) {
+			throw new UserInputError(`emptyInformation`);
 		}
 
 		infoCollection.replaceOne({}, {

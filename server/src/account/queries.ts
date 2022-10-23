@@ -1,10 +1,17 @@
-import { AuthenticationError } from 'apollo-server-express';
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { hash, compare } from 'bcrypt';
 import { accountCollection } from '../database';
 import { DbAccount } from '../schemas';
 import { createAccountToken } from './tokens';
 
 export const login = async (parent: any, args: any, context: any, info: any) => {
+	if (args.username.trim() === ``) {
+		throw new UserInputError(`emptyUsername`);
+	}
+	if (args.password.trim() === ``) {
+		throw new UserInputError(`emptyPassword`);
+	}
+
 	let shouldRegister: boolean = await accountCollection.find({}).toArray().then((res: any) => { return res.length === 0; });
 
 	if (shouldRegister) {
