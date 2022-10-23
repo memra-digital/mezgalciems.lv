@@ -74,7 +74,7 @@ export interface DbStatisticsLog {
 export interface DbAccount {
 	_id: ObjectId,
 	username: string,
-	name: string,
+	firstName: string,
 	lastName: string,
 	password: string,
 	permissions: number

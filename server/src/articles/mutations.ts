@@ -2,9 +2,9 @@ import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-expre
 import { InsertOneResult, ObjectId } from 'mongodb';
 import { getPermission } from '../account/permissions';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
-import { articleCollection } from '../database';
+import { accountCollection, articleCollection } from '../database';
 import { uploadImg } from '../imgbb';
-import { DbArticle } from '../schemas';
+import { DbAccount, DbArticle } from '../schemas';
 
 export const addArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
@@ -19,6 +19,8 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 
 		let image: any = await uploadImg(args.image).then((res) => { return res; });
 
+		let account: DbAccount = await accountCollection.findOne({ username: getUsernameFromToken(args.token) }).then((res: any) => { return res; });
+
 		let article: InsertOneResult<Document> = await articleCollection.insertOne({
 			title: args.title,
 			content: args.content,
@@ -26,7 +28,7 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 			imageAlt: args.imageAlt,
 			date: timestamp,
 			edited: false,
-			author: getUsernameFromToken(args.token)
+			author: `${account.firstName} ${account.lastName}`
 		});
 
 		return {
@@ -56,16 +58,23 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 			throw new UserInputError(`invalidArticleId`);
 		}
 
+		let account: DbAccount = await accountCollection.findOne({ username: getUsernameFromToken(args.token) }).then((res: any) => { return res; });
+		let authorList = originalArticle.author.split(` & `);
+		let currentAuthorName = `${account.firstName} ${account.lastName}`;
+		if (!authorList.includes(currentAuthorName)) {
+			authorList.push(currentAuthorName);
+		}
+
 		// Modify the article
 		const modifiedArticle: DbArticle = {
 			_id: new ObjectId(args.id),
 			title: args.title,
 			content: args.content,
-			image: originalArticle?.image || ``,
+			image: originalArticle.image,
 			imageAlt: args.imageAlt,
-			date: originalArticle?.date || 0,
+			date: originalArticle.date,
 			edited: true,
-			author: getUsernameFromToken(args.token)
+			author: authorList.join(` & `)
 		};
 
 		articleCollection.replaceOne({ _id: new ObjectId(args.id) }, modifiedArticle);
