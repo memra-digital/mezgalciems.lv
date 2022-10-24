@@ -13,13 +13,14 @@ import * as config from './config.json';
 import { getArticle, getArticles } from './articles/queries';
 import { getInformation } from './information/queries';
 import { getHistoryArticle, getHistoryArticles } from './history/queries';
-import { login } from './account/queries';
+import { getAccounts, login } from './account/queries';
 import { getStatistics } from './statistics/queries';
 import { addArticle, modifyArticle, removeArticle } from './articles/mutations';
 import { modifyInformation } from './information/mutations';
 import { addHistoryArticle, modifyHistoryArticle, removeHistoryArticle } from './history/mutations';
 import { registerPageView } from './statistics/mutations';
 import { dbClient } from './database';
+import { addAccount, changeAccountPassword, modifyAccount, removeAccount } from './account/mutations';
 
 console.log(`✅ Started mezgalciems.lv backend server!`);
 
@@ -40,6 +41,8 @@ dbClient.connect().then(async () => {
 			login: login,
 
 			statistics: getStatistics,
+
+			accounts: getAccounts
 		},
 		Mutation: {
 			addArticle: addArticle,
@@ -52,8 +55,12 @@ dbClient.connect().then(async () => {
 			modifyHistoryArticle: modifyHistoryArticle,
 			removeHistoryArticle: removeHistoryArticle,
 
-			registerPageView: registerPageView
+			registerPageView: registerPageView,
 
+			addAccount: addAccount,
+			modifyAccount: modifyAccount,
+			changeAccountPassword: changeAccountPassword,
+			removeAccount: removeAccount
 		}
 	};
 

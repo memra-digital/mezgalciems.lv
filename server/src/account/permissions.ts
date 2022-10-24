@@ -7,7 +7,7 @@ import { AccountToken, DbAccount } from '../schemas';
 	1 - Modify information
 	2 - Add/modify history
 	3 - Delete articles/history
-	4 - Add/modify new accounts
+	4 - View/add/modify/delete others' accounts, change everyone's permissions
 	5 - View statistics
 */
 export const getPermission = async (token: string, perm: number) => {

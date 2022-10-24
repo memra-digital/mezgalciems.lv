@@ -86,6 +86,14 @@ type Statistics {
 	viewsYesterday: Int
 }
 
+type Account {
+	id: String!
+	username: String!
+	firstName: String!
+	lastName: String!
+	permissions: Int!
+}
+
 type Query {
 	articles(page: Int!): ArticlePage!
 	article(id: String!): Article
@@ -98,6 +106,8 @@ type Query {
 	login(username: String!, password: String!): LoginDetails
 
 	statistics(token: String!): Statistics
+
+	accounts(token: String!): [Account!]
 }
 
 type Mutation {
@@ -112,4 +122,9 @@ type Mutation {
 	removeHistoryArticle(id: String!, token: String!): HistoryArticleMutationResult
 
 	registerPageView(page: String!, user: String): Boolean
+
+	addAccount(token: String!, username: String!, password: String!, firstName: String!, lastName: String!, permissions: Int!): Account
+	modifyAccount(token: String!, id: String!, username: String!, firstName: String!, lastName: String!, permissions: Int!): Account
+	changeAccountPassword(token: String!, oldPassword: String!, newPassword: String!): Account
+	removeAccount(token: String!, id: String!): Account
 }

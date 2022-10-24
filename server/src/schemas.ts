@@ -72,7 +72,6 @@ export interface DbStatisticsLog {
 	user: string
 }
 export interface DbAccount {
-	_id: ObjectId,
 	username: string,
 	firstName: string,
 	lastName: string,
@@ -81,4 +80,11 @@ export interface DbAccount {
 }
 export interface AccountToken {
 	username: string
+}
+export interface Account {
+	id: string,
+	username: string,
+	firstName: string,
+	lastName: string,
+	permissions: number
 }
