@@ -2,13 +2,22 @@ import { ApolloError } from 'apollo-server-express';
 import { articleCollection } from '../database';
 import { articlePageSize } from '../config.json';
 import { Article, DbArticle } from '../schemas';
-import { ObjectId } from 'mongodb';
+import { Document, ObjectId, WithId } from 'mongodb';
 
-export const getArticles = async (parent: any, args: any, context: any, info: any) => {
+interface GetArticlesArgs {
+	page: number
+}
+interface GetArticlesReturn {
+	articles: Article[],
+	totalArticles: number,
+	totalPages: number,
+	page: number
+}
+export const getArticles = async (_parent: any, args: GetArticlesArgs, _context: any, _info: any): Promise<GetArticlesReturn> => {
 	let totalArticles: number = 0;
 	let totalPages: number = 0;
 
-	let articles: Article[] = await articleCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
+	let articles: Article[] = await articleCollection.find().sort({ date: -1 }).toArray().then((res: WithId<Document>[]) => {
 		totalArticles = res.length;
 		totalPages = Math.ceil(res.length / articlePageSize);
 
@@ -36,12 +45,23 @@ export const getArticles = async (parent: any, args: any, context: any, info: an
 	};
 }
 
-export const getArticle = async (parent: any, args: any, context: any, info: any) => {
-	let article: DbArticle | null = <DbArticle | null> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
-
-	if (article === null) {
+interface GetArticleArgs {
+	id: string
+}
+export const getArticle = async (_parent: any, args: GetArticleArgs, _context: any, _info: any): Promise<Article> => {
+	let dbArticle: WithId<DbArticle> = <WithId<DbArticle>> await articleCollection.findOne({ _id: new ObjectId(args.id) });
+	if (dbArticle === null) {
 		throw new ApolloError(`unknown`);
 	}
 
-	return article;
+	return {
+		id: dbArticle._id.toString(),
+		title: dbArticle.title,
+		content: dbArticle.content,
+		image: dbArticle.image,
+		imageAlt: dbArticle.imageAlt,
+		date: dbArticle.date,
+		edited: dbArticle.edited,
+		author: dbArticle.author
+	};
 }

@@ -1,10 +1,12 @@
+scalar Int64
+
 type Article {
 	id: ID!
 	title: String!
 	content: String!
 	image: String!
 	imageAlt: String!
-	date: String!
+	date: Int64!
 	edited: Boolean!
 	author: String!
 }
@@ -85,15 +87,15 @@ type Query {
 type Mutation {
 	registerPageView(page: String!, user: String): Boolean!
 
-	createArticle(title: String!, content: String!, image: String!, imageAlt: String!, token: String!): Article!
-	editArticle(id: ID!, title: String!, content: String! imageAlt: String!, token: String!): Article!
-	deleteArticle(id: ID!, token: String!): Article!
+	createArticle(token: String!, title: String!, content: String!, image: String!, imageAlt: String!): Article!
+	editArticle(token: String!, id: ID!, title: String!, content: String! imageAlt: String!): Article!
+	deleteArticle(token: String!, id: ID!): Article!
 
-	editInformation(nextDate: String!, dateInfo: String!, information: String!, token: String!): Information!
+	editInformation(token: String!, nextDate: String!, dateInfo: String!, information: String!): Information!
 
-	createHistoryArticle(title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticle!
-	editHistoryArticle(id: ID!, title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticle!
-	deleteHistoryArticle(id: ID!, token: String!): HistoryArticle!
+	createHistoryArticle(token: String!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
+	editHistoryArticle(token: String!, id: ID!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
+	deleteHistoryArticle(token: String!, id: ID!): HistoryArticle!
 
 	createAccount(token: String!, username: String!, password: String!, firstName: String!, lastName: String!, permissions: Int!): Account!
 	editAccount(token: String!, id: ID!, username: String!, firstName: String!, lastName: String!, permissions: Int!): Account!

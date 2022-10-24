@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 
 export interface DbArticle {
-	_id: ObjectId,
 	title: string,
 	content: string,
 	date: number,

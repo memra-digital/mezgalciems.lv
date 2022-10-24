@@ -1,12 +1,19 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
-import { InsertOneResult, ObjectId } from 'mongodb';
+import { InsertOneResult, ObjectId, WithId } from 'mongodb';
 import { getPermission } from '../account/permissions';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
 import { accountCollection, articleCollection } from '../database';
 import { uploadImg } from '../imgbb';
-import { DbAccount, DbArticle } from '../schemas';
+import { Article, DbAccount, DbArticle } from '../schemas';
 
-export const createArticle = async (parent: any, args: any, context: any, info: any) => {
+interface CreateArticleArgs {
+	token: string,
+	title: string,
+	content: string,
+	image: string,
+	imageAlt: string
+}
+export const createArticle = async (_parent: any, args: CreateArticleArgs, _context: any, _info: any): Promise<Article> => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -30,9 +37,9 @@ export const createArticle = async (parent: any, args: any, context: any, info: 
 
 		let timestamp: number = new Date().getTime();
 
-		let image: any = await uploadImg(args.image).then((res) => { return res; });
+		let image: any = await uploadImg(args.image).then((res) => { return res; }).catch((err) => { throw new ApolloError(`imgUploadFailed`); });
 
-		let account: DbAccount = await accountCollection.findOne({ username: getUsernameFromToken(args.token) }).then((res: any) => { return res; });
+		let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ username: getUsernameFromToken(args.token) });
 
 		let article: InsertOneResult<Document> = await articleCollection.insertOne({
 			title: args.title,
@@ -48,16 +55,26 @@ export const createArticle = async (parent: any, args: any, context: any, info: 
 			id: article.insertedId.toString(),
 			title: args.title,
 			content: args.content,
+			image: image.url,
 			imageAlt: args.imageAlt,
-			edited: false
-		}
+			date: timestamp,
+			edited: false,
+			author: `${account.firstName} ${account.lastName}`
+		};
 	} catch (e: any) {
 		console.log(e);
 		throw new ApolloError(`unknown`);
 	}
 }
 
-export const editArticle = async (parent: any, args: any, context: any, info: any) => {
+interface EditArticleArgs {
+	token: string,
+	id: string,
+	title: string,
+	content: string,
+	imageAlt: string
+}
+export const editArticle = async (_parent: any, args: EditArticleArgs, _context: any, _info: any): Promise<Article> => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -76,20 +93,20 @@ export const editArticle = async (parent: any, args: any, context: any, info: an
 			throw new UserInputError(`emptyAlt`);
 		}
 
-		let originalArticle: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
-		if (originalArticle === undefined) {
+		let originalArticle: WithId<DbArticle> = <WithId<DbArticle>> await articleCollection.findOne({ _id: new ObjectId(args.id) });
+		if (originalArticle === null) {
 			throw new UserInputError(`invalidArticleId`);
 		}
 
-		let account: DbAccount = await accountCollection.findOne({ username: getUsernameFromToken(args.token) }).then((res: any) => { return res; });
-		let authorList = originalArticle.author.split(` & `);
-		let currentAuthorName = `${account.firstName} ${account.lastName}`;
+		// Create a list of the accounts that have written this article
+		let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ username: getUsernameFromToken(args.token) });
+		let authorList: string[] = originalArticle.author.split(` & `);
+		let currentAuthorName: string = `${account.firstName} ${account.lastName}`;
 		if (!authorList.includes(currentAuthorName)) {
 			authorList.push(currentAuthorName);
 		}
 
-		// Modify the article
-		const modifiedArticle: DbArticle = {
+		const modifiedArticle: WithId<DbArticle> = {
 			_id: new ObjectId(args.id),
 			title: args.title,
 			content: args.content,
@@ -104,18 +121,25 @@ export const editArticle = async (parent: any, args: any, context: any, info: an
 
 		return {
 			id: args.id,
-			title: args.title,
-			content: args.content,
-			imageAlt: args.imageAlt,
-			edited: true
-		}
+			title: modifiedArticle.title,
+			content: modifiedArticle.content,
+			image: modifiedArticle.image,
+			imageAlt: modifiedArticle.imageAlt,
+			date: modifiedArticle.date,
+			edited: modifiedArticle.edited,
+			author: modifiedArticle.author
+		};
 	} catch (e: any) {
 		console.log(e);
 		throw new ApolloError(`unknown`);
 	}
 }
 
-export const deleteArticle = async (parents: any, args: any, context: any, info: any) => {
+interface DeleteArticleArgs {
+	token: string,
+	id: string
+}
+export const deleteArticle = async (_parents: any, args: DeleteArticleArgs, _context: any, _info: any): Promise<Article> => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -125,8 +149,8 @@ export const deleteArticle = async (parents: any, args: any, context: any, info:
 		}
 
 		// Check if the article exists
-		let article: DbArticle | undefined = <DbArticle | undefined> await articleCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
-		if (article === undefined) {
+		let article: WithId<DbArticle> = <WithId<DbArticle>> await articleCollection.findOne({ _id: new ObjectId(args.id) });
+		if (article === null) {
 			throw new UserInputError(`invalidArticleId`);
 		}
 
@@ -137,9 +161,12 @@ export const deleteArticle = async (parents: any, args: any, context: any, info:
 			id: args.id,
 			title: article.title,
 			content: article.content,
+			image: article.image,
 			imageAlt: article.imageAlt,
-			edited: article.edited
-		}
+			date: article.date,
+			edited: article.edited,
+			author: article.author
+		};
 	} catch (e: any) {
 		console.log(e);
 		throw new ApolloError(`unknown`);
