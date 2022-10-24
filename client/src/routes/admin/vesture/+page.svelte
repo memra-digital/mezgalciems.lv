@@ -129,16 +129,16 @@
 		let mutation;
 		if (editorArticle.id === ``) {
 			mutation = gql`
-				mutation addHistoryArticle {
-					addHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				mutation createHistoryArticle {
+					createHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 						id
 					}
 				}
 			`;
 		} else {
 			mutation = gql`
-				mutation modifyHistoryArticle {
-					modifyHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				mutation editHistoryArticle {
+					editHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 						id
 					}
 				}
@@ -149,7 +149,7 @@
 			isSaving = false;
 
 			if (editorArticle.id === ``) {
-				editorArticle.id = data.addHistoryArticle.id;
+				editorArticle.id = data.createHistoryArticle.id;
 				window.location.hash = editorArticle.id.toString();
 			}
 		});
@@ -159,8 +159,8 @@
 		isLoadingEditor = true;
 
 		const mutation = gql`
-			mutation removeHistoryArticle {
-				removeHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+			mutation deleteHistoryArticle {
+				deleteHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					id
 				}
 			}

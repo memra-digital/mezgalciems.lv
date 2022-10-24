@@ -26,7 +26,7 @@ const validateHistoryArticle = (args: any) => {
 	}
 }
 
-export const addHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
+export const createHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -66,7 +66,7 @@ export const addHistoryArticle = async (parent: any, args: any, context: any, in
 	}
 }
 
-export const modifyHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
+export const editHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
 		// Verify token
 		if (!verifyAccountToken(args.token)) {
@@ -111,7 +111,7 @@ export const modifyHistoryArticle = async (parent: any, args: any, context: any,
 	}
 }
 
-export const removeHistoryArticle = async (parents: any, args: any, context: any, info: any) => {
+export const deleteHistoryArticle = async (parents: any, args: any, context: any, info: any) => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}

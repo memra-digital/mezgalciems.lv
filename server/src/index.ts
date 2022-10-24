@@ -15,12 +15,12 @@ import { getInformation } from './information/queries';
 import { getHistoryArticle, getHistoryArticles } from './history/queries';
 import { getAccounts, login } from './account/queries';
 import { getStatistics } from './statistics/queries';
-import { addArticle, modifyArticle, removeArticle } from './articles/mutations';
-import { modifyInformation } from './information/mutations';
-import { addHistoryArticle, modifyHistoryArticle, removeHistoryArticle } from './history/mutations';
+import { createArticle, editArticle, deleteArticle } from './articles/mutations';
+import { editInformation } from './information/mutations';
+import { createHistoryArticle, editHistoryArticle, deleteHistoryArticle } from './history/mutations';
 import { registerPageView } from './statistics/mutations';
 import { dbClient } from './database';
-import { addAccount, changeAccountPassword, modifyAccount, removeAccount } from './account/mutations';
+import { createAccount, changeAccountPassword, editAccount, deleteAccount } from './account/mutations';
 
 console.log(`✅ Started mezgalciems.lv backend server!`);
 
@@ -45,22 +45,22 @@ dbClient.connect().then(async () => {
 			accounts: getAccounts
 		},
 		Mutation: {
-			addArticle: addArticle,
-			modifyArticle: modifyArticle,
-			removeArticle: removeArticle,
+			createArticle: createArticle,
+			editArticle: editArticle,
+			deleteArticle: deleteArticle,
 
-			modifyInformation: modifyInformation,
+			editInformation: editInformation,
 
-			addHistoryArticle: addHistoryArticle,
-			modifyHistoryArticle: modifyHistoryArticle,
-			removeHistoryArticle: removeHistoryArticle,
+			createHistoryArticle: createHistoryArticle,
+			editHistoryArticle: editHistoryArticle,
+			deleteHistoryArticle: deleteHistoryArticle,
 
 			registerPageView: registerPageView,
 
-			addAccount: addAccount,
-			modifyAccount: modifyAccount,
+			createAccount: createAccount,
+			editAccount: editAccount,
 			changeAccountPassword: changeAccountPassword,
-			removeAccount: removeAccount
+			deleteAccount: deleteAccount
 		}
 	};
 

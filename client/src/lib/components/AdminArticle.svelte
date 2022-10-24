@@ -58,8 +58,8 @@
 		isLoading = true;
 
 		const query = gql`
-			mutation modifyArticle {
-				modifyArticle(id: "${id}", title: "${titleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${contentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", imageAlt: "${imageAlt.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+			mutation editArticle {
+				editArticle(id: "${id}", title: "${titleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${contentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", imageAlt: "${imageAlt.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					title
 					content
 				}
@@ -68,8 +68,8 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoading = false;
 
-			title = data.modifyArticle.title;
-			content = data.modifyArticle.content;
+			title = data.editArticle.title;
+			content = data.editArticle.content;
 		}).catch((err: any) => {
 			isLoading = false;
 
@@ -81,8 +81,8 @@
 		isLoading = true;
 
 		const query = gql`
-			mutation removeArticle {
-				removeArticle(id: "${id}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+			mutation deleteArticle {
+				deleteArticle(id: "${id}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					id
 				}
 			}

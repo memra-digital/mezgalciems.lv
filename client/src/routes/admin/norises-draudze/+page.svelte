@@ -77,8 +77,8 @@
 		isLoadingSave = true;
 		
 		const query = gql`
-			mutation modifyInformation {
-				modifyInformation(nextDate: "${parseInt(yearValue)}-${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+			mutation editInformation {
+				editInformation(nextDate: "${parseInt(yearValue)}-${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					nextDate,
 					dateInfo,
 					information
@@ -88,8 +88,8 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingSave = false;
 
-			dateInfoInput = data.modifyInformation.dateInfo;
-			infoInput = data.modifyInformation.information;
+			dateInfoInput = data.editInformation.dateInfo;
+			infoInput = data.editInformation.information;
 		}).catch((err: any) => {
 			isLoadingSave = false;
 

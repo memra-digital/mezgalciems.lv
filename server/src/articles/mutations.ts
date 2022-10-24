@@ -6,7 +6,7 @@ import { accountCollection, articleCollection } from '../database';
 import { uploadImg } from '../imgbb';
 import { DbAccount, DbArticle } from '../schemas';
 
-export const addArticle = async (parent: any, args: any, context: any, info: any) => {
+export const createArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -57,7 +57,7 @@ export const addArticle = async (parent: any, args: any, context: any, info: any
 	}
 }
 
-export const modifyArticle = async (parent: any, args: any, context: any, info: any) => {
+export const editArticle = async (parent: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -115,7 +115,7 @@ export const modifyArticle = async (parent: any, args: any, context: any, info: 
 	}
 }
 
-export const removeArticle = async (parents: any, args: any, context: any, info: any) => {
+export const deleteArticle = async (parents: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);

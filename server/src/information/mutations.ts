@@ -5,7 +5,7 @@ import { verifyAccountToken } from "../account/tokens";
 import { infoCollection } from "../database";
 import { DbInformation } from "../schemas";
 
-export const modifyInformation = async (parents: any, args: any, context: any, info: any) => {
+export const editInformation = async (parents: any, args: any, context: any, info: any) => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);

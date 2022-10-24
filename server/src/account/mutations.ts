@@ -6,7 +6,7 @@ import { Account, DbAccount } from '../schemas';
 import { getPermission } from './permissions';
 import { getUsernameFromToken, verifyAccountToken } from './tokens';
 
-const validateAccount = (args: AddAccountArgs | ModifyAccountArgs): void => {
+const validateAccount = (args: CreateAccountArgs | EditAccountArgs): void => {
 	if (args.username.trim() === ``) {
 		throw new UserInputError(`emptyUsername`);
 	}
@@ -21,7 +21,7 @@ const validateAccount = (args: AddAccountArgs | ModifyAccountArgs): void => {
 	}
 }
 
-interface AddAccountArgs {
+interface CreateAccountArgs {
 	token: string,
 	username: string,
 	password: string,
@@ -29,7 +29,7 @@ interface AddAccountArgs {
 	lastName: string,
 	permissions: number
 }
-export const addAccount = async (_parent: any, args: AddAccountArgs, _context: any, _info: any): Promise<Account> => {
+export const createAccount = async (_parent: any, args: CreateAccountArgs, _context: any, _info: any): Promise<Account> => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
@@ -66,7 +66,7 @@ export const addAccount = async (_parent: any, args: AddAccountArgs, _context: a
 	}
 }
 
-interface ModifyAccountArgs {
+interface EditAccountArgs {
 	token: string,
 	id: string,
 	username: string,
@@ -74,7 +74,7 @@ interface ModifyAccountArgs {
 	lastName: string,
 	permissions: number
 }
-export const modifyAccount = async (_parent: any, args: ModifyAccountArgs, _context: any, _info: any): Promise<Account> => {
+export const editAccount = async (_parent: any, args: EditAccountArgs, _context: any, _info: any): Promise<Account> => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
@@ -179,11 +179,11 @@ export const changeAccountPassword = async (_parent: any, args: ChangeAccountPas
 	}
 }
 
-interface RemoveAccountArgs {
+interface DeleteAccountArgs {
 	token: string,
 	id: string
 }
-export const removeAccount = async (_parent: any, args: RemoveAccountArgs, _context: any, _info: any): Promise<Account> => {
+export const deleteAccount = async (_parent: any, args: DeleteAccountArgs, _context: any, _info: any): Promise<Account> => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
