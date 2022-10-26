@@ -75,7 +75,6 @@ export interface DbHistoryArticle {
 }
 
 export interface DbStatisticsLog {
-	_id: ObjectId,
 	time: number,
 	page: string,
 	user: string

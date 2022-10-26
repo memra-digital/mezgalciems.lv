@@ -71,7 +71,7 @@
 		// Send statistical data
 		request(apiUrl, `
 			mutation registerPageView {
-				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`)}")
+				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`) ?? ``}")
 			}
 		`);
 	});

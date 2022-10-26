@@ -1,10 +1,28 @@
-import { ForbiddenError, UserInputError } from 'apollo-server-express';
+import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
+import { WithId } from 'mongodb';
 import { getPermission } from '../account/permissions';
 import { verifyAccountToken } from '../account/tokens';
 import { statisticsCollection } from '../database';
 import { DbStatisticsLog } from '../schemas';
 
-export const getStatistics = async (parent: any, args: any, context: any, info: any) => {
+interface GetStatisticsArgs {
+	token: string
+}
+interface GetStatisticsReturn {
+	visitorsInLast7Days: number,
+	visitorsToday: number,
+	mostViewedPage?: string,
+	mostViewedPageViews?: number,
+	viewsInLast7Days: number,
+	viewsToday: number,
+	views6DaysAgo: number,
+	views5DaysAgo: number,
+	views4DaysAgo: number,
+	views3DaysAgo: number,
+	views2DaysAgo: number,
+	viewsYesterday: number
+}
+export const getStatistics = async (_parent: any, args: GetStatisticsArgs, _context: any, _info: any): Promise<GetStatisticsReturn> => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new UserInputError(`invalidToken`);
@@ -13,22 +31,25 @@ export const getStatistics = async (parent: any, args: any, context: any, info: 
 			throw new ForbiddenError(`invalidPermissions`);
 		}
 
-		let logs: DbStatisticsLog[] = <DbStatisticsLog[]> await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
+		let logs: WithId<DbStatisticsLog>[] = <WithId<DbStatisticsLog>[]> await statisticsCollection.find({}).sort({ _id: -1 }).toArray().then(res => { return res; });
 
-		let logs6DaysAgo: DbStatisticsLog[] = [];
-		let logs5DaysAgo: DbStatisticsLog[] = [];
-		let logs4DaysAgo: DbStatisticsLog[] = [];
-		let logs3DaysAgo: DbStatisticsLog[] = [];
-		let logs2DaysAgo: DbStatisticsLog[] = [];
-		let logs1DayAgo: DbStatisticsLog[] = [];
-		let logsToday: DbStatisticsLog[] = [];
+		let logs6DaysAgo: WithId<DbStatisticsLog>[] = [];
+		let logs5DaysAgo: WithId<DbStatisticsLog>[] = [];
+		let logs4DaysAgo: WithId<DbStatisticsLog>[] = [];
+		let logs3DaysAgo: WithId<DbStatisticsLog>[] = [];
+		let logs2DaysAgo: WithId<DbStatisticsLog>[] = [];
+		let logs1DayAgo: WithId<DbStatisticsLog>[] = [];
+		let logsToday: WithId<DbStatisticsLog>[] = [];
 
 		let pageViews: any = {};
 
 		let usersToday: any = {};
 		let usersInLast7Days: any = {};
 
-		let timestamp: number = Date.now();
+		let timestampDate: Date = new Date();
+		timestampDate.setHours(24);
+		timestampDate.setMinutes(0);
+		let timestamp: number = timestampDate.getTime();
 
 		for (let i: number = 0; i < logs.length; i++) {
 			switch (Math.floor((timestamp - logs[i].time) / 1000 / 60 / 60 / 24)) {
@@ -84,10 +105,10 @@ export const getStatistics = async (parent: any, args: any, context: any, info: 
 
 		let viewsInLast7Days: number = logs6DaysAgo.length + logs5DaysAgo.length + logs4DaysAgo.length + logs3DaysAgo.length + logs2DaysAgo.length + logs1DayAgo.length + logsToday.length;
 
-		let mostViewedPage: string = ``;
-		let mostViewedPageViews: number = 0;
+		let mostViewedPage: string | undefined;
+		let mostViewedPageViews: number | undefined;
 		for (let i in pageViews) {
-			if (pageViews[i] > mostViewedPageViews) {
+			if (mostViewedPageViews === undefined || pageViews[i] > mostViewedPageViews) {
 				mostViewedPage = i;
 				mostViewedPageViews = pageViews[i];
 			}
@@ -112,5 +133,6 @@ export const getStatistics = async (parent: any, args: any, context: any, info: 
 		}
 	} catch (e: any) {
 		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
 }
