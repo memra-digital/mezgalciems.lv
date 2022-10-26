@@ -15,6 +15,8 @@
 		monthValue: number = 0,
 		yearValue: string = ``;
 
+	let isNextServiceDateEnabled: boolean = true;
+
 	let isMinuteValueInvalid: boolean = false,
 		isHourValueInvalid: boolean = false,
 		isDateValueInvalid: boolean = false,
@@ -37,15 +39,19 @@
 		request(apiUrl, query).then((data: any) => {
 			isLoadingFetch = false;
 
-			let date: string[] = data.information.nextDate.split(`-`);
-			yearValue = date[0];
-			dateValue = date[1];
-			monthValue = parseInt(date[2]) - 1;
-			hourValue = date[3];
-			minuteValue = date[4];
+			if (data.information.nextDate === null) {
+				isNextServiceDateEnabled = false;
+			} else {
+				let date: Date = new Date(data.information.nextDate);
+				yearValue = date.getFullYear().toString();
+				dateValue = date.getDate().toString();
+				monthValue = date.getMonth();
+				hourValue = date.getHours().toString();
+				minuteValue = date.getMinutes().toString();
 
-			if (hourValue.length === 1) hourValue = `0${hourValue}`;
-			if (minuteValue.length === 1) minuteValue = `0${minuteValue}`;
+				if (hourValue.length === 1) hourValue = `0${hourValue}`;
+				if (minuteValue.length === 1) minuteValue = `0${minuteValue}`;
+			}
 			
 			dateInfoInput = data.information.dateInfo;
 			infoInput = data.information.information;
@@ -53,32 +59,45 @@
 	});
 
 	const save = () => {
-		// Validate the fields
-		isHourValueInvalid = isNaN(hourValue as unknown as number);
-		isMinuteValueInvalid = isNaN(minuteValue as unknown as number);
-		isDateValueInvalid = isNaN(dateValue as unknown as number);
-		isYearValueInvalid = isNaN(yearValue as unknown as number);
+		// Validate the date fields
+		if (isNextServiceDateEnabled) {
+			isHourValueInvalid = isNaN(hourValue as unknown as number);
+			isMinuteValueInvalid = isNaN(minuteValue as unknown as number);
+			isDateValueInvalid = isNaN(dateValue as unknown as number);
+			isYearValueInvalid = isNaN(yearValue as unknown as number);
 
-		isHourValueInvalid = isHourValueInvalid || (hourValue > `23` || hourValue < `0`);
-		isMinuteValueInvalid = isMinuteValueInvalid || (minuteValue > `59` || minuteValue < `0`);
+			isHourValueInvalid = isHourValueInvalid || (hourValue > `23` || hourValue < `0`);
+			isMinuteValueInvalid = isMinuteValueInvalid || (minuteValue > `59` || minuteValue < `0`);
 
-		// Kind of overkill to check the length of the month like this to ensure that the date is valid but ¯\_(ツ)_/¯
-		let monthLengths: number[] = [31, 28, 31, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-		if ((parseInt(yearValue) % 4 === 0) && (parseInt(yearValue) % 100 !== 0 || parseInt(yearValue) % 400 === 0)) {
-			monthLengths[1] = 29;
+			// Kind of overkill to check the length of the month like this to ensure that the date is valid but ¯\_(ツ)_/¯
+			let monthLengths: number[] = [31, 28, 31, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+			if ((parseInt(yearValue) % 4 === 0) && (parseInt(yearValue) % 100 !== 0 || parseInt(yearValue) % 400 === 0)) {
+				monthLengths[1] = 29;
+			}
+			isDateValueInvalid = isDateValueInvalid || parseInt(dateValue) > monthLengths[monthValue] || parseInt(dateValue) <= 0;
+
+			if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid || isYearValueInvalid) {
+				return;
+			}
 		}
-		isDateValueInvalid = isDateValueInvalid || parseInt(dateValue) > monthLengths[monthValue] || parseInt(dateValue) <= 0;
 
-		if (isHourValueInvalid || isMinuteValueInvalid || isDateValueInvalid || isYearValueInvalid) {
-			return;
-		}
-
-		// Save everything
 		isLoadingSave = true;
-		
+
+		let nextServiceDateValue: number | null = null;
+		if (isNextServiceDateEnabled) {
+			let nextServiceDate: Date = new Date();
+			nextServiceDate.setFullYear(parseInt(yearValue));
+			nextServiceDate.setMonth(monthValue);
+			nextServiceDate.setDate(parseInt(dateValue));
+			nextServiceDate.setHours(parseInt(hourValue));
+			nextServiceDate.setMinutes(parseInt(minuteValue));
+
+			nextServiceDateValue = nextServiceDate.getTime();
+		}
+
 		const query = gql`
 			mutation editInformation {
-				editInformation(nextDate: "${parseInt(yearValue)}-${parseInt(dateValue)}-${monthValue + 1}-${parseInt(hourValue)}-${parseInt(minuteValue)}", dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				editInformation(nextDate: ${nextServiceDateValue}, dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
 					nextDate,
 					dateInfo,
 					information
@@ -148,7 +167,9 @@
 	<Loading />
 {:else}
 	<b class="font-title font-bold text-xl text-slate-800">Nākamā dievkalpojuma datums</b>
-	<div class="mb-2">
+	<input type="checkbox" bind:checked={isNextServiceDateEnabled}>
+
+	<div class="mb-2 transition" class:opacity-50={!isNextServiceDateEnabled} class:pointer-events-none={!isNextServiceDateEnabled}>
 		<p class="inline-block">Laiks: </p>
 		<input 
 			class="inline-block w-8 px-1 text-center rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"
@@ -201,6 +222,8 @@
 
 	<button 
 		class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-6 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:brightness-95 duration-200"
+		class:opacity-50={!isNextServiceDateEnabled}
+		class:pointer-events-none={!isNextServiceDateEnabled}
 		on:click={() => autoSetDate()}>
 		
 		<i class="bi bi-arrow-repeat"></i>

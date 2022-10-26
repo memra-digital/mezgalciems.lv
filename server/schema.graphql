@@ -18,7 +18,7 @@ type ArticlePage {
 }
 
 type Information {
-	nextDate: String!
+	nextDate: Int64
 	dateInfo: String!
 	information: String!
 }
@@ -91,7 +91,7 @@ type Mutation {
 	editArticle(token: String!, id: ID!, title: String!, content: String! imageAlt: String!): Article!
 	deleteArticle(token: String!, id: ID!): Article!
 
-	editInformation(token: String!, nextDate: String!, dateInfo: String!, information: String!): Information!
+	editInformation(token: String!, nextDate: Int64, dateInfo: String!, information: String!): Information!
 
 	createHistoryArticle(token: String!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
 	editHistoryArticle(token: String!, id: ID!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!

@@ -7,7 +7,7 @@
 	import { formatDate, parseURLs, escapeHTML } from '$lib/processing';
 
 	let isLoading: boolean = true;
-	let nextDate: string,
+	let nextDate: string | null,
 		dateInfo: string,
 		information: string;
 
@@ -23,7 +23,12 @@
 		`).then((data: any) => {
 			isLoading = false;
 
-			nextDate = formatDate(data.information.nextDate).toLowerCase();
+			if (data.information.nextDate !== null) {
+				nextDate = formatDate(data.information.nextDate).toLowerCase();
+			} else {
+				nextDate = null;
+			}
+
 			dateInfo = data.information.dateInfo;
 			information = data.information.information;
 		});
@@ -39,7 +44,10 @@
 {#if isLoading}
 	<Loading />
 {:else}
-	<h3 class="font-title font-bold text-xl text-slate-800">Nākamais dievkalpojums {nextDate}</h3>
+	{#if nextDate !== null}
+		<h3 class="font-title font-bold text-xl text-slate-800">Nākamais dievkalpojums {nextDate}</h3>
+	{/if}
+
 	<p class="mb-6">{@html parseURLs(escapeHTML(dateInfo))}</p>
 	<p>{@html parseURLs(escapeHTML(information))}</p>
 {/if}
