@@ -78,7 +78,7 @@
 
 		const query = gql`
 			mutation createArticle {
-				createArticle(title: "${newArticleTitleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${newArticleContentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", image: "${uploadedImageData}", imageAlt: "${newArticleAltValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				createArticle(title: "${newArticleTitleValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${newArticleContentValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", image: "${uploadedImageData}", imageAlt: "${newArticleAltValue.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 					id
 				}
 			}

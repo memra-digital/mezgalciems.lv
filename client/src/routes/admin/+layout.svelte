@@ -39,7 +39,7 @@
 	let accountLinks: Link[] = [
 		{
 			name: `Konta iestatījumi`,
-			link: `/admin/konti/12345`,
+			link: `/admin/konti`,
 			icon: `gear`
 		},
 		{
@@ -86,13 +86,21 @@
 		}
 	}
 
-	let username: string | null;
+	let accountUsername: string | null = null,
+		accountId: string | null = null,
+		accountPermissions: string | null = null;
 	afterNavigate(() => {
+		accountUsername = localStorage.getItem(`adminAccountUsername`);
+		accountId = localStorage.getItem(`adminAccountID`);
+		accountPermissions = localStorage.getItem(`adminAccountPermissions`);
+
 		// If the client has not been logged in, redirect to login page
-		username = localStorage.getItem(`adminLoginUsername`);
-		if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
+		if (localStorage.getItem(`adminAccountToken`) === null || accountUsername === null || accountId === null || accountPermissions === null) {
 			window.location.pathname = `/admin/ienakt`;
+			localStorage.removeItem(`adminAccountToken`);
 		}
+
+		accountLinks[0].link = `/admin/konti/${accountId}`;
 
 		// Set the selected link
 		selectedLink = window.location.pathname;
@@ -126,7 +134,7 @@
 						style="transform: translateY({(1 - $accountPopupAnimationProgress) * 10}px); opacity: {$accountPopupAnimationProgress}; display: {$accountPopupAnimationProgress === 0 ? `none` : `block`}"
 						bind:this={accountPopupElement}>
 
-						<b class="block w-full text-center">{username}</b>
+						<b class="block w-full text-center">{accountUsername}</b>
 
 						<div class="block w-full h-1 rounded bg-gradient-to-tl from-blue-500 to-sky-400 mb-2 mt-1"></div>
 
@@ -137,7 +145,7 @@
 							</a>
 						{/each}
 
-						<a class="block my-1 hover:opacity-75 transition" on:click={() => localStorage.removeItem(`adminLoginToken`)}
+						<a class="block my-1 hover:opacity-75 transition" on:click={() => localStorage.removeItem(`adminAccountToken`)}
 							href="/admin/ienakt">
 							<i class="bi bi-box-arrow-right"></i>
 							Iziet
@@ -191,7 +199,7 @@
 	
 	<a
 		class="block my-4 text-xl font-title"
-		on:click={() => localStorage.removeItem(`adminLoginToken`)}
+		on:click={() => localStorage.removeItem(`adminAccountToken`)}
 		href="/admin/ienakt">
 
 		<i class="bi bi-box-arrow-right"></i>

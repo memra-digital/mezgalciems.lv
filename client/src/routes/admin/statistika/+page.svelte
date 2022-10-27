@@ -24,7 +24,7 @@
 	onMount(async () => {
 		const query = gql`
 			{
-				statistics(token: "${localStorage.getItem(`adminLoginToken`)}") {
+				statistics(token: "${localStorage.getItem(`adminAccountToken`)}") {
 					visitorsInLast7Days
 					visitorsToday
 

@@ -132,7 +132,7 @@
 		if (editorArticle.id === ``) {
 			mutation = gql`
 				mutation createHistoryArticle {
-					createHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+					createHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 						id
 					}
 				}
@@ -140,7 +140,7 @@
 		} else {
 			mutation = gql`
 				mutation editHistoryArticle {
-					editHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+					editHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 						id
 					}
 				}
@@ -162,7 +162,7 @@
 
 		const mutation = gql`
 			mutation deleteHistoryArticle {
-				deleteHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				deleteHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 					id
 				}
 			}

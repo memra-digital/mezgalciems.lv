@@ -41,13 +41,18 @@
 			{
 				login(username: "${usernameValue}", password: "${passwordValue}") {
 					token
+					id
+					username
+					permissions
 				}
 			}
 		`).then((data: any) => {
 			isLoading = false;
 
-			localStorage.setItem(`adminLoginToken`, data.login.token);
-			localStorage.setItem(`adminLoginUsername`, usernameValue);
+			localStorage.setItem(`adminAccountToken`, data.login.token);
+			localStorage.setItem(`adminAccountID`, data.login.id);
+			localStorage.setItem(`adminAccountUsername`, data.login.username);
+			localStorage.setItem(`adminAccountPermissions`, data.login.permissions);
 			window.location.pathname = `/admin/`;
 		}).catch((err: any) => {
 			isLoading = false;
@@ -91,7 +96,7 @@
 
 	onMount(() => {
 		// If logged in already, go to admin home page
-		if (localStorage.getItem(`adminLoginToken`) !== null && localStorage.getItem(`adminLoginUsername`) !== null) {
+		if (localStorage.getItem(`adminAccountToken`) !== null) {
 			window.location.href = `/admin`;
 		}
 	});

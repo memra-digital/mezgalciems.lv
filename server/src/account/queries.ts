@@ -1,11 +1,24 @@
-import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-express';
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { hash, compare } from 'bcrypt';
+import { InsertOneResult, WithId } from 'mongodb';
 import { accountCollection } from '../database';
 import { Account, DbAccount } from '../schemas';
 import { getPermission } from './permissions';
 import { createAccountToken, getUsernameFromToken, verifyAccountToken } from './tokens';
 
-export const login = async (parent: any, args: any, context: any, info: any) => {
+interface LoginArgs {
+	username: string,
+	password: string
+}
+interface LoginReturn {
+	token: string,
+	id: string,
+	username: string,
+	firstName: string,
+	lastName: string,
+	permissions: number
+}
+export const login = async (_parent: any, args: LoginArgs, _context: any, _info: any): Promise<LoginReturn> => {
 	if (args.username.trim() === ``) {
 		throw new UserInputError(`emptyUsername`);
 	}
@@ -16,9 +29,9 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 	let shouldRegister: boolean = await accountCollection.find({}).toArray().then((res: any) => { return res.length === 0; });
 
 	if (shouldRegister) {
-		let hashedPwd: string = await hash(args.password, 10).then((res: any) => { return res; });
+		let hashedPwd: string = await hash(args.password, 10);
 
-		accountCollection.insertOne({
+		let newAccount: InsertOneResult<Document> = await accountCollection.insertOne({
 			username: args.username,
 			password: hashedPwd,
 			firstName: ``,
@@ -27,23 +40,36 @@ export const login = async (parent: any, args: any, context: any, info: any) => 
 		});
 
 		return await {
-			token: createAccountToken(args.username)
+			token: createAccountToken(args.username),
+			id: newAccount.insertedId.toString(),
+			username: args.username,
+			firstName: ``,
+			lastName: ``,
+			permissions: 255
 		};
 	}
 
-	let account: DbAccount = await accountCollection.findOne({ username: args.username }).then((res: any) => { return res; });
-	let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
+	let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ username: args.username });
+	let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``);
 
 	if (account === null || !isPwdCorrect) {
 		throw new AuthenticationError(`invalidUsernameOrPassword`);
 	}
 
 	return await {
-		token: createAccountToken(account.username)
+		token: createAccountToken(account.username),
+		id: account._id.toString(),
+		username: account.username,
+		firstName: account.firstName,
+		lastName: account.lastName,
+		permissions: account.permissions
 	};
 }
 
-export const getAccounts = async (parent: any, args: any, context: any, info: any) => {
+interface GetAccountsArgs {
+	token: string
+}
+export const getAccounts = async (_parent: any, args: GetAccountsArgs, _context: any, _info: any): Promise<Account[]> => {
 	if (!verifyAccountToken(args.token)) {
 		throw new UserInputError(`invalidToken`);
 	}

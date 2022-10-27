@@ -41,6 +41,11 @@ type HistoryArticleList {
 
 type LoginDetails {
 	token: String!
+	id: ID!
+	username: String!
+	firstName: String!
+	lastName: String!
+	permissions: Int!
 }
 
 type Statistics {

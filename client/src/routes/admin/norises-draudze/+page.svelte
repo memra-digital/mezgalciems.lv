@@ -97,7 +97,7 @@
 
 		const query = gql`
 			mutation editInformation {
-				editInformation(nextDate: ${nextServiceDateValue}, dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				editInformation(nextDate: ${nextServiceDateValue}, dateInfo: "${dateInfoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", information: "${infoInput.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 					nextDate,
 					dateInfo,
 					information
