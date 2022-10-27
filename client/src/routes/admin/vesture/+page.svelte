@@ -98,6 +98,8 @@
 
 			editorArticle = data.historyArticle;
 
+			editorArticle.videoLink = editorArticle.videoLink ?? ``;
+
 			selectedArticleType = data.historyArticle.type === `church` ? 0 : 1;
 			selectedFont = data.historyArticle.font === `sans` ? 0 : 1;
 

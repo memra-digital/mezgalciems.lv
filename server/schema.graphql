@@ -27,16 +27,16 @@ type HistoryArticle {
 	id: ID!
 	title: String!
 	content: String!
+	preview: String!
 	date: String!
 	author: String!
 	type: String!
 	font: String!
-	videoLink: String!
+	videoLink: String
 }
 type HistoryArticleList {
 	articles: [HistoryArticle!]!
 	totalArticles: Int!
-	page: Int!
 }
 
 type LoginDetails {
@@ -94,7 +94,7 @@ type Mutation {
 	editInformation(token: String!, nextDate: Int64, dateInfo: String!, information: String!): Information!
 
 	createHistoryArticle(token: String!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
-	editHistoryArticle(token: String!, id: ID!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
+	editHistoryArticle(token: String!, id: ID!, title: String, content: String, type: String, font: String, videoLink: String): HistoryArticle!
 	deleteHistoryArticle(token: String!, id: ID!): HistoryArticle!
 
 	createAccount(token: String!, username: String!, password: String!, firstName: String!, lastName: String!, permissions: Int!): Account!

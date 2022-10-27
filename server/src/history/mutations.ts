@@ -1,32 +1,40 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server-express';
-import { InsertOneResult, ObjectId } from 'mongodb';
+import { InsertOneResult, ObjectId, WithId } from 'mongodb';
 import { getPermission } from '../account/permissions';
 import { verifyAccountToken, getUsernameFromToken } from '../account/tokens';
-import { historyCollection } from '../database';
-import { DbHistoryArticle, HistoryArticle } from '../schemas';
+import { accountCollection, historyCollection } from '../database';
+import { DbAccount, DbHistoryArticle, HistoryArticle } from '../schemas';
 
-const validateHistoryArticle = (args: any) => {
-	if (args.title.trim() === ``) {
+const validateHistoryArticle = (args: CreateHistoryArticleArgs | EditHistoryArticleArgs): void => {
+	if (args.title && args.title.trim() === ``) {
 		throw new UserInputError(`emptyTitle`);
 	}
-	if (args.content.trim() === ``) {
+	if (args.content && args.content.trim() === ``) {
 		throw new UserInputError(`emptyTitle`);
 	}
-	if (args.type !== `church` && args.type !== `baptist`) {
+	if (args.type && args.type !== `church` && args.type !== `baptist`) {
 		throw new UserInputError(`invalidType`);
 	}
-	if (args.font !== `sans` && args.font !== `serif`) {
+	if (args.font && args.font !== `sans` && args.font !== `serif`) {
 		throw new UserInputError(`invalidType`);
 	}
-	if (args.videoLink !== undefined || args.videoLink !== ``) {
-		if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink) && args.videoLink !== ``) {
+	if (args.videoLink !== undefined && args.videoLink !== ``) {
+		if (!/([a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_][a-zA-Z0-9-_])/gi.test(args.videoLink)) {
 			// I KNOW THIS REGEX IS HORRIBLE!!!
 			throw new UserInputError(`invalidVideoLink`);
 		}
 	}
 }
 
-export const createHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
+interface CreateHistoryArticleArgs {
+	token: string,
+	title: string,
+	content: string,
+	type: string,
+	font: string,
+	videoLink?: string
+}
+export const createHistoryArticle = async (_parent: any, args: CreateHistoryArticleArgs, _context: any, _info: any): Promise<HistoryArticle> => {
 	try {
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
@@ -37,10 +45,9 @@ export const createHistoryArticle = async (parent: any, args: any, context: any,
 
 		validateHistoryArticle(args);
 
-		// Capture the timestamp
-		let timestamp: number = new Date().getTime();
+		let timestamp: number = Date.now();
 
-		let article: InsertOneResult<Document> = await historyCollection.insertOne({
+		let article: InsertOneResult<DbHistoryArticle> = <InsertOneResult<DbHistoryArticle>> await historyCollection.insertOne({
 			_id: new ObjectId(),
 			title: args.title,
 			content: args.content,
@@ -51,14 +58,16 @@ export const createHistoryArticle = async (parent: any, args: any, context: any,
 			videoLink: args.videoLink
 		});
 
-		// Return everything
 		return {
 			id: article.insertedId.toString(),
 			title: args.title,
 			content: args.content,
+			preview: args.content.slice(0, 60),
+			date: timestamp,
+			author: getUsernameFromToken(args.token),
 			type: args.type,
 			font: args.font,
-			videoLink: args.videoLink
+			videoLink: args.videoLink?.length === 0 ? undefined : args.videoLink
 		}
 	} catch (e: any) {
 		console.log(e);
@@ -66,9 +75,17 @@ export const createHistoryArticle = async (parent: any, args: any, context: any,
 	}
 }
 
-export const editHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
+interface EditHistoryArticleArgs {
+	token: string,
+	id: string,
+	title: string,
+	content: string,
+	type: string,
+	font: string,
+	videoLink?: string
+}
+export const editHistoryArticle = async (_parent: any, args: EditHistoryArticleArgs, _context: any, _info: any): Promise<HistoryArticle> => {
 	try {
-		// Verify token
 		if (!verifyAccountToken(args.token)) {
 			throw new ForbiddenError(`invalidToken`);
 		}
@@ -78,32 +95,42 @@ export const editHistoryArticle = async (parent: any, args: any, context: any, i
 
 		validateHistoryArticle(args);
 
-		let originalArticle: DbHistoryArticle | undefined = <DbHistoryArticle | undefined> await historyCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
-		if (originalArticle === undefined) {
+		let originalArticle: WithId<DbHistoryArticle> = <WithId<DbHistoryArticle>> await historyCollection.findOne({ _id: new ObjectId(args.id) });
+		if (originalArticle === null) {
 			throw new UserInputError(`invalidHistoryId`);
 		}
 
-		// Modify the article
-		const modifiedArticle: DbHistoryArticle = {
-			_id: originalArticle?._id,
-			title: args.title,
-			content: args.content,
-			date: originalArticle?.date || 0,
-			author: getUsernameFromToken(args.token),
-			type: args.type,
-			font: args.font,
-			videoLink: args.videoLink || ``
+		// Create a list of the accounts that have written this article
+		let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ username: getUsernameFromToken(args.token) });
+		let authorList: string[] = originalArticle.author.split(` & `);
+		let currentAuthorName: string = `${account.firstName} ${account.lastName}`;
+		if (!authorList.includes(currentAuthorName)) {
+			authorList.push(currentAuthorName);
+		}
+
+		const modifiedArticle: WithId<DbHistoryArticle> = {
+			_id: originalArticle._id,
+			title: args.title ?? originalArticle.title,
+			content: args.content ?? originalArticle.content,
+			date: originalArticle.date,
+			author: authorList.join(` & `),
+			type: args.type ?? originalArticle.type,
+			font: args.font ?? originalArticle.font,
+			videoLink: args.videoLink?.length === 0 ? undefined : args.videoLink ?? originalArticle.videoLink
 		};
 
-		historyCollection.replaceOne({ _id: new ObjectId(args.id) }, modifiedArticle);
+		historyCollection.replaceOne({ _id: originalArticle._id }, modifiedArticle);
 
 		return {
-			id: args.id,
-			title: args.title,
-			content: args.content,
-			type: args.type,
-			font: args.font,
-			videoLink: args.videoLink
+			id: modifiedArticle._id.toString(),
+			title: modifiedArticle.title,
+			content: modifiedArticle.content,
+			preview: modifiedArticle.content.slice(0, 60),
+			date: modifiedArticle.date,
+			author: modifiedArticle.author,
+			type: modifiedArticle.type,
+			font: modifiedArticle.font,
+			videoLink: modifiedArticle.videoLink
 		}
 	} catch (e: any) {
 		console.log(e);
@@ -111,7 +138,11 @@ export const editHistoryArticle = async (parent: any, args: any, context: any, i
 	}
 }
 
-export const deleteHistoryArticle = async (parents: any, args: any, context: any, info: any) => {
+interface DeleteHistoryArticle {
+	token: string,
+	id: string
+}
+export const deleteHistoryArticle = async (_parents: any, args: DeleteHistoryArticle, _context: any, _info: any): Promise<HistoryArticle> => {
 	if (!verifyAccountToken(args.token)) {
 		throw new ForbiddenError(`invalidToken`);
 	}
@@ -120,17 +151,22 @@ export const deleteHistoryArticle = async (parents: any, args: any, context: any
 	}
 
 	// Check if the article exists
-	let article: DbHistoryArticle = <DbHistoryArticle> await historyCollection.findOne({ _id: new ObjectId(args.id) }).then(res => { return res; });
-	if (article === undefined) {
+	let article: WithId<DbHistoryArticle> = <WithId<DbHistoryArticle>> await historyCollection.findOne({ _id: new ObjectId(args.id) });
+	if (article === null) {
 		throw new UserInputError(`invalidHistoryId`);
 	}
 
-	historyCollection.deleteOne({ _id: new ObjectId(args.id) });
+	historyCollection.deleteOne({ _id: article._id });
 
-	// Return everything
 	return {
-		id: article._id,
+		id: article._id.toString(),
 		title: article.title,
-		content: article.content
+		content: article.content,
+		preview: article.content.slice(0, 60),
+		date: article.date,
+		author: article.author,
+		type: article.type,
+		font: article.font,
+		videoLink: article.videoLink
 	}
 }

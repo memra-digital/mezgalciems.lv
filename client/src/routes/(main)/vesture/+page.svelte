@@ -5,11 +5,11 @@
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { request, gql } from 'graphql-request';
+	import { request } from 'graphql-request';
 	import { apiUrl } from '$lib/globals';
 	import { parseURLs, escapeHTML } from '$lib/processing';
 
-	interface HistoryArticlePreview {
+	interface HistoryArticleListItem {
 		id: string,
 		title: string,
 		preview: string,
@@ -20,13 +20,13 @@
 		title: string,
 		content: string,
 		font: string,
-		videoLink: string
+		videoLink: string | null
 	}
 
 	let isLoadingContent: boolean = false,
 		loadingArticles: boolean = true;
 
-	let articleList: HistoryArticlePreview[] = [],
+	let articleList: HistoryArticleListItem[] = [],
 		currentArticle: HistoryArticle | null = null;
 		
 	let sidebarElement: HTMLElement,
@@ -78,7 +78,7 @@
 		`baptist`
 	];
 	const filterArticles = (index: number) => {
-		let results: HistoryArticlePreview[] = [];
+		let results: HistoryArticleListItem[] = [];
 		
 		if (index === 0) {
 			results = articleList;
@@ -183,7 +183,7 @@
 			{currentArticle.title}
 		</h1>
 
-		{#if currentArticle.videoLink !== ``}
+		{#if currentArticle.videoLink !== null}
 			<iframe
 				class="block w-full max-w-[28rem] aspect-video mx-auto mt-2 mb-4 rounded-3xl bg-black shadow-lg shadow-slate-800/20"
 				src="https://www.youtube.com/embed/{currentArticle.videoLink}"
