@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	import { cubicInOut, cubicOut } from 'svelte/easing';
 	import { year } from '$lib/globals';
 	import { afterNavigate } from '$app/navigation';
 	
@@ -35,13 +34,20 @@
 			name: `Vēsture`,
 			link: `/admin/vesture`,
 			icon: `clock-history`
-		},
-		/* {
-			name: `Konti`,
-			link: `/#/admin/konti`,
-			icon: `person`
-		}, */
+		}
 	];
+	let accountLinks: Link[] = [
+		{
+			name: `Konta iestatījumi`,
+			link: `/admin/konti/12345`,
+			icon: `gear`
+		},
+		{
+			name: `Visi konti`,
+			link: `/admin/konti`,
+			icon: `list-ul`
+		}
+	]
 	let selectedLink: string;
 
 	// Animation for mobile sidebar
@@ -51,44 +57,39 @@
 	});
 
 	// Account menu popup
-	/* let accountPopupElement: HTMLElement,
-		accountPopupOpen: boolean = false;
+	let	isAccountPopupOpen: boolean = false,
+		accountPopupElement: HTMLElement;
+	const accountPopupAnimationProgress = tweened(0, {
+		duration: 200,
+		easing: cubicInOut
+	});
 	const toggleAccountPopup = () => {
-		console.log(accountPopupElement, `toggle`);
-		if (accountPopupElement === null) {
-			return;
-		}
-
-		if (!accountPopupOpen) {
-			accountPopupElement.style.display = `block`;
-			setTimeout(() => accountPopupOpen = true, 10);
+		if (!isAccountPopupOpen) {
+			accountPopupAnimationProgress.set(1);
+			setTimeout(() => isAccountPopupOpen = true, 10);
 		} else {
-			accountPopupOpen = false;
-			setTimeout(() => accountPopupElement.style.display = `none`, 200);
+			accountPopupAnimationProgress.set(0);
+			isAccountPopupOpen = false;
 		}
 	}
 
 	// Close the account menu popup when it's open and you click anywhere else on the page
 	const bodyClick = (e: MouseEvent) => {
-		console.log(accountPopupElement, `bodyClick`);
 		if (accountPopupElement === null) {
 			return;
 		}
 
-		if (accountPopupOpen) {
-			if (e.target !== accountPopupElement &&
-				e.target !== accountPopupElement.children[0] &&
-				e.target !== accountPopupElement.children[0].children[0] &&
-				e.target !== accountPopupElement.children[1] &&
-				e.target !== accountPopupElement.children[2]) {
+		if (isAccountPopupOpen) {
+			if (!accountPopupElement.contains(<HTMLElement> e.target)) {
 				toggleAccountPopup();
 			}
 		}
-	} */
+	}
 
+	let username: string | null;
 	afterNavigate(() => {
 		// If the client has not been logged in, redirect to login page
-		const username: string | null = localStorage.getItem(`adminLoginUsername`);
+		username = localStorage.getItem(`adminLoginUsername`);
 		if (localStorage.getItem(`adminLoginToken`) === null || username === null) {
 			window.location.pathname = `/admin/ienakt`;
 		}
@@ -98,7 +99,7 @@
 	});
 </script>
 
-<!-- <svelte:body on:click={(e) => bodyClick(e)}></svelte:body> -->
+<svelte:body on:click={(e) => bodyClick(e)}></svelte:body>
 
 <div class="bg-slate-100 min-h-screen">
 	<nav class="block w-[95%] md:w-5/6 h-20 mx-auto border-b-2 border-slate-300">
@@ -113,57 +114,36 @@
 					</a>
 				{/each}
 
-				<a class="ml-2 hover:opacity-75 transition duration-200" on:click={() => localStorage.removeItem(`adminLoginToken`)} href="/admin/ienakt">
-					
-					<i class="bi bi-door-open"></i>
-					Iziet
-				</a>
-
-				<!-- <div
-					class="account">
-
-					<button
-						class:active={accountPopupOpen}
+				<div class="float-right">
+					<button class="text-2xl ml-2 transition mt-[-0.2rem]"
+						class:text-blue-500={isAccountPopupOpen}
 						on:click={() => toggleAccountPopup()}>
 
 						<i class="bi bi-person-circle"></i>
 					</button>
 
-					<div
-						class="account-popup"
-						class:account-popup-open={accountPopupOpen}
+					<div class="absolute right-16 block w-48 h-36 bg-white rounded-2xl shadow-lg shadow-slate-800/20 z-20 p-4 pt-2"
+						style="transform: translateY({(1 - $accountPopupAnimationProgress) * 10}px); opacity: {$accountPopupAnimationProgress}; display: {$accountPopupAnimationProgress === 0 ? `none` : `block`}"
 						bind:this={accountPopupElement}>
 
-						<b>
-							<i class="bi bi-person-circle"></i>
-							{username}
-						</b>
+						<b class="block w-full text-center">{username}</b>
 
-						<div class="separator"></div>
+						<div class="block w-full h-1 rounded bg-gradient-to-tl from-blue-500 to-sky-400 mb-2 mt-1"></div>
 
-						<a
-							href="/admin/iestatijumi">
+						{#each accountLinks as link}
+							<a class="block my-1 hover:opacity-75 transition" class:font-bold={selectedLink === link.link} class:text-blue-500={selectedLink === link.link} href={link.link}>
+								<i class="bi bi-{link.icon}"></i>
+								{link.name}
+							</a>
+						{/each}
 
-							<i class="bi bi-gear"></i>
-							Iestatījumi
-						</a>
-						<br />
-						<a
-							href="/admin/mainit-paroli">
-
-							<i class="bi bi-arrow-repeat"></i>
-							Mainīt paroli
-						</a>
-						<br />
-						<a
-							on:click={() => localStorage.removeItem(`adminLoginToken`)}
+						<a class="block my-1 hover:opacity-75 transition" on:click={() => localStorage.removeItem(`adminLoginToken`)}
 							href="/admin/ienakt">
-
 							<i class="bi bi-box-arrow-right"></i>
 							Iziet
 						</a>
 					</div>
-				</div> -->
+				</div>
 			</div>
 		</div>
 		<div class="lg:hidden">
