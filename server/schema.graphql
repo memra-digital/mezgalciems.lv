@@ -87,6 +87,7 @@ type Query {
 	statistics(token: String!): Statistics!
 
 	accounts(token: String!): [Account!]!
+	account(token: String!, id: ID!): Account!
 }
 
 type Mutation {

@@ -5,7 +5,7 @@
 	import { apiUrl } from '$lib/globals';
 	import { request, gql } from 'graphql-request';
 
-	let loading: boolean = true;
+	let isLoading: boolean = true;
 	
 	let visitorsInLast7Days: number = 0;
 	let visitorsToday: number = 0;
@@ -43,7 +43,7 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loading = false;
+			isLoading = false;
 
 			visitorsInLast7Days = data.statistics.visitorsInLast7Days;
 			visitorsToday = data.statistics.visitorsToday;
@@ -97,7 +97,7 @@
 <svelte:body class="admin"></svelte:body>
 
 <h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Statistika</h1>
-{#if loading}
+{#if isLoading}
 	<Loading />
 {:else}
 	<div class="flex flex-wrap gap-4">

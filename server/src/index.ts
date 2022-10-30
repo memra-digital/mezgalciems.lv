@@ -13,7 +13,7 @@ import * as config from './config.json';
 import { getArticle, getArticles } from './articles/queries';
 import { getInformation } from './information/queries';
 import { getHistoryArticle, getHistoryArticles } from './history/queries';
-import { getAccounts, login } from './account/queries';
+import { getAccount, getAccounts, login } from './account/queries';
 import { getStatistics } from './statistics/queries';
 import { createArticle, editArticle, deleteArticle } from './articles/mutations';
 import { editInformation } from './information/mutations';
@@ -42,7 +42,8 @@ dbClient.connect().then(async () => {
 
 			statistics: getStatistics,
 
-			accounts: getAccounts
+			accounts: getAccounts,
+			account: getAccount
 		},
 		Mutation: {
 			createArticle: createArticle,
