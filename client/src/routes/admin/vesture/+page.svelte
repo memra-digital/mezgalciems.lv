@@ -25,16 +25,19 @@
 		duration: 300,
 		easing: cubicInOut
 	});
+
+	let selectedArticleType: number = 0,
+		selectedFont: number = 0;
 	
 	interface HistoryArticleListItem {
-		id: number,
+		id: string,
 		title: string,
 		preview: string
 	}
 	let articleList: HistoryArticleListItem[];
 
 	interface HistoryArticle {
-		id: number,
+		id: string,
 		title: string,
 		content: string,
 		type: string,
@@ -43,7 +46,7 @@
 	}
 
 	let editorArticle: HistoryArticle = {
-		id: -1,
+		id: ``,
 		title: ``,
 		content: ``,
 		type: ``,
@@ -74,13 +77,13 @@
 			articleList = data.historyArticles.articles;
 		});
 	}
-	const openArticle = (id: number) => {
+	const openArticle = (id: string) => {
 		pageTransitionProgress.set(-1);
 		isLoadingEditor = true;
 
 		const query = gql`
 			{
-				historyArticle(id: ${id.toString()}) {
+				historyArticle(id: "${id.toString()}") {
 					id
 					title
 					content
@@ -92,7 +95,14 @@
 		`;
 		request(apiUrl, query).then((data: any) => {
 			isLoadingEditor = false;
+
 			editorArticle = data.historyArticle;
+
+			editorArticle.videoLink = editorArticle.videoLink ?? ``;
+
+			selectedArticleType = data.historyArticle.type === `church` ? 0 : 1;
+			selectedFont = data.historyArticle.font === `sans` ? 0 : 1;
+
 			window.location.hash = editorArticle.id.toString();
 		});
 	}
@@ -103,7 +113,7 @@
 		window.location.hash = `jauns`;
 
 		editorArticle = {
-			id: -1,
+			id: ``,
 			title: ``,
 			content: ``,
 			type: `church`,
@@ -115,19 +125,22 @@
 	const saveArticle = () => {
 		isSaving = true;
 
+		editorArticle.type = [`church`, `baptist`][selectedArticleType];
+		editorArticle.font = [`sans`, `serif`][selectedFont];
+
 		let mutation;
-		if (editorArticle.id === -1) {
+		if (editorArticle.id === ``) {
 			mutation = gql`
-				mutation addHistoryArticle {
-					addHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				mutation createHistoryArticle {
+					createHistoryArticle(title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 						id
 					}
 				}
 			`;
 		} else {
 			mutation = gql`
-				mutation modifyHistoryArticle {
-					modifyHistoryArticle(id: ${editorArticle.id}, title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminLoginToken`)}") {
+				mutation editHistoryArticle {
+					editHistoryArticle(id: "${editorArticle.id}", title: "${editorArticle.title.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", content: "${editorArticle.content.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", type: "${editorArticle.type}", font: "${editorArticle.font}", videoLink: "${editorArticle.videoLink.replaceAll(`\n`, `\\n`).replaceAll(`"`, `\\"`)}", token: "${localStorage.getItem(`adminAccountToken`)}") {
 						id
 					}
 				}
@@ -137,19 +150,20 @@
 		request(apiUrl, mutation).then((data: any) => {
 			isSaving = false;
 
-			if (editorArticle.id === -1) {
-				editorArticle.id = data.addHistoryArticle.id;
+			if (editorArticle.id === ``) {
+				editorArticle.id = data.createHistoryArticle.id;
 				window.location.hash = editorArticle.id.toString();
 			}
 		});
 	}
 
-	const deleteArticle = (id: number) => {
+	const deleteArticle = (id: string) => {
 		isLoadingEditor = true;
 
 		const mutation = gql`
-			mutation removeHistoryArticle {
-				removeHistoryArticle(id: ${id.toString()}, token: "${localStorage.getItem(`adminLoginToken`)}") {
+			mutation deleteHistoryArticle {
+				deleteHistoryArticle(id: "${id.toString()}", token: "${localStorage.getItem(`adminAccountToken`)}") {
+					id
 				}
 			}
 		`;
@@ -169,7 +183,7 @@
 		} else if (window.location.hash.trim() === `#jauns`) {
 			newArticle();
 		} else {
-			openArticle(parseInt(window.location.hash.slice(1).trim()));
+			openArticle(window.location.hash.slice(1).trim());
 		}
 	});
 </script>
@@ -184,7 +198,7 @@
 	<div class="absolute top-0 grid grid-cols-2 w-[200%] h-full"
 		style="left: calc({$pageTransitionProgress} * 100%);">
 
-		<div class="h-full">
+		<div class="h-full overflow-y-auto">
 
 			<button class="block bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 mb-2 mx-auto w-2/3 xs:w-1/3 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200"
 				on:click={() => newArticle()}>
@@ -224,7 +238,7 @@
 				<div class="float-right">
 					{#if isSaving}
 						<p class="inline-block w-24 text-center">Saglabā...</p>
-					{:else if editorArticle.id != -1}
+					{:else if editorArticle.id !== ``}
 						<button class="bg-gradient-to-tl from-blue-600 to-blue-300 text-white py-1 px-4 rounded-full shadow-sm shadow-blue-200 hover:shadow-md hover:shadow-blue-200 hover:brightness-95 duration-200"
 							on:click={() => saveArticle()}>
 							
@@ -247,10 +261,10 @@
 
 				<div class="block mt-2">
 					<p class="inline-block">Kategorija: </p>
-					<Dropdown options={[`Draudzes vēsture`, `Baptistu vēsture`]} selected={editorArticle.type === `church` ? 0 : 1} />
+					<Dropdown options={[`Draudzes vēsture`, `Baptistu vēsture`]} bind:selected={selectedArticleType} />
 
 					<p class="inline-block ml-4">Fonts: </p>
-					<Dropdown options={[`Sans`, `Serif`]} selected={editorArticle.font === `sans` ? 0 : 1} />
+					<Dropdown options={[`Sans`, `Serif`]} bind:selected={selectedFont} />
 				</div>
 
 				<input class="block mt-2 pt-1 text-center text-2xl font-bold font-title w-full rounded-lg bg-white border border-slate-300 focus:border-2 focus:border-blue-500 transition duration-200"

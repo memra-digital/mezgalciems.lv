@@ -13,13 +13,14 @@ import * as config from './config.json';
 import { getArticle, getArticles } from './articles/queries';
 import { getInformation } from './information/queries';
 import { getHistoryArticle, getHistoryArticles } from './history/queries';
-import { login } from './account/queries';
+import { getAccount, getAccounts, login } from './account/queries';
 import { getStatistics } from './statistics/queries';
-import { addArticle, modifyArticle, removeArticle } from './articles/mutations';
-import { modifyInformation } from './information/mutations';
-import { addHistoryArticle, modifyHistoryArticle, removeHistoryArticle } from './history/mutations';
+import { createArticle, editArticle, deleteArticle } from './articles/mutations';
+import { editInformation } from './information/mutations';
+import { createHistoryArticle, editHistoryArticle, deleteHistoryArticle } from './history/mutations';
 import { registerPageView } from './statistics/mutations';
 import { dbClient } from './database';
+import { createAccount, changeAccountPassword, editAccount, deleteAccount } from './account/mutations';
 
 console.log(`✅ Started mezgalciems.lv backend server!`);
 
@@ -40,20 +41,27 @@ dbClient.connect().then(async () => {
 			login: login,
 
 			statistics: getStatistics,
+
+			accounts: getAccounts,
+			account: getAccount
 		},
 		Mutation: {
-			addArticle: addArticle,
-			modifyArticle: modifyArticle,
-			removeArticle: removeArticle,
+			createArticle: createArticle,
+			editArticle: editArticle,
+			deleteArticle: deleteArticle,
 
-			modifyInformation: modifyInformation,
+			editInformation: editInformation,
 
-			addHistoryArticle: addHistoryArticle,
-			modifyHistoryArticle: modifyHistoryArticle,
-			removeHistoryArticle: removeHistoryArticle,
+			createHistoryArticle: createHistoryArticle,
+			editHistoryArticle: editHistoryArticle,
+			deleteHistoryArticle: deleteHistoryArticle,
 
-			registerPageView: registerPageView
+			registerPageView: registerPageView,
 
+			createAccount: createAccount,
+			editAccount: editAccount,
+			changeAccountPassword: changeAccountPassword,
+			deleteAccount: deleteAccount
 		}
 	};
 

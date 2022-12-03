@@ -71,7 +71,7 @@
 		// Send statistical data
 		request(apiUrl, `
 			mutation registerPageView {
-				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`)}")
+				registerPageView(page: "${currentPage}", user: "${localStorage.getItem(`statisticsUserToken`) ?? ``}")
 			}
 		`);
 	});
@@ -84,7 +84,7 @@
 
 <svelte:window on:scroll={(e) => updateStickiness()} bind:scrollY={y}/>
 
-<div class="bg-slate-50 print:bg-white">
+<div class="bg-slate-50 print:bg-white min-h-[100vh]">
 	<CookieNotice />
 
 	<header class="print:hidden">

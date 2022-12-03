@@ -1,12 +1,9 @@
 import * as dotenv from 'dotenv';
 import { sign, verify, decode } from 'jsonwebtoken';
+import { AccountToken } from '../schemas';
 
 dotenv.config();
 const jwtSecretKey: string = process.env.JWT_PRIVATE_KEY || ``;
-
-export interface AccountToken {
-	username: string
-}
 
 export const createAccountToken = (username: string): string => {
 	return sign({

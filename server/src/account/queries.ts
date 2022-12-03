@@ -1,51 +1,141 @@
-import { AuthenticationError } from 'apollo-server-express';
+import { ApolloError, AuthenticationError, UserInputError } from 'apollo-server-express';
 import { hash, compare } from 'bcrypt';
-import { ObjectId } from 'mongodb';
+import { InsertOneResult, ObjectId, WithId } from 'mongodb';
 import { accountCollection } from '../database';
-import { DbAccount } from '../schemas';
-import { createAccountToken } from './tokens';
+import { Account, DbAccount } from '../schemas';
+import { getPermission } from './permissions';
+import { createAccountToken, getUsernameFromToken, verifyAccountToken } from './tokens';
 
-export const login = async (parent: any, args: any, context: any, info: any) => {
-	let shouldRegister: boolean = await accountCollection.find({}).toArray().then((res: any) => { return res.length === 0; });
+interface LoginArgs {
+	username: string,
+	password: string
+}
+interface LoginReturn {
+	token: string,
+	id: string,
+	username: string,
+	firstName: string,
+	lastName: string,
+	permissions: number
+}
+export const login = async (_parent: any, args: LoginArgs, _context: any, _info: any): Promise<LoginReturn> => {
+	try {
+		if (args.username.trim() === ``) {
+			throw new UserInputError(`emptyUsername`);
+		}
+		if (args.password.trim() === ``) {
+			throw new UserInputError(`emptyPassword`);
+		}
 
-	if (shouldRegister) {
-		let hashedPwd: string = await hash(args.password, 10).then((res: any) => { return res; });
+		let shouldRegister: boolean = await accountCollection.find({}).toArray().then((res: any) => { return res.length === 0; });
 
-		accountCollection.insertOne({
-			_id: new ObjectId(`0`),
-			username: args.username,
-			password: hashedPwd,
-			email: ``,
-			firstName: ``,
-			lastName: ``,
-			permissions: 63
-		});
+		if (shouldRegister) {
+			let hashedPwd: string = await hash(args.password, 10);
+
+			let newAccount: InsertOneResult<Document> = await accountCollection.insertOne({
+				username: args.username,
+				password: hashedPwd,
+				firstName: ``,
+				lastName: ``,
+				permissions: 255
+			});
+
+			return await {
+				token: createAccountToken(args.username),
+				id: newAccount.insertedId.toString(),
+				username: args.username,
+				firstName: ``,
+				lastName: ``,
+				permissions: 255
+			};
+		}
+
+		let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ username: args.username });
+		let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``);
+
+		if (account === null || !isPwdCorrect) {
+			throw new AuthenticationError(`invalidUsernameOrPassword`);
+		}
 
 		return await {
-			token: createAccountToken(args.username)
+			token: createAccountToken(account.username),
+			id: account._id.toString(),
+			username: account.username,
+			firstName: account.firstName,
+			lastName: account.lastName,
+			permissions: account.permissions
 		};
+	} catch (e) {
+		console.log(e);
+		throw new ApolloError(`unknown`);
 	}
-
-	let account: DbAccount = await accountCollection.findOne({ username: args.username }).then((res: any) => { return res; });
-	let isPwdCorrect: boolean = await compare(args.password, account?.password ?? ``).then((res: any) => { return res; });
-
-	if (account === null || !isPwdCorrect) {
-		throw new AuthenticationError(`invalidUsernameOrPassword`);
-	}
-
-	return await {
-		token: createAccountToken(account.username)
-	};
 }
 
-/*
+interface GetAccountsArgs {
+	token: string
+}
+export const getAccounts = async (_parent: any, args: GetAccountsArgs, _context: any, _info: any): Promise<Account[]> => {
+	try {
+		if (!verifyAccountToken(args.token)) {
+			throw new UserInputError(`invalidToken`);
+		}
+		
+		let canSeeOtherAccounts: boolean = await getPermission(args.token, 4);
 
-Permission integer:
+		let accounts: Account[] = await accountCollection.find({}).sort({ _id: -1 }).toArray().then(async (res) => {
+			let processed: Account[] = [];
 
-1. - Add/edit articles
-2. - Modify information
-3. - Add/edit history
-4. - Delete articles/history
-5. - Add/modify new accounts
-6. - View statistics
-*/
+			for (let i: number = 0; i < res.length; i++) {
+				if (canSeeOtherAccounts || res[i].username === getUsernameFromToken(args.token)) {
+					processed.push({
+						id: res[i]._id.toString(),
+						username: res[i].username,
+						firstName: res[i].firstName,
+						lastName: res[i].lastName,
+						permissions: res[i].permissions
+					});
+				}
+			}
+
+			return processed;
+		});
+		
+		return accounts;
+	} catch (e) {
+		console.log(e);
+		throw new ApolloError(`unknown`);
+	}
+}
+
+interface GetAccountArgs {
+	token: string,
+	id: string
+}
+export const getAccount = async (_parent: any, args: GetAccountArgs, _context: any, _info: any): Promise<Account> => {
+	try {
+		if (!verifyAccountToken(args.token)) {
+			throw new UserInputError(`invalidToken`);
+		}
+
+		let account: WithId<DbAccount> = <WithId<DbAccount>> await accountCollection.findOne({ _id: new ObjectId(args.id)});
+		if (account === null) {
+			throw new UserInputError(`invalidAccountId`);
+		}
+
+		let canSeeOtherAccounts: boolean = await getPermission(args.token, 4);
+		if (!canSeeOtherAccounts && account.username !== getUsernameFromToken(args.token)) {
+			throw new UserInputError(`invalidAccountId`);
+		}
+
+		return {
+			id: account._id.toString(),
+			username: account.username,
+			firstName: account.firstName,
+			lastName: account.lastName,
+			permissions: account.permissions
+		};
+	} catch (e) {
+		console.log(e);
+		throw new ApolloError(`unknown`);
+	}
+}

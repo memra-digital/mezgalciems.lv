@@ -1,6 +1,6 @@
 import imgbbUploader from 'imgbb-uploader';
 
-export const uploadImg = (image: string) => {
+export const uploadImg = (image: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
 		let imageInput: string[] = image.split(`,`);
 		imageInput.splice(0, 1);
@@ -10,6 +10,8 @@ export const uploadImg = (image: string) => {
 			base64string: imageInput.join(``)
 		}).then((res: any) => {
 			resolve(res);
+		}).catch((err: any) => {
+			reject(err);
 		});
 	});
 }

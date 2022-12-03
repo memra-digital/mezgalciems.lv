@@ -5,7 +5,7 @@
 	import { apiUrl } from '$lib/globals';
 	import { request, gql } from 'graphql-request';
 
-	let loading: boolean = true;
+	let isLoading: boolean = true;
 	
 	let visitorsInLast7Days: number = 0;
 	let visitorsToday: number = 0;
@@ -24,7 +24,7 @@
 	onMount(async () => {
 		const query = gql`
 			{
-				statistics(token: "${localStorage.getItem(`adminLoginToken`)}") {
+				statistics(token: "${localStorage.getItem(`adminAccountToken`)}") {
 					visitorsInLast7Days
 					visitorsToday
 
@@ -43,7 +43,7 @@
 			}
 		`;
 		request(apiUrl, query).then((data: any) => {
-			loading = false;
+			isLoading = false;
 
 			visitorsInLast7Days = data.statistics.visitorsInLast7Days;
 			visitorsToday = data.statistics.visitorsToday;
@@ -67,7 +67,7 @@
 		"ka-noklut": `Kā nokļūt`,
 		"norises-draudze": `Norises draudzē`,
 		"vesture": `Vēsture`,
-		"privatuma-politika": `Privātuma politika`,
+		"privatuma-politika": `Privātuma politika`
 	}
 
 	let weekDayList: string[] = [
@@ -97,7 +97,7 @@
 <svelte:body class="admin"></svelte:body>
 
 <h1 class="font-title text-3xl text-slate-900 mt-4 mb-2">Statistika</h1>
-{#if loading}
+{#if isLoading}
 	<Loading />
 {:else}
 	<div class="flex flex-wrap gap-4">
@@ -113,14 +113,18 @@
 			<h1 class="text-4xl font-title text-slate-900">{viewsInLast7Days}</h1>
 			<p class="text-slate-600 font-bold">skatījumi pēdējās 7 dienās</p>
 		</div>
-		<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-			<h1 class="text-4xl font-title text-slate-900">{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
-			<p class="text-slate-600 font-bold">ir visapmeklētākā lapa</p>
-		</div>
-		<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
-			<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
-			<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
-		</div>
+
+		{#if mostViewedPage !== null}
+			<div class="grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{pageNames[mostViewedPage] === undefined ? `404` : pageNames[mostViewedPage]}</h1>
+				<p class="text-slate-600 font-bold">ir visapmeklētākā lapa</p>
+			</div>
+			<div class="grow text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
+				<h1 class="text-4xl font-title text-slate-900">{mostViewedPageViews}</h1>
+				<p class="text-slate-600 font-bold">skatījumi visapmeklētākajai lapai</p>
+			</div>
+		{/if}
+
 		<div class="hidden sm:block grow-[6] text-center rounded-3xl bg-white p-2 shadow-md shadow-slate-300">
 			<div class="flex items-end justify-center h-60">
 				<div

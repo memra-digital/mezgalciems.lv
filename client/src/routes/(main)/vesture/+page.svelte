@@ -5,28 +5,28 @@
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { request, gql } from 'graphql-request';
+	import { request } from 'graphql-request';
 	import { apiUrl } from '$lib/globals';
 	import { parseURLs, escapeHTML } from '$lib/processing';
 
-	interface HistoryArticlePreview {
-		id: number,
+	interface HistoryArticleListItem {
+		id: string,
 		title: string,
 		preview: string,
 		type: string
 	}
 	interface HistoryArticle {
-		id: number,
+		id: string,
 		title: string,
 		content: string,
 		font: string,
-		videoLink: string
+		videoLink: string | null
 	}
 
 	let isLoadingContent: boolean = false,
 		loadingArticles: boolean = true;
 
-	let articleList: HistoryArticlePreview[] = [],
+	let articleList: HistoryArticleListItem[] = [],
 		currentArticle: HistoryArticle | null = null;
 		
 	let sidebarElement: HTMLElement,
@@ -35,12 +35,12 @@
 	let currentArticleFilterOption: number;
 
 	// Fetches the content of the article
-	const loadArticle = (id: number) => {
+	const loadArticle = (id: string) => {
 		isLoadingContent = true;
 
 		request(apiUrl, `
 			{
-				historyArticle(id: ${id.toString()}) {
+				historyArticle(id: "${id.toString()}") {
 					id
 					title
 					content
@@ -60,7 +60,7 @@
 		if (window.pageYOffset >= sidebarHeight - 64) {
 			sidebarElement.style.position = `fixed`;
 			sidebarElement.style.top = `4rem`;
-			sidebarElement.style.width = `30%`;
+			sidebarElement.style.width = `26.4vw`;
 		} else {
 			sidebarElement.style.position = `static`;
 			sidebarElement.style.width = `100%`;
@@ -78,7 +78,7 @@
 		`baptist`
 	];
 	const filterArticles = (index: number) => {
-		let results: HistoryArticlePreview[] = [];
+		let results: HistoryArticleListItem[] = [];
 		
 		if (index === 0) {
 			results = articleList;
@@ -132,7 +132,7 @@
 
 <h1 class="font-title font-bold text-3xl text-slate-900 mb-4 print:mb-0">Vēsture</h1>
 
-<div class="hidden md:inline-block inline-block w-2/5 align-top print:hidden">
+<div class="hidden md:inline-block inline-block w-1/3 align-top print:hidden">
 	<div class="hidden md:block" bind:this={sidebarElement}>
 		<div class="mb-4 h-8">
 			<p class="inline-block">Rādīt: </p>
@@ -145,12 +145,12 @@
 		</div>
 
 		<div
-			class="pt-2 max-h-[calc(80vh - 3rem)] overflow-y-auto overflow-x-hidden">
+			class="pt-2 block h-[calc(80vh-6rem)] overflow-y-auto overflow-x-hidden">
 			
 			{#each filterArticles(currentArticleFilterOption) as article}
 				<button
 					class="block text-left mb-6 w-full hover:opacity-75 transition duration-200"
-					class:opacity-75={(currentArticle?.id ?? -1) === article.id}
+					class:opacity-75={(currentArticle?.id || ``) === article.id}
 					on:click={() => loadArticle(article.id)}>
 
 					<b class="font-title text-slate-900 leading-5">{article.title}</b>
@@ -175,7 +175,7 @@
 	</button>
 </div>
 
-<div class="inline-block w-full md:w-3/5 ml-[-5px] mt-4 md:mt-0">
+<div class="inline-block w-full md:w-3/5 ml-[-5px] mt-4 md:mt-0 min-h-[80vh]">
 	{#if isLoadingContent}
 		<Loading />
 	{:else if currentArticle !== null}
@@ -183,7 +183,7 @@
 			{currentArticle.title}
 		</h1>
 
-		{#if currentArticle.videoLink !== ``}
+		{#if currentArticle.videoLink !== null}
 			<iframe
 				class="block w-full max-w-[28rem] aspect-video mx-auto mt-2 mb-4 rounded-3xl bg-black shadow-lg shadow-slate-800/20"
 				src="https://www.youtube.com/embed/{currentArticle.videoLink}"

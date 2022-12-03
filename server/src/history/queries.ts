@@ -1,23 +1,30 @@
 import { ApolloError } from 'apollo-server-express';
+import { ObjectId, WithId } from 'mongodb';
 import { historyCollection } from '../database';
-import { HistoryArticlePreview, DbHistoryArticle } from '../schemas';
+import { DbHistoryArticle, HistoryArticle } from '../schemas';
 
-export const getHistoryArticles = async (parent: any, args: any, context: any, info: any) => {
+interface GetHistoryArticlesArgs {}
+interface GetHistoryArticlesReturn {
+	articles: HistoryArticle[],
+	totalArticles: number
+}
+export const getHistoryArticles = async (_parent: any, args: GetHistoryArticlesArgs, _context: any, _info: any): Promise<GetHistoryArticlesReturn> => {
 	let totalArticles: number = 0;
-	let totalPages: number = 0;
 
-	let articles: HistoryArticlePreview[] = await historyCollection.find({}).sort({ _id: -1 }).toArray().then(res => {
+	let articles: HistoryArticle[] = await historyCollection.find({}).sort({ _id: -1 }).toArray().then((res: any) => {
 		totalArticles = res.length;
 
-		let processed: HistoryArticlePreview[] = [];
+		let processed: HistoryArticle[] = [];
 		for (let i = 0; i < res.length; i++) {
 			processed.push({
-				id: parseInt(res[i]._id.toString()),
+				id: res[i]._id.toString(),
 				title: res[i].title,
-				preview: `${res[i].content.substr(0, 50)}`,
+				content: res[i].content,
+				preview: res[i].content.slice(0, 60),
 				date: res[i].date,
 				author: res[i].author,
 				type: res[i].type,
+				font: res[i].font,
 				videoLink: res[i].videoLink
 			});
 		}
@@ -27,27 +34,28 @@ export const getHistoryArticles = async (parent: any, args: any, context: any, i
 
 	return {
 		totalArticles,
-		totalPages,
-		page: args.page,
 		articles
 	};
 }
 
-export const getHistoryArticle = async (parent: any, args: any, context: any, info: any) => {
-	let dbArticle: DbHistoryArticle | null = <DbHistoryArticle | null> await historyCollection.findOne({ _id: args.id });
-
-	if (dbArticle === null) {
+interface GetHistoryArticleArgs {
+	id: string
+}
+export const getHistoryArticle = async (_parent: any, args: GetHistoryArticleArgs, _context: any, _info: any): Promise<HistoryArticle> => {
+	let article: WithId<DbHistoryArticle> = <WithId<DbHistoryArticle>> await historyCollection.findOne({ _id: new ObjectId(args.id) });
+	if (article === null) {
 		throw new ApolloError(`unknown`);
 	}
 
 	return {
-		id: parseInt(dbArticle._id.toString()),
-		title: dbArticle.title,
-		content: dbArticle.content,
-		date: dbArticle.date,
-		author: dbArticle.author,
-		type: dbArticle.type,
-		font: dbArticle.font,
-		videoLink: dbArticle.videoLink
+		id: article._id.toString(),
+		title: article.title,
+		content: article.content,
+		preview: article.content.slice(0, 60),
+		date: article.date,
+		author: article.author,
+		type: article.type,
+		font: article.font,
+		videoLink: article.videoLink
 	};
 }

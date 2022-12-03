@@ -1,16 +1,15 @@
-export const formatDate = (input: string) => {
-	let nextServiceDate: Date = new Date();
-
-	let date: string[] = input.split(`-`);
-	nextServiceDate.setDate(parseInt(date[0]));
-	nextServiceDate.setMonth(parseInt(date[1]) - 1);
-	nextServiceDate.setHours(parseInt(date[2]));
-	nextServiceDate.setMinutes(parseInt(date[3]));
+export const formatDate = (input: number) => {
+	let nextServiceDate: Date = new Date(input);
 
 	let hour: string = nextServiceDate.getHours().toString();
 	let minute: string = nextServiceDate.getMinutes().toString();
 
-	let monthNumber: number = nextServiceDate.getMonth() + 1
+	let year: string = ``;
+	if (nextServiceDate.getFullYear() !== (new Date()).getFullYear()) {
+		year = ` ${nextServiceDate.getFullYear()}. gada`;
+	}
+
+	let monthNumber: number = nextServiceDate.getMonth() + 1;
 	let month: string = ``;
 	switch (monthNumber) {
 		case 1:
@@ -79,7 +78,7 @@ export const formatDate = (input: string) => {
 	if (parseInt(hour) < 10) hour = `0` + hour;
 	if (parseInt(minute) < 10) minute = `0` + minute;
 
-	return `${weekday}, ${nextServiceDate.getDate()}. ${month} ${hour}:${minute}`;
+	return `${weekday},${year} ${nextServiceDate.getDate()}. ${month} ${hour}:${minute}`;
 }
 
 export const parseURLs = (text: string) => {
@@ -95,7 +94,7 @@ export const parseURLs = (text: string) => {
 }
 export const escapeHTML = (text: string) => {
 	return text.split(`<`).join(`&lt;`).split(`>`).join(`&gt;`);
-	// For context, you can replace all occurances of a string inside of a string with .split(originalWord).join(newWord).
+	// For context, you can replace all occurrence of a string inside of a string with .split(originalWord).join(newWord).
 	// For whatever reason, Typescript throws an error when using string.replaceAll(), says that I should set the compilation
 	// target to es2021 or later, but when I do, it says that target doesn't even exist. Welp, what can I expect from Microsoft... 🤷
 }

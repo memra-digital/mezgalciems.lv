@@ -1,115 +1,110 @@
-type ArticlePage {
-	articles: [Article!]
-	totalArticles: Int
-	totalPages: Int
-	page: Int
-}
+scalar Int64
+
 type Article {
-	id: Int!
-	title: String
-	content: String
-	image: String
-	imageAlt: String
-	date: String
-	edited: Boolean
-	author: String
+	id: ID!
+	title: String!
+	content: String!
+	image: String!
+	imageAlt: String!
+	date: Int64!
+	edited: Boolean!
+	author: String!
 }
-type ArticleMutationResult {
-	id: Int!
-	title: String
-	content: String
-	imageAlt: String
-	edited: Boolean
+type ArticlePage {
+	articles: [Article!]!
+	totalArticles: Int!
+	totalPages: Int!
+	page: Int!
 }
 
 type Information {
-	nextDate: String
-	dateInfo: String
-	information: String
-}
-type InformationMutationResult {
-	nextDate: String
-	dateInfo: String
-	information: String
+	nextDate: Int64
+	dateInfo: String!
+	information: String!
 }
 
-type HistoryArticleList {
-	articles: [HistoryArticlePreview!]
-	totalArticles: Int
-	page: Int
-}
-type HistoryArticlePreview {
-	id: Int!
-	title: String
-	preview: String
-	date: String
-	author: String
-	type: String
-}
 type HistoryArticle {
-	id: Int
-	title: String
-	content: String
-	date: String
-	author: String
-	type: String
-	font: String
+	id: ID!
+	title: String!
+	content: String!
+	preview: String!
+	date: String!
+	author: String!
+	type: String!
+	font: String!
 	videoLink: String
 }
-type HistoryArticleMutationResult {
-	id: Int
-	title: String
-	content: String
-	type: String
-	font: String
-	videoLink: String
+type HistoryArticleList {
+	articles: [HistoryArticle!]!
+	totalArticles: Int!
 }
 
 type LoginDetails {
-	token: String
+	token: String!
+	id: ID!
+	username: String!
+	firstName: String!
+	lastName: String!
+	permissions: Int!
 }
 
 type Statistics {
-	visitorsInLast7Days: Int
-	visitorsToday: Int
+	visitorsInLast7Days: Int!
+	visitorsToday: Int!
 
 	mostViewedPage: String
 	mostViewedPageViews: Int
 
-	viewsInLast7Days: Int
-	viewsToday: Int
-	views6DaysAgo: Int
-	views5DaysAgo: Int
-	views4DaysAgo: Int
-	views3DaysAgo: Int
-	views2DaysAgo: Int
-	viewsYesterday: Int
+	viewsInLast7Days: Int!
+	viewsToday: Int!
+	views6DaysAgo: Int!
+	views5DaysAgo: Int!
+	views4DaysAgo: Int!
+	views3DaysAgo: Int!
+	views2DaysAgo: Int!
+	viewsYesterday: Int!
+}
+
+type Account {
+	id: ID!
+	username: String!
+	firstName: String!
+	lastName: String!
+	permissions: Int!
 }
 
 type Query {
 	articles(page: Int!): ArticlePage!
-	article(id: Int!): Article
+	article(id: ID!): Article!
 
-	information: Information
+	information: Information!
 
 	historyArticles: HistoryArticleList!
-	historyArticle(id: Int!): HistoryArticle!
+	historyArticle(id: ID!): HistoryArticle!
 
-	login(username: String!, password: String!): LoginDetails
+	login(username: String!, password: String!): LoginDetails!
 
-	statistics(token: String!): Statistics
+	statistics(token: String!): Statistics!
+
+	accounts(token: String!): [Account!]!
+	account(token: String!, id: ID!): Account!
 }
 
 type Mutation {
-	addArticle(title: String!, content: String!, image: String!, imageAlt: String!, token: String!): ArticleMutationResult
-	modifyArticle(id: Int!, title: String!, content: String! imageAlt: String!, token: String!): ArticleMutationResult
-	removeArticle(id: Int!, token: String!): ArticleMutationResult
+	registerPageView(page: String!, user: String): Boolean!
 
-	modifyInformation(nextDate: String!, dateInfo: String!, information: String!, token: String!): InformationMutationResult
+	createArticle(token: String!, title: String!, content: String!, image: String!, imageAlt: String!): Article!
+	editArticle(token: String!, id: ID!, title: String!, content: String! imageAlt: String!): Article!
+	deleteArticle(token: String!, id: ID!): Article!
 
-	addHistoryArticle(title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticleMutationResult
-	modifyHistoryArticle(id: Int!, title: String!, content: String!, type: String!, font: String!, videoLink: String, token: String!): HistoryArticleMutationResult
-	removeHistoryArticle(id: Int!, token: String!): HistoryArticleMutationResult
+	editInformation(token: String!, nextDate: Int64, dateInfo: String!, information: String!): Information!
 
-	registerPageView(page: String!, user: String): Boolean
+	createHistoryArticle(token: String!, title: String!, content: String!, type: String!, font: String!, videoLink: String): HistoryArticle!
+	editHistoryArticle(token: String!, id: ID!, title: String, content: String, type: String, font: String, videoLink: String): HistoryArticle!
+	deleteHistoryArticle(token: String!, id: ID!): HistoryArticle!
+
+	createAccount(token: String!, username: String!, password: String!, firstName: String!, lastName: String!, permissions: Int!): Account!
+	editAccount(token: String!, id: ID!, username: String!, firstName: String!, lastName: String!, permissions: Int!): Account!
+	changeAccountPassword(token: String!, oldPassword: String!, newPassword: String!): Account!
+	deleteAccount(token: String!, id: ID!): Account!
 }
