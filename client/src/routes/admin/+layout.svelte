@@ -100,7 +100,7 @@
 			localStorage.removeItem(`adminAccountToken`);
 		}
 
-		accountLinks[0].link = `/admin/konti/${accountId}`;
+		//accountLinks[0].link = `/admin/konti/${accountId}`;
 
 		// Set the selected link
 		selectedLink = window.location.pathname;

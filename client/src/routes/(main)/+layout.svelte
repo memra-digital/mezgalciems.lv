@@ -54,15 +54,19 @@
 	let mainElement: HTMLElement;
 
 	afterNavigate((nav) => {
-		currentPage = nav.to.pathname.split(`/`).pop();
+		if (nav.to === null) {
+			return;
+		}
+
+		currentPage = nav.to.url.pathname.split(`/`).pop();
 
 		// Redirect #/admin/* links to the new ones to avoid any confusion
-		if (nav.to.hash.includes(`admin`)) {
+		if (nav.to.url.hash.includes(`admin`)) {
 			window.location.pathname = `/admin/ienakt`;
 		}
 		
 		// Some pages might require wider main elements
-		if (nav.to.pathname === `/vesture`) {
+		if (nav.to.url.pathname === `/vesture`) {
 			mainElement.style.width = `80vw`;
 		} else {
 			mainElement.style.width = ``;
