@@ -39,6 +39,7 @@
 			totalPages = data.articles.totalPages;
 
 			articles = [...articles, ...data.articles.articles];
+			console.log(articles)
 
 			loadedPages++;
 		});
