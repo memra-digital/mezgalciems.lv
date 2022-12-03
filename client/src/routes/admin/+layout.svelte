@@ -37,7 +37,7 @@
 		}
 	];
 	let accountLinks: Link[] = [
-		{
+		/* 	{
 			name: `Konta iestatījumi`,
 			link: `/admin/konti`,
 			icon: `gear`
@@ -46,7 +46,7 @@
 			name: `Visi konti`,
 			link: `/admin/konti`,
 			icon: `list-ul`
-		}
+		} */
 	]
 	let selectedLink: string;
 

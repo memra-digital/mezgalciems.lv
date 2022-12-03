@@ -1,6 +1,6 @@
 {
 	"name": "mezgalciems.lv-client",
-	"version": "3.0.1",
+	"version": "4.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -9,7 +9,8 @@
 	"dependencies": {
 		"graphql": "^15.5.0",
 		"graphql-request": "^3.4.0",
-		"mapbox-gl": "^2.10.0"
+		"mapbox-gl": "^2.10.0",
+		"sass": "^1.56.1"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
