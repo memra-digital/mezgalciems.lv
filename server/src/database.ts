@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Collection, Db, MongoClient } from 'mongodb';
 
-const dbUrl: string = process.env.DB_DEV_URL || ``;
+const dbUrl: string = process.env.DB_DEV_URL || process.env.DB_URL || ``;
 const dbName: string = `mezgalciems-lv`;
 export const dbClient: MongoClient = new MongoClient(dbUrl);
 
